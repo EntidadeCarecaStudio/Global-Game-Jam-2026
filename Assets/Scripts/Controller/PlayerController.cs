@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float _movementSpeedZ = 3.0f;
     [SerializeField] private float _dodgeSpeedMultiplier = 2.0f;
     [SerializeField] private float _dodgeDuration = 0.5f;
+    [SerializeField] private AnimationCurve _dodgeCurve;
     [SerializeField] private float _attackDuration = 0.4f;
     [SerializeField] private int _maxHealth = 100;
     [SerializeField] private CharacterAnimationController _characterAnimationController;
@@ -212,9 +213,13 @@ public class PlayerController : MonoBehaviour
 
     private void PerformDodgeMovement()
     {
+        float curveFactor = _dodgeCurve.Evaluate(m_stateTimer / _dodgeDuration);
+
         Vector3 currentVelocity = m_rigidbody.linearVelocity;
-        currentVelocity.x = m_dodgeDirection.x * _movementSpeedX * _dodgeSpeedMultiplier;
-        currentVelocity.z = m_dodgeDirection.z * _movementSpeedZ * _dodgeSpeedMultiplier;
+
+        currentVelocity.x = m_dodgeDirection.x * _movementSpeedX * _dodgeSpeedMultiplier * curveFactor;
+        currentVelocity.z = m_dodgeDirection.z * _movementSpeedZ * _dodgeSpeedMultiplier * curveFactor;
+
         m_rigidbody.linearVelocity = currentVelocity;
     }
 

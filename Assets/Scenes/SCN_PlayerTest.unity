@@ -147,7 +147,7 @@ Transform:
   m_GameObject: {fileID: 251052809}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.2, y: -0.5, z: 0}
+  m_LocalPosition: {x: 0, y: -0.5, z: 0}
   m_LocalScale: {x: 2.4, y: 2.4, z: 2.4}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -415,6 +415,57 @@ MonoBehaviour:
   _movementSpeedZ: 3
   _dodgeSpeedMultiplier: 2
   _dodgeDuration: 0.7
+  _dodgeCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 9
+      outSlope: 9
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.13333334
+    - serializedVersion: 3
+      time: 0.25
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 65
+      weightedMode: 0
+      inWeight: 0.93333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.5
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.41666663
+    - serializedVersion: 3
+      time: 0.75
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 5
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.8166666
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: -10.476201
+      outSlope: -10.476201
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.099999905
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   _attackDuration: 0.9
   _maxHealth: 100
   _characterAnimationController: {fileID: 251052813}
