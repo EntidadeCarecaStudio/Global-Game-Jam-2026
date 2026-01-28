@@ -2,17 +2,17 @@ using UnityEngine;
 using System.Collections;
 
 [RequireComponent(typeof(Rigidbody))]
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, IDamageable
 {
-    [SerializeField] private float _movementSpeedX = 5.0f;
-    [SerializeField] private float _movementSpeedZ = 3.0f;
+    
+    [SerializeField] private CharacterStats _characterStats;
     [SerializeField] private float _dodgeSpeedMultiplier = 2.0f;
-    [SerializeField] private float _dodgeDuration = 0.5f;
     [SerializeField] private AnimationCurve _dodgeCurve;
-    [SerializeField] private float _attackDuration = 0.4f;
-    [SerializeField] private int _maxHealth = 100;
     [SerializeField] private CharacterAnimationController _characterAnimationController;
     [SerializeField] private SpriteRenderer _spriteRenderer;
+    [SerializeField] private Transform _attackPoint;
+    [SerializeField] private float _attackRadius = 0.5f;
+    [SerializeField] private LayerMask _enemyLayer;
 
     private int m_currentHealth;
     private CharacterState m_currentState;
@@ -33,7 +33,13 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
-        m_currentHealth = _maxHealth;
+        if (_characterStats == null)
+        {
+            Debug.LogError("CharacterStats ScriptableObject not assigned to PlayerController.");
+            enabled = false;
+            return;
+        }
+        m_currentHealth = _characterStats.maxHealth;
         SetState(CharacterState.Idle);
     }
 
@@ -64,33 +70,7 @@ public class PlayerController : MonoBehaviour
 
     private void HandleInput()
     {
-        if (m_currentState == CharacterState.Die)
-        {
-            m_movementInput = Vector3.zero;
-            return;
-        }
-
-        float horizontalInput = Input.GetAxisRaw("Horizontal");
-        float verticalInput = Input.GetAxisRaw("Vertical");
-
-        m_movementInput = new Vector3(horizontalInput, 0f, verticalInput).normalized;
-
-        if (m_movementInput.x != 0)
-        {
-            m_facingDirection = new Vector3(m_movementInput.x, 0f, 0f).normalized;
-        }
-
-        if (m_canPerformAction)
-        {
-            if (Input.GetButton("Attack"))
-            {
-                Attack();
-            }
-            else if (Input.GetButton("Dodge"))
-            {
-                Dodge();
-            }
-        }
+        
     }
 
     private void UpdateStateLogic()
@@ -138,8 +118,9 @@ public class PlayerController : MonoBehaviour
 
     private void HandleAttackStateLogic()
     {
-        if (m_stateTimer >= _attackDuration)
+        if (m_stateTimer >= _characterStats.attackDuration)
         {
+            PerformAttackDetection();
             m_canPerformAction = true;
             if (m_movementInput != Vector3.zero)
             {
@@ -152,9 +133,27 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void PerformAttackDetection()
+    {
+        if (_attackPoint == null)
+        {
+            Debug.LogWarning("Attack point not assigned for player attack detection.");
+            return;
+        }
+
+        Collider[] hitEnemies = Physics.OverlapSphere(_attackPoint.position, _attackRadius, _enemyLayer);
+        foreach (Collider enemyCollider in hitEnemies)
+        {
+            if (enemyCollider.TryGetComponent(out IDamageable damageableEnemy))
+            {
+                damageableEnemy.TakeDamage(_characterStats.attackDamage);
+            }
+        }
+    }
+
     private void HandleDodgeStateLogic()
     {
-        if (m_stateTimer >= _dodgeDuration)
+        if (m_stateTimer >= _characterStats.dodgeDuration)
         {
             m_canPerformAction = true;
             if (m_movementInput != Vector3.zero)
@@ -204,22 +203,18 @@ public class PlayerController : MonoBehaviour
         }
 
         Vector3 currentVelocity = m_rigidbody.linearVelocity;
-
-        currentVelocity.x = direction.x * _movementSpeedX;
-        currentVelocity.z = direction.z * _movementSpeedZ;
-
+        currentVelocity.x = direction.x * _characterStats.movementSpeedX;
+        currentVelocity.z = direction.z * _characterStats.movementSpeedZ;
         m_rigidbody.linearVelocity = currentVelocity;
     }
 
     private void PerformDodgeMovement()
     {
-        float curveFactor = _dodgeCurve.Evaluate(m_stateTimer / _dodgeDuration);
-
+        float curveFactor = _dodgeCurve.Evaluate(m_stateTimer / _characterStats.dodgeDuration);
+        
         Vector3 currentVelocity = m_rigidbody.linearVelocity;
-
-        currentVelocity.x = m_dodgeDirection.x * _movementSpeedX * _dodgeSpeedMultiplier * curveFactor;
-        currentVelocity.z = m_dodgeDirection.z * _movementSpeedZ * _dodgeSpeedMultiplier * curveFactor;
-
+        currentVelocity.x = m_dodgeDirection.x * _characterStats.movementSpeedX * _dodgeSpeedMultiplier * curveFactor;
+        currentVelocity.z = m_dodgeDirection.z * _characterStats.movementSpeedZ * _dodgeSpeedMultiplier * curveFactor;
         m_rigidbody.linearVelocity = currentVelocity;
     }
 
@@ -298,6 +293,52 @@ public class PlayerController : MonoBehaviour
             yield return new WaitForSeconds(0.1f);
             _spriteRenderer.color = originalColor;
         }
+    }
+
+    private void OnMove(Vector2 value)
+    {
+        if (m_currentState == CharacterState.Die)
+        {
+            m_movementInput = Vector3.zero;
+            return;
+        }
+
+        m_movementInput = new Vector3(value.x, 0f, value.y).normalized;
+
+        if (m_movementInput.x != 0)
+            m_facingDirection = new Vector3(m_movementInput.x, 0f, 0f).normalized;
+    }
+
+    private void OnAttack()
+    {
+        if (m_currentState == CharacterState.Die)
+            return;
+
+        if (m_canPerformAction)
+            Attack();
+    }
+
+    private void OnDodge()
+    {
+        if (m_currentState == CharacterState.Die)
+            return;
+
+        if (m_canPerformAction)
+            Dodge();
+    }
+
+    void OnEnable()
+    {
+        Manager_Events.Input.OnMove += OnMove;
+        Manager_Events.Input.OnAttack += OnAttack;
+        Manager_Events.Input.OnDodge += OnDodge;
+    }
+
+    void OnDisable()
+    {
+        Manager_Events.Input.OnMove -= OnMove;
+        Manager_Events.Input.OnAttack -= OnAttack;
+        Manager_Events.Input.OnDodge -= OnDodge;
     }
 
 }
