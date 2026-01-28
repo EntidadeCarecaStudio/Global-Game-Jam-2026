@@ -867,7 +867,7 @@ Transform:
   m_GameObject: {fileID: 1315619389}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0, y: 1, z: -0}
+  m_LocalPosition: {x: -0, y: 0.6, z: -0}
   m_LocalScale: {x: 1, y: 1, z: 0.25}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -950,6 +950,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd105af00c03e1744a71b16b693cf1cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerPrefab: {fileID: 1311362182539385582, guid: e75e2943ed0a6c14da30561de6ede6a1, type: 3}
+  mainBossEnemyPrefab: {fileID: 1311362182539385582, guid: e75e2943ed0a6c14da30561de6ede6a1, type: 3}
   startRoomPrefab: {fileID: 7859365083193607609, guid: 0a776dfc9aaed4348b06992e9f7cb767, type: 3}
   bossRoomPrefab: {fileID: 6094557943811145485, guid: d7c425b97f12a2f4798cbdc1f4a611df, type: 3}
   roomPrefabs:

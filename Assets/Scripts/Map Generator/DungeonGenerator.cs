@@ -4,6 +4,10 @@ using System.Linq;
 
 public class DungeonGenerator : MonoBehaviour
 {
+    [Header("Player & Main Boss")]
+    public GameObject playerPrefab;      // Arraste o Player aqui
+    public GameObject mainBossEnemyPrefab; // Arraste o Boss Final aqui
+
     [Header("Prefabs - Standard")]
     public Room startRoomPrefab;
     public Room bossRoomPrefab;
@@ -313,15 +317,23 @@ public class DungeonGenerator : MonoBehaviour
                 }
             }
 
-            // --- SPAWN SYSTEM ---
-            if (vr.type == Room.RoomType.MiniBoss)
+            // --- SPAWN SYSTEM (ATUALIZADO) ---
+            if (vr.type == Room.RoomType.Start)
             {
-                // Spawna o Miniboss específico + Minions
+                // Regra: Sempre spawna o Player no único ponto disponível
+                SpawnSingleEntity(newRoom, playerPrefab);
+            }
+            else if (vr.type == Room.RoomType.Boss)
+            {
+                // Regra: Sempre spawna o Boss Principal no único ponto disponível
+                SpawnSingleEntity(newRoom, mainBossEnemyPrefab);
+            }
+            else if (vr.type == Room.RoomType.MiniBoss)
+            {
                 SpawnMiniBossEnemies(newRoom, vr.element);
             }
-            else if (vr.type == Room.RoomType.Room && vr.type != Room.RoomType.Start)
+            else if (vr.type == Room.RoomType.Room)
             {
-                // Spawna inimigos normais
                 if (Random.value <= enemySpawnChance)
                 {
                     SpawnStandardEnemies(newRoom);
@@ -434,5 +446,24 @@ public class DungeonGenerator : MonoBehaviour
                 }
             }
         }
+    }
+
+
+    void SpawnSingleEntity(Room roomInstance, GameObject entityPrefab)
+    {
+        if (entityPrefab == null) return;
+        
+        // Verifica se a sala tem o spawn point configurado
+        if (roomInstance.spawnPoints == null || roomInstance.spawnPoints.Count == 0) 
+        {
+            Debug.LogWarning($"A sala {roomInstance.name} do tipo {roomInstance.type} não tem Spawn Point configurado!");
+            return;
+        }
+
+        // Pega sempre o primeiro ponto (índice 0)
+        Transform spawnPoint = roomInstance.spawnPoints[0];
+        
+        // Instancia a entidade (Player ou Boss)
+        Instantiate(entityPrefab, spawnPoint.position, spawnPoint.rotation);
     }
 }
