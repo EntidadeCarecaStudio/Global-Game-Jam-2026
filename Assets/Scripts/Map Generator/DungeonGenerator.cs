@@ -10,6 +10,7 @@ public class DungeonGenerator : MonoBehaviour
     public Room[] roomPrefabs;
     public Room[] corridorPrefabs;
     public GameObject wallPrefab;
+    public GameObject doorPrefab;
 
     [Header("Generation Rules")]
     public int desiredRooms = 20;
@@ -257,21 +258,26 @@ public class DungeonGenerator : MonoBehaviour
         {
             Room newRoom = Instantiate(vr.prefabReference, vr.position, vr.rotation, transform);
             
-            // --- LOGIC-BASED WALL GENERATION ---
-            // No Physics! We rely on the bool array we populated during simulation.
             for(int i=0; i < vr.isConnectorUsed.Length; i++)
             {
-                // If connector is NOT used, plug it with a wall
+                Transform connectorTrans = newRoom.connectors[i];
+
                 if (!vr.isConnectorUsed[i])
                 {
+                    // Lógica da parede (mantida igual)
                     if (wallPrefab != null)
                     {
-                        Transform connectorTrans = newRoom.connectors[i];
-
-                        // Modified line: Adds +2 to the Y axis
                         Vector3 wallPos = connectorTrans.position + (Vector3.up * 2f);
-
                         Instantiate(wallPrefab, wallPos, connectorTrans.rotation, transform);
+                    }
+                }
+                else
+                {
+                    // --- ALTERAÇÃO AQUI ---
+                    // Só instancia a porta se NÃO for um corredor (e se o prefab existir)
+                    if (vr.type != Room.RoomType.Corridor && doorPrefab != null)
+                    {
+                        Instantiate(doorPrefab, connectorTrans.position, connectorTrans.rotation, transform);
                     }
                 }
             }
