@@ -137,6 +137,7 @@ MonoBehaviour:
   connectors:
   - {fileID: 3125302518538540306}
   - {fileID: 3092923645513670050}
+  spawnPoints: []
 --- !u!1001 &880256334165890505
 PrefabInstance:
   m_ObjectHideFlags: 0
