@@ -962,10 +962,21 @@ MonoBehaviour:
   - {fileID: 1646351440356907616, guid: 15dd71c06f7088d488a9a7881fd3967d, type: 3}
   wallPrefab: {fileID: 7497742661655590222, guid: 9de1cf0d99194d946b90a2acdfb7bc96, type: 3}
   doorPrefab: {fileID: 2676750040825125370, guid: 4efd71d62f1ce5f42918d8bfc2fab936, type: 3}
-  desiredRooms: 50
-  maxSimulationAttempts: 100
+  fireRoomPrefab: {fileID: 5946541285351160598, guid: 09b8f0b0712b78646b060f8f211590cb, type: 3}
+  iceRoomPrefab: {fileID: 5276511597662811546, guid: a3c863c0b9938de4f97779ea7b544eed, type: 3}
+  earthRoomPrefab: {fileID: 717650978647655219, guid: e3bf69b8adf5c5b45b407327a494a0d9, type: 3}
+  fireBossPrefab: {fileID: 1311362182539385582, guid: e75e2943ed0a6c14da30561de6ede6a1, type: 3}
+  iceBossPrefab: {fileID: 3344326619342167051, guid: 035335262352119448ada63cbceba9a4, type: 3}
+  earthBossPrefab: {fileID: 9204264434054010836, guid: 0bba33dfa8feb35478de9bc4529194ca, type: 3}
+  desiredRooms: 40
+  maxSimulationAttempts: 200
   roomRadius: 10
   gridSize: 10
+  standardEnemyPrefabs:
+  - {fileID: 2266345566208212972, guid: f290bc9591b7f11449db95477a6a69c4, type: 3}
+  minEnemiesPerRoom: 1
+  maxEnemiesPerRoom: 3
+  enemySpawnChance: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
