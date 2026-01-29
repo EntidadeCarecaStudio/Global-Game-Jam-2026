@@ -12,6 +12,10 @@ public class EnemySpawnController : MonoBehaviour
     [Header("Modularidade")]
     public GameObject spawnVFXPrefab; // Arraste partículas de terra/fumaça aqui futuramente
 
+    [Header("AI Context")]
+    public Room ownerRoom; // A referência que você vai preencher
+    public RoomManager ownerManager; // Opcional, mas útil para avisar que morreu
+
     private Vector3 finalPosition;
     private Vector3 hiddenPosition;
     private Collider myCollider;
@@ -100,5 +104,15 @@ public class EnemySpawnController : MonoBehaviour
         // Se usar NavMeshAgent, precisa tratar separado
         UnityEngine.AI.NavMeshAgent agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
         if (agent != null) agent.enabled = state;
+    }
+
+    public bool IsInsideRoomBounds(Vector3 position)
+    {
+        if (ownerRoom == null) return true; // Sem dono, livre pelo mundo
+        
+        // Exemplo simples: Distância do centro
+        // Os programadores de IA podem melhorar isso usando Colliders depois
+        float distance = Vector3.Distance(position, ownerRoom.transform.position);
+        return distance < 20f; // Exemplo de raio limite
     }
 }

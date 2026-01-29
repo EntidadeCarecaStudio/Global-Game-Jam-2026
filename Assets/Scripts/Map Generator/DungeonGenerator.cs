@@ -518,11 +518,15 @@ public class DungeonGenerator : MonoBehaviour
         // Adiciona à lista do manager
         if (manager != null) manager.myEnemies.Add(enemyObj);
 
-        // Verifica se tem o componente de Spawn
+        // --- NOVA PARTE: Configura o "Dono" no Inimigo ---
         EnemySpawnController spawnCtrl = enemyObj.GetComponent<EnemySpawnController>();
-        
         // Se não tiver (esquecimento do dev), adiciona automaticamente
         if (spawnCtrl == null) spawnCtrl = enemyObj.AddComponent<EnemySpawnController>();
+
+        // Injeta as referências
+        spawnCtrl.ownerManager = manager;
+        spawnCtrl.ownerRoom = manager.GetComponent<Room>(); // Pega o componente Room do mesmo objeto
+        // -------------------------------------------------
 
         // Prepara (enterra o inimigo e desativa AI)
         spawnCtrl.PrepareForSpawn();
