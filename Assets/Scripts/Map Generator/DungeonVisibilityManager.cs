@@ -9,7 +9,7 @@ public class DungeonVisibilityManager : MonoBehaviour
     private List<Room> allRooms = new List<Room>();
     
     // Define a profundidade: 2 significa (Sala Atual + Vizinhos + Vizinhos dos Vizinhos)
-    public int viewDepth = 6; 
+    public int viewDepth = 2; 
 
     void Awake()
     {

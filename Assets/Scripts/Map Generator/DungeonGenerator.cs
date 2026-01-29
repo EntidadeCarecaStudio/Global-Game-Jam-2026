@@ -250,6 +250,13 @@ public class DungeonGenerator : MonoBehaviour
                 if (IsPositionValid(bossPos, virtualRooms))
                 {
                     VirtualRoom vBoss = CreateVirtualRoom(bossRoomPrefab, bossPos, bossRot);
+                    // --- CORREÇÃO AQUI ---
+                    // Registramos o pai para que o sistema de Vizinhos (BuildDungeon)
+                    // e o Fog of War saibam que esta sala está conectada ao corredor anterior.
+                    vBoss.parentIndex = pIdx; 
+                    vBoss.parentConnectorIndex = cIdx;
+                    // ---------------------
+
                     pRoom.isConnectorUsed[cIdx] = true;
                     vBoss.isConnectorUsed[0] = true;
                     virtualRooms.Add(vBoss);
