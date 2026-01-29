@@ -3,16 +3,16 @@ using System.Collections.Generic;
 
 public class Room : MonoBehaviour
 {
-    // Adicionado o tipo MiniBoss
     public enum RoomType { Room, Corridor, Boss, Start, MiniBoss }
     public RoomType type;
-
-    // Novo enum para definir o elemento (importante para os Minibosses)
     public enum RoomElement { None, Fire, Ice, Earth }
-    public RoomElement element; // Defina isso no Inspector dos prefabs de Miniboss
-    
+    public RoomElement element;
+
     [Header("Connections")]
     public List<Transform> connectors;
+    
+    // --- NOVO: Lista de vizinhos preenchida pelo Gerador ---
+    public List<Room> neighbors = new List<Room>();
 
     [Header("Spawning")]
     public List<Transform> spawnPoints; 
@@ -22,10 +22,7 @@ public class Room : MonoBehaviour
         if (spawnPoints != null)
         {
             Gizmos.color = Color.red;
-            foreach (var sp in spawnPoints)
-            {
-                if(sp != null) Gizmos.DrawSphere(sp.position, 0.5f);
-            }
+            foreach (var sp in spawnPoints) if(sp != null) Gizmos.DrawSphere(sp.position, 0.5f);
         }
     }
 }

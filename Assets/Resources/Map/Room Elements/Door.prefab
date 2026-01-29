@@ -122,5 +122,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isOpen: 0
-  liftSpeed: 3
-  destroyHeight: 15
+  moveSpeed: 17.5
+  moveDistance: 10

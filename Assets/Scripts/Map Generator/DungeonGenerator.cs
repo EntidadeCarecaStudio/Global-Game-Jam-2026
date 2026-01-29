@@ -294,9 +294,17 @@ public class DungeonGenerator : MonoBehaviour
 
     void BuildDungeon(List<VirtualRoom> layout)
     {
+        List<Room> instantiatedRooms = new List<Room>();
+
+        // 1. Instanciação Física
         foreach (var vr in layout)
         {
             Room newRoom = Instantiate(vr.prefabReference, vr.position, vr.rotation, transform);
+            
+            // Configuração do Manager (Inimigos/Portas)
+            RoomManager roomManager = newRoom.gameObject.GetComponent<RoomManager>();
+            if (roomManager == null) roomManager = newRoom.gameObject.AddComponent<RoomManager>();
+            roomManager.roomType = vr.type; 
             
             // Paredes e Portas
             for(int i=0; i < vr.isConnectorUsed.Length; i++)
@@ -306,51 +314,69 @@ public class DungeonGenerator : MonoBehaviour
                 {
                     if (wallPrefab != null)
                     {
-                        Vector3 wallPos = connectorTrans.position + (Vector3.up * 2f); 
-                        Instantiate(wallPrefab, wallPos, connectorTrans.rotation, transform);
+                        Instantiate(wallPrefab, connectorTrans.position + (Vector3.up * 2f), connectorTrans.rotation, transform);
                     }
                 }
                 else
                 {
                     if (vr.type != Room.RoomType.Corridor && doorPrefab != null)
-                        Instantiate(doorPrefab, connectorTrans.position, connectorTrans.rotation, transform);
+                    {
+                        GameObject doorObj = Instantiate(doorPrefab, connectorTrans.position, connectorTrans.rotation, transform);
+                        DoorController doorCtrl = doorObj.GetComponent<DoorController>();
+                        if (doorCtrl != null) roomManager.myDoors.Add(doorCtrl);
+                    }
                 }
             }
 
-            // --- SPAWN SYSTEM (ATUALIZADO) ---
-            if (vr.type == Room.RoomType.Start)
+            // Spawn System
+            if (vr.type == Room.RoomType.Start) SpawnSingleEntity(newRoom, playerPrefab, null);
+            else if (vr.type == Room.RoomType.Boss) SpawnSingleEntity(newRoom, mainBossEnemyPrefab, roomManager);
+            else if (vr.type == Room.RoomType.MiniBoss) SpawnMiniBossEnemies(newRoom, vr.element, roomManager);
+            else if (vr.type == Room.RoomType.Room && Random.value <= enemySpawnChance) SpawnStandardEnemies(newRoom, roomManager);
+
+            instantiatedRooms.Add(newRoom);
+        }
+
+        // 2. Linkagem de Vizinhos (ESSENCIAL PARA A VISIBILIDADE)
+        for (int i = 0; i < layout.Count; i++)
+        {
+            VirtualRoom vr = layout[i];
+            
+            // Conecta Filho <-> Pai
+            if (vr.parentIndex >= 0 && vr.parentIndex < instantiatedRooms.Count)
             {
-                // Regra: Sempre spawna o Player no único ponto disponível
-                SpawnSingleEntity(newRoom, playerPrefab);
+                Room currentPhysRoom = instantiatedRooms[i];
+                Room parentPhysRoom = instantiatedRooms[vr.parentIndex];
+
+                if (!currentPhysRoom.neighbors.Contains(parentPhysRoom)) currentPhysRoom.neighbors.Add(parentPhysRoom);
+                if (!parentPhysRoom.neighbors.Contains(currentPhysRoom)) parentPhysRoom.neighbors.Add(currentPhysRoom);
             }
-            else if (vr.type == Room.RoomType.Boss)
-            {
-                // Regra: Sempre spawna o Boss Principal no único ponto disponível
-                SpawnSingleEntity(newRoom, mainBossEnemyPrefab);
-            }
-            else if (vr.type == Room.RoomType.MiniBoss)
-            {
-                SpawnMiniBossEnemies(newRoom, vr.element);
-            }
-            else if (vr.type == Room.RoomType.Room)
-            {
-                if (Random.value <= enemySpawnChance)
-                {
-                    SpawnStandardEnemies(newRoom);
-                }
-            }
+        }
+
+        // 3. Inicializa o Sistema de Visibilidade Otimizado
+        if (DungeonVisibilityManager.Instance == null)
+        {
+            GameObject managerObj = new GameObject("DungeonVisibilityManager");
+            managerObj.AddComponent<DungeonVisibilityManager>();
+        }
+
+        DungeonVisibilityManager.Instance.Initialize(instantiatedRooms);
+        
+        // Força a sala inicial a aparecer (junto com seus vizinhos imediatos)
+        if (instantiatedRooms.Count > 0)
+        {
+            DungeonVisibilityManager.Instance.UpdateVisibility(instantiatedRooms[0]);
         }
     }
 
     // --- MÉTODOS DE SPAWN ---
 
-    void SpawnMiniBossEnemies(Room roomInstance, Room.RoomElement element)
+    void SpawnMiniBossEnemies(Room roomInstance, Room.RoomElement element, RoomManager manager)
     {
         if (roomInstance.spawnPoints == null || roomInstance.spawnPoints.Count == 0) return;
 
         List<Transform> availablePoints = new List<Transform>(roomInstance.spawnPoints);
         
-        // 1. Identificar e Spawnar o Boss Correto
         GameObject bossPrefabToSpawn = null;
         switch (element)
         {
@@ -361,17 +387,16 @@ public class DungeonGenerator : MonoBehaviour
 
         if (bossPrefabToSpawn != null)
         {
-            // O Boss sempre ocupa o primeiro spawn point (índice 0)
             Transform bossPoint = availablePoints[0];
-            Instantiate(bossPrefabToSpawn, bossPoint.position, bossPoint.rotation, roomInstance.transform);
+            GameObject bossObj = Instantiate(bossPrefabToSpawn, bossPoint.position, bossPoint.rotation, roomInstance.transform);
             
-            // Remove o ponto usado
+            // --- NOVO: Registra o Boss ---
+            if (manager != null) manager.myEnemies.Add(bossObj);
+
             availablePoints.RemoveAt(0);
         }
 
-        // 2. Spawnar Minions nos pontos restantes (Opcional)
-        // Vamos preencher alguns dos pontos restantes com minions normais
-        int minionsToSpawn = Random.Range(1, availablePoints.Count + 1); // Pelo menos 1 minion se houver espaço
+        int minionsToSpawn = Random.Range(1, availablePoints.Count + 1);
         
         for(int i = 0; i < minionsToSpawn; i++)
         {
@@ -379,14 +404,19 @@ public class DungeonGenerator : MonoBehaviour
             if (standardEnemyPrefabs == null || standardEnemyPrefabs.Length == 0) break;
 
             int idx = Random.Range(0, availablePoints.Count);
-            GameObject minion = standardEnemyPrefabs[Random.Range(0, standardEnemyPrefabs.Length)];
-            Instantiate(minion, availablePoints[idx].position, availablePoints[idx].rotation, roomInstance.transform);
+            GameObject minionPrefab = standardEnemyPrefabs[Random.Range(0, standardEnemyPrefabs.Length)];
+            
+            GameObject minionObj = Instantiate(minionPrefab, availablePoints[idx].position, availablePoints[idx].rotation, roomInstance.transform);
+            
+            // --- NOVO: Registra o Minion ---
+            if (manager != null) manager.myEnemies.Add(minionObj);
             
             availablePoints.RemoveAt(idx);
         }
     }
 
-    void SpawnStandardEnemies(Room roomInstance)
+    // Adicionado parâmetro RoomManager manager
+    void SpawnStandardEnemies(Room roomInstance, RoomManager manager)
     {
         if (standardEnemyPrefabs == null || standardEnemyPrefabs.Length == 0) return;
         if (roomInstance.spawnPoints == null || roomInstance.spawnPoints.Count == 0) return;
@@ -399,8 +429,14 @@ public class DungeonGenerator : MonoBehaviour
         {
             if (availablePoints.Count == 0) break;
             int idx = Random.Range(0, availablePoints.Count);
-            GameObject enemy = standardEnemyPrefabs[Random.Range(0, standardEnemyPrefabs.Length)];
-            Instantiate(enemy, availablePoints[idx].position, availablePoints[idx].rotation, roomInstance.transform);
+            GameObject enemyPrefab = standardEnemyPrefabs[Random.Range(0, standardEnemyPrefabs.Length)];
+            
+            // Instancia
+            GameObject newEnemy = Instantiate(enemyPrefab, availablePoints[idx].position, availablePoints[idx].rotation, roomInstance.transform);
+            
+            // --- NOVO: Registra no Manager ---
+            if (manager != null) manager.myEnemies.Add(newEnemy);
+
             availablePoints.RemoveAt(idx);
         }
     }
@@ -449,21 +485,21 @@ public class DungeonGenerator : MonoBehaviour
     }
 
 
-    void SpawnSingleEntity(Room roomInstance, GameObject entityPrefab)
+    // Adicionado parâmetro RoomManager manager (pode ser nulo para o Player)
+    void SpawnSingleEntity(Room roomInstance, GameObject entityPrefab, RoomManager manager)
     {
         if (entityPrefab == null) return;
         
-        // Verifica se a sala tem o spawn point configurado
         if (roomInstance.spawnPoints == null || roomInstance.spawnPoints.Count == 0) 
         {
-            Debug.LogWarning($"A sala {roomInstance.name} do tipo {roomInstance.type} não tem Spawn Point configurado!");
+            Debug.LogWarning($"A sala {roomInstance.name} não tem Spawn Point!");
             return;
         }
 
-        // Pega sempre o primeiro ponto (índice 0)
         Transform spawnPoint = roomInstance.spawnPoints[0];
+        GameObject entityObj = Instantiate(entityPrefab, spawnPoint.position, spawnPoint.rotation);
         
-        // Instancia a entidade (Player ou Boss)
-        Instantiate(entityPrefab, spawnPoint.position, spawnPoint.rotation);
+        // --- NOVO: Se tiver manager (caso do Boss), registra ---
+        if (manager != null) manager.myEnemies.Add(entityObj);
     }
 }

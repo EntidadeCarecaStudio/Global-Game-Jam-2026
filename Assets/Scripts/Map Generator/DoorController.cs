@@ -3,29 +3,38 @@ using UnityEngine;
 public class DoorController : MonoBehaviour
 {
     [Header("Door Settings")]
-    public bool isOpen = false; // Começa falso como solicitado
-    public float liftSpeed = 2f;
-    public float destroyHeight = 15f;
+    public bool isOpen = true; // Começa aberta para o jogador poder entrar
+    public float moveSpeed = 5f;
+    public float moveDistance = 3f; // Quanto ela sobe
+
+    private Vector3 closedPosition;
+    private Vector3 openPosition;
+
+    void Start()
+    {
+        closedPosition = transform.position;
+        openPosition = transform.position + (Vector3.up * moveDistance);
+        
+        // Se começar aberta, já posiciona lá em cima
+        if (isOpen) transform.position = openPosition;
+    }
 
     void Update()
     {
-        // Se o bool for verdadeiro, inicia a "animação"
-        if (isOpen)
-        {
-            // Move para cima no eixo Y
-            transform.Translate(Vector3.up * liftSpeed * Time.deltaTime);
+        // Define o alvo baseado no estado
+        Vector3 target = isOpen ? openPosition : closedPosition;
 
-            // Verifica se atingiu a altura para destruir
-            if (transform.position.y >= destroyHeight)
-            {
-                gameObject.SetActive(false); // Desativa o objeto
-            }
-        }
+        // Move suavemente para o alvo
+        transform.position = Vector3.MoveTowards(transform.position, target, moveSpeed * Time.deltaTime);
     }
     
-    // Método público para ser chamado por gatilhos ou eventos do jogo
     public void OpenDoor()
     {
         isOpen = true;
+    }
+
+    public void CloseDoor()
+    {
+        isOpen = false;
     }
 }
