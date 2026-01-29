@@ -4,7 +4,7 @@ using System.Collections;
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerController : MonoBehaviour, IDamageable
 {
-    
+
     [SerializeField] private CharacterStats _characterStats;
     [SerializeField] private float _dodgeSpeedMultiplier = 2.0f;
     [SerializeField] private AnimationCurve _dodgeCurve;
@@ -13,6 +13,8 @@ public class PlayerController : MonoBehaviour, IDamageable
     [SerializeField] private Transform _attackPoint;
     [SerializeField] private float _attackRadius = 0.5f;
     [SerializeField] private LayerMask _enemyLayer;
+    [SerializeField] private float _attackWindowStartPercentage = 0.3f;
+    [SerializeField] private float _attackWindowEndPercentage = 0.8f;
 
     private int m_currentHealth;
     private CharacterState m_currentState;
@@ -22,6 +24,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     private bool m_canPerformAction = true;
     private Rigidbody m_rigidbody;
     private Vector3 m_facingDirection = Vector3.back;
+    private bool m_hasAttackedInCurrentWindow;
 
     public int CurrentHealth => m_currentHealth;
 
@@ -61,6 +64,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         {
             m_currentState = newState;
             m_stateTimer = 0f;
+            m_hasAttackedInCurrentWindow = false;
             if (_characterAnimationController != null)
             {
                 _characterAnimationController.UpdateAnimation(m_currentState);
@@ -70,7 +74,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     private void HandleInput()
     {
-        
+
     }
 
     private void UpdateStateLogic()
@@ -118,9 +122,16 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     private void HandleAttackStateLogic()
     {
-        if (m_stateTimer >= _characterStats.attackDuration)
+        float normalizedTime = m_stateTimer / _characterStats.attackDuration;
+
+        if (normalizedTime >= _attackWindowStartPercentage && normalizedTime <= _attackWindowEndPercentage && !m_hasAttackedInCurrentWindow)
         {
             PerformAttackDetection();
+            m_hasAttackedInCurrentWindow = true;
+        }
+
+        if (m_stateTimer >= _characterStats.attackDuration)
+        {
             m_canPerformAction = true;
             if (m_movementInput != Vector3.zero)
             {
@@ -144,6 +155,9 @@ public class PlayerController : MonoBehaviour, IDamageable
         Collider[] hitEnemies = Physics.OverlapSphere(_attackPoint.position, _attackRadius, _enemyLayer);
         foreach (Collider enemyCollider in hitEnemies)
         {
+            if (!enemyCollider.isTrigger || enemyCollider.gameObject == gameObject)
+                continue;
+
             if (enemyCollider.TryGetComponent(out IDamageable damageableEnemy))
             {
                 damageableEnemy.TakeDamage(_characterStats.attackDamage);
@@ -211,7 +225,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     private void PerformDodgeMovement()
     {
         float curveFactor = _dodgeCurve.Evaluate(m_stateTimer / _characterStats.dodgeDuration);
-        
+
         Vector3 currentVelocity = m_rigidbody.linearVelocity;
         currentVelocity.x = m_dodgeDirection.x * _characterStats.movementSpeedX * _dodgeSpeedMultiplier * curveFactor;
         currentVelocity.z = m_dodgeDirection.z * _characterStats.movementSpeedZ * _dodgeSpeedMultiplier * curveFactor;
