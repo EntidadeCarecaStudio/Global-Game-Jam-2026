@@ -391,7 +391,7 @@ public class DungeonGenerator : MonoBehaviour
             GameObject bossObj = Instantiate(bossPrefabToSpawn, bossPoint.position, bossPoint.rotation, roomInstance.transform);
             
             // --- NOVO: Registra o Boss ---
-            if (manager != null) manager.myEnemies.Add(bossObj);
+            if (manager != null) SetupEnemySpawn(bossObj, manager);
 
             availablePoints.RemoveAt(0);
         }
@@ -409,7 +409,7 @@ public class DungeonGenerator : MonoBehaviour
             GameObject minionObj = Instantiate(minionPrefab, availablePoints[idx].position, availablePoints[idx].rotation, roomInstance.transform);
             
             // --- NOVO: Registra o Minion ---
-            if (manager != null) manager.myEnemies.Add(minionObj);
+            if (manager != null) SetupEnemySpawn(minionObj, manager);
             
             availablePoints.RemoveAt(idx);
         }
@@ -434,8 +434,9 @@ public class DungeonGenerator : MonoBehaviour
             // Instancia
             GameObject newEnemy = Instantiate(enemyPrefab, availablePoints[idx].position, availablePoints[idx].rotation, roomInstance.transform);
             
-            // --- NOVO: Registra no Manager ---
-            if (manager != null) manager.myEnemies.Add(newEnemy);
+            // --- ALTERADO: Usa o método de setup ---
+            SetupEnemySpawn(newEnemy, manager);
+            // ---------------------------------------
 
             availablePoints.RemoveAt(idx);
         }
@@ -500,6 +501,23 @@ public class DungeonGenerator : MonoBehaviour
         GameObject entityObj = Instantiate(entityPrefab, spawnPoint.position, spawnPoint.rotation);
         
         // --- NOVO: Se tiver manager (caso do Boss), registra ---
-        if (manager != null) manager.myEnemies.Add(entityObj);
+        if (manager != null) SetupEnemySpawn(entityObj, manager);
+    }
+
+
+    // Método auxiliar para preparar o inimigo logo após instanciar
+    void SetupEnemySpawn(GameObject enemyObj, RoomManager manager)
+    {
+        // Adiciona à lista do manager
+        if (manager != null) manager.myEnemies.Add(enemyObj);
+
+        // Verifica se tem o componente de Spawn
+        EnemySpawnController spawnCtrl = enemyObj.GetComponent<EnemySpawnController>();
+        
+        // Se não tiver (esquecimento do dev), adiciona automaticamente
+        if (spawnCtrl == null) spawnCtrl = enemyObj.AddComponent<EnemySpawnController>();
+
+        // Prepara (enterra o inimigo e desativa AI)
+        spawnCtrl.PrepareForSpawn();
     }
 }

@@ -65,7 +65,30 @@ public class RoomManager : MonoBehaviour
     void StartCombat()
     {
         isActive = true;
-        CloseAllDoors(); // TRANCA O JOGADOR!
+        CloseAllDoors(); 
+
+        Debug.Log($"Iniciando combate na sala {gameObject.name} com {myEnemies.Count} inimigos.");
+
+        // --- NOVO: Acorda os inimigos ---
+        foreach (GameObject enemyObj in myEnemies)
+        {
+            if (enemyObj != null)
+            {
+                // Tenta pegar o controlador
+                EnemySpawnController spawner = enemyObj.GetComponent<EnemySpawnController>();
+                
+                if (spawner != null)
+                {
+                    // Faz a animação bonita
+                    spawner.StartSpawnSequence();
+                }
+                else
+                {
+                    // Fallback: Se o inimigo não tiver o script, garante que ative (se estiver desativado)
+                    enemyObj.SetActive(true); 
+                }
+            }
+        }
     }
 
     void RoomCleared()
