@@ -121,6 +121,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54014a831d1f16e48a71fec3559c36ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isOpen: 0
   moveSpeed: 17.5
   moveDistance: 10
+  detectionRange: 8
+  hysteresisBuffer: 1
+  isLocked: 0
