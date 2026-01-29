@@ -972,6 +972,8 @@ MonoBehaviour:
   earthBossPrefab: {fileID: 9204264434054010836, guid: 0bba33dfa8feb35478de9bc4529194ca, type: 3}
   desiredRooms: 20
   maxSimulationAttempts: 200
+  useRandomSeed: 1
+  seed: 0
   roomRadius: 10
   gridSize: 10
   standardEnemyPrefabs:

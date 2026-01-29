@@ -29,6 +29,12 @@ public class DungeonGenerator : MonoBehaviour
     [Header("Generation Rules")]
     public int desiredRooms = 20;
     public int maxSimulationAttempts = 100;
+
+    // --- ADICIONE ISTO AQUI ---
+    [Header("Seed System")]
+    public bool useRandomSeed = true; // Se marcado, gera uma nova a cada play
+    public int seed;                  // O número mágico que define a dungeon
+    // --------------------------
     
     [Header("Collision Settings")]
     public float roomRadius = 8f; 
@@ -104,6 +110,20 @@ public class DungeonGenerator : MonoBehaviour
 
     void GenerateDungeon()
     {
+        // 1. Configuração da Seed
+        if (useRandomSeed)
+        {
+            // Cria uma seed baseada no relógio do sistema (sempre diferente)
+            seed = (int)System.DateTime.Now.Ticks;
+        }
+
+        // Inicializa o gerador de números aleatórios da Unity com a nossa seed
+        Random.InitState(seed);
+        
+        // Loga no console para que você possa copiar a seed se encontrar um bug
+        Debug.Log($"<color=cyan>Generating Dungeon with Seed: {seed}</color>");
+
+        // 2. O resto do código continua igual...
         List<VirtualRoom> finalLayout = null;
         int attempts = 0;
 
@@ -115,11 +135,7 @@ public class DungeonGenerator : MonoBehaviour
 
         if (finalLayout != null)
         {
-            
-            // --- NOVO: Remove corredores inúteis antes de construir ---
             CleanupDanglingCorridors(finalLayout);
-            // ---------------------------------------------------------
-            
             Debug.Log($"Dungeon generated successfully on attempt {attempts}");
             BuildDungeon(finalLayout);
         }
