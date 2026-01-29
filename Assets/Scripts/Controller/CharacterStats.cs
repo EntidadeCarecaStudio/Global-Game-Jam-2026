@@ -9,4 +9,5 @@ public class CharacterStats : ScriptableObject
     public float movementSpeedZ = 3.0f;
     public float attackDuration = 0.4f;
     public float dodgeDuration = 0.5f;
+    public float attackCooldown = 1.0f;
 }

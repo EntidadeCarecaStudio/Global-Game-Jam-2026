@@ -18,3 +18,4 @@ MonoBehaviour:
   movementSpeedZ: 3
   attackDuration: 0.9
   dodgeDuration: 0.7
+  attackCooldown: 1

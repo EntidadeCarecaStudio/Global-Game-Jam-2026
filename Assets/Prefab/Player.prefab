@@ -77,7 +77,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _characterStats: {fileID: 11400000, guid: 9e552baa7b07f954ab31f10bb3e83df3, type: 2}
-  _dodgeSpeedMultiplier: 2
+  _dodgeSpeedMultiplier: 1.5
   _dodgeCurve:
     serializedVersion: 2
     m_Curve:
@@ -138,6 +138,11 @@ MonoBehaviour:
     m_Bits: 1
   _attackWindowStartPercentage: 0.6666667
   _attackWindowEndPercentage: 0.8888889
+  _interactableLayer:
+    serializedVersion: 2
+    m_Bits: 1
+  _interactionRange: 0.5
+  _interactionCheckInterval: 0.1
 --- !u!65 &7602100185671958399
 BoxCollider:
   m_ObjectHideFlags: 0

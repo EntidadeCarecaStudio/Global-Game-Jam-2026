@@ -31,6 +31,7 @@ public static class Manager_Events
         public static Event<Vector2> OnMove;
         public static Event OnAttack;
         public static Event OnDodge;
+        public static Event OnInteract;
     }
 
     public static class Settings
