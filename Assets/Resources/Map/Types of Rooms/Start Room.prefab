@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 343386388377304527}
   - component: {fileID: -4292585002590197083}
   - component: {fileID: 7859365083193607609}
+  - component: {fileID: 2191692902957218971}
   m_Layer: 6
   m_Name: Start Room
   m_TagString: Untagged
@@ -58,8 +59,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 10.489573, y: 4.050688, z: 10.247545}
-  m_Center: {x: -0.009876251, y: 1.9962072, z: -0.13745809}
+  m_Size: {x: 9.89876, y: 4.050688, z: 9.730583}
+  m_Center: {x: -0.009876013, y: 1.9962072, z: -0.14976692}
 --- !u!114 &7859365083193607609
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -72,12 +73,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6fa69fb51d3173346b76589093a2ba58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: 2
+  type: 3
   element: 0
   connectors:
   - {fileID: 6605651889979776337}
   spawnPoints:
   - {fileID: 946403543351599366}
+--- !u!114 &2191692902957218971
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4780013040318592972}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4efd883ba90ac64eb74cd889bb9036f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isCleared: 0
+  isActive: 0
+  roomType: 0
+  myDoors: []
+  myEnemies: []
 --- !u!1 &6038833081633001511
 GameObject:
   m_ObjectHideFlags: 0

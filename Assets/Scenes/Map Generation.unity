@@ -970,8 +970,10 @@ MonoBehaviour:
   fireBossPrefab: {fileID: 1311362182539385582, guid: e75e2943ed0a6c14da30561de6ede6a1, type: 3}
   iceBossPrefab: {fileID: 3344326619342167051, guid: 035335262352119448ada63cbceba9a4, type: 3}
   earthBossPrefab: {fileID: 9204264434054010836, guid: 0bba33dfa8feb35478de9bc4529194ca, type: 3}
-  desiredRooms: 40
+  desiredRooms: 20
   maxSimulationAttempts: 200
+  useRandomSeed: 1
+  seed: 0
   roomRadius: 10
   gridSize: 10
   standardEnemyPrefabs:
