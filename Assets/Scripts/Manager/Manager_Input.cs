@@ -31,7 +31,11 @@ public class Manager_Input : Singleton<Manager_Input>
         InputSystem.onEvent -= OnInputEvent;
     }
 
-    // private void OnPlayer1Move(InputValue value) => Manager_Events.Player.OnPlayer1Move.Notify(value.Get<Vector2>());
+    private void OnMove(InputValue value) => Manager_Events.Input.OnMove.Notify(value.Get<Vector2>());
+    private void OnAttack(InputValue _) => Manager_Events.Input.OnAttack.Notify();
+    private void OnDodge(InputValue _) => Manager_Events.Input.OnDodge.Notify();
+    private void OnInteract(InputValue _) => Manager_Events.Input.OnInteract.Notify();
+    private void OnHit(InputValue _) => Manager_Events.Input.OnHit.Notify();
 
     private void OnUserChange(InputUser user, InputUserChange change, InputDevice device)
     {

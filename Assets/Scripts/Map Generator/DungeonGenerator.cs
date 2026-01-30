@@ -4,49 +4,83 @@ using System.Linq;
 
 public class DungeonGenerator : MonoBehaviour
 {
-    [Header("Prefabs")]
+    [Header("Player & Main Boss")]
+    public GameObject playerPrefab;      // Arraste o Player aqui
+    public GameObject mainBossEnemyPrefab; // Arraste o Boss Final aqui
+
+    [Header("Prefabs - Standard")]
     public Room startRoomPrefab;
     public Room bossRoomPrefab;
-    public Room[] roomPrefabs;      
-    public Room[] corridorPrefabs;  
+    public Room[] roomPrefabs;
+    public Room[] corridorPrefabs;
     public GameObject wallPrefab;
+    public GameObject doorPrefab;
 
-    [Header("Regras de Geração")]
-    public int desiredRooms = 20;   
+    [Header("Prefabs - MiniBoss Rooms (1 of each)")]
+    public Room fireRoomPrefab;
+    public Room iceRoomPrefab;
+    public Room earthRoomPrefab;
+
+    [Header("Prefabs - MiniBoss Enemies")]
+    public GameObject fireBossPrefab;
+    public GameObject iceBossPrefab;
+    public GameObject earthBossPrefab;
+
+    [Header("Generation Rules")]
+    public int desiredRooms = 20;
     public int maxSimulationAttempts = 100;
-    
-    // Tolerância de sobreposição (0.1 = 10%)
-    [Range(0f, 1f)] public float maxOverlapPercentage = 0.1f; 
 
-    // --- ESTRUTURAS DE DADOS VIRTUAIS ---
+    // --- ADICIONE ISTO AQUI ---
+    [Header("Seed System")]
+    public bool useRandomSeed = true; // Se marcado, gera uma nova a cada play
+    public int seed;                  // O número mágico que define a dungeon
+    // --------------------------
     
+    [Header("Collision Settings")]
+    public float roomRadius = 8f; 
+    public float gridSize = 10f; 
+
+    [Header("Enemy Spawning")]
+    public GameObject[] standardEnemyPrefabs; // Minions normais
+    public int minEnemiesPerRoom = 1;
+    public int maxEnemiesPerRoom = 3;
+    [Range(0f, 1f)] public float enemySpawnChance = 0.8f;
+
+    // --- VIRTUAL DATA STRUCTURES ---
     private class VirtualRoom
     {
         public Room prefabReference;
         public Vector3 position;
         public Quaternion rotation;
         public Room.RoomType type;
-        public List<Vector3> availableConnectorsPoints; 
-        public List<Quaternion> availableConnectorsRots; 
-        public Bounds worldBounds; // <--- NOVO: Armazena o volume físico no mundo
+        public Room.RoomElement element; // Guardamos o elemento aqui
+        
+        public List<Vector3> connectorsPoints;
+        public List<Quaternion> connectorsRots;
+        public bool[] isConnectorUsed; 
+
+        // --- NOVO: Rastreamento do Pai para poder "Podar" depois ---
+        public int parentIndex = -1; 
+        public int parentConnectorIndex = -1;
     }
 
-    private struct PrefabData 
+    private Dictionary<Room, RoomDataCache> prefabCache = new Dictionary<Room, RoomDataCache>();
+    private struct RoomDataCache 
     { 
-        public List<TransformData> connectors;
-        public Bounds localBounds; // <--- NOVO: Armazena o volume local do prefab
+        public List<TransformData> connectors; 
+        public int connectorCount;
     }
-
     private struct TransformData { public Vector3 localPos; public Quaternion localRot; }
-
-    // Cache atualizado
-    private Dictionary<Room, PrefabData> prefabCache = new Dictionary<Room, PrefabData>();
 
     void Start()
     {
-        // 1. Pré-processamento: Lê geometria e BOUNDS
+        // Cache de todos os prefabs, incluindo os novos minibosses
         CachePrefabData(startRoomPrefab);
         CachePrefabData(bossRoomPrefab);
+        CachePrefabData(fireRoomPrefab);
+        CachePrefabData(iceRoomPrefab);
+        CachePrefabData(earthRoomPrefab);
+
         foreach (var r in roomPrefabs) CachePrefabData(r);
         foreach (var c in corridorPrefabs) CachePrefabData(c);
 
@@ -55,51 +89,41 @@ public class DungeonGenerator : MonoBehaviour
 
     void CachePrefabData(Room prefab)
     {
+        if(prefab == null || prefabCache.ContainsKey(prefab)) return;
+
         Room temp = Instantiate(prefab, Vector3.zero, Quaternion.identity);
-        temp.gameObject.SetActive(false); // Garante que não interfira na física durante o setup
+        temp.gameObject.SetActive(false);
         
-        // Coleta conectores
-        List<TransformData> connData = new List<TransformData>();
+        List<TransformData> connectorData = new List<TransformData>();
         foreach(var conn in temp.connectors)
         {
-            connData.Add(new TransformData { localPos = conn.localPosition, localRot = conn.localRotation });
-        }
-
-        // --- NOVO: Coleta Bounds (Caixa de Colisão) ---
-        Bounds combinedBounds = new Bounds(Vector3.zero, Vector3.zero);
-        // Tenta pegar bounds dos Colliders primeiro, se não tiver, pega dos Renderers
-        Collider[] colliders = temp.GetComponentsInChildren<Collider>();
-        if (colliders.Length > 0)
-        {
-            combinedBounds = colliders[0].bounds;
-            for (int i = 1; i < colliders.Length; i++) combinedBounds.Encapsulate(colliders[i].bounds);
-        }
-        else
-        {
-            Renderer[] rends = temp.GetComponentsInChildren<Renderer>();
-            if (rends.Length > 0)
-            {
-                combinedBounds = rends[0].bounds;
-                for (int i = 1; i < rends.Length; i++) combinedBounds.Encapsulate(rends[i].bounds);
-            }
+            connectorData.Add(new TransformData { localPos = conn.localPosition, localRot = conn.localRotation });
         }
         
-        // Ajusta o bounds para ser relativo ao pivô do objeto (local space)
-        // O bounds.center retornado pelo Unity é em World Space, mas como instanciamos em (0,0,0), funciona como local,
-        // exceto se o pivô do modelo 3D estiver deslocado. Vamos assumir pivô correto.
+        prefabCache.Add(prefab, new RoomDataCache { 
+            connectors = connectorData, 
+            connectorCount = connectorData.Count 
+        });
         
-        PrefabData data = new PrefabData 
-        { 
-            connectors = connData,
-            localBounds = combinedBounds
-        };
-
-        prefabCache.Add(prefab, data);
         DestroyImmediate(temp.gameObject);
     }
 
     void GenerateDungeon()
     {
+        // 1. Configuração da Seed
+        if (useRandomSeed)
+        {
+            // Cria uma seed baseada no relógio do sistema (sempre diferente)
+            seed = (int)System.DateTime.Now.Ticks;
+        }
+
+        // Inicializa o gerador de números aleatórios da Unity com a nossa seed
+        Random.InitState(seed);
+        
+        // Loga no console para que você possa copiar a seed se encontrar um bug
+        Debug.Log($"<color=cyan>Generating Dungeon with Seed: {seed}</color>");
+
+        // 2. O resto do código continua igual...
         List<VirtualRoom> finalLayout = null;
         int attempts = 0;
 
@@ -111,135 +135,161 @@ public class DungeonGenerator : MonoBehaviour
 
         if (finalLayout != null)
         {
-            Debug.Log($"Dungeon gerada na tentativa {attempts}.");
+            CleanupDanglingCorridors(finalLayout);
+            Debug.Log($"Dungeon generated successfully on attempt {attempts}");
             BuildDungeon(finalLayout);
         }
         else
         {
-            Debug.LogError("Falha Crítica: Não foi possível gerar dungeon sem sobreposições excessivas.");
+            Debug.LogError("Failed to generate dungeon. Try reducing Room Radius or increasing max attempts.");
         }
     }
 
     List<VirtualRoom> SimulateDungeon()
     {
         List<VirtualRoom> virtualRooms = new List<VirtualRoom>();
-        // Lista de conectores pendentes: (IndiceSala, IndiceConector)
-        List<(int rIdx, int cIdx)> pendingConnectors = new List<(int, int)>();
-
-        // 1. Sala Inicial
+        
+        // 1. Setup Start Room
         VirtualRoom vStart = CreateVirtualRoom(startRoomPrefab, Vector3.zero, Quaternion.identity);
         virtualRooms.Add(vStart);
-        
-        for(int i=0; i < vStart.availableConnectorsPoints.Count; i++) pendingConnectors.Add((0, i));
 
-        int roomsCreated = 1; 
+        List<(int roomIdx, int connIdx)> pendingConnectors = new List<(int, int)>();
+        for(int i=0; i < vStart.connectorsPoints.Count; i++) pendingConnectors.Add((0, i));
+
+        // 2. Lista de Minibosses Obrigatórios
+        List<Room> requiredMiniBosses = new List<Room> { fireRoomPrefab, iceRoomPrefab, earthRoomPrefab };
+        // Embaralha para a ordem não ser sempre Fogo -> Gelo -> Terra
+        requiredMiniBosses = requiredMiniBosses.OrderBy(x => Random.value).ToList();
+
+        int roomsCreated = 1;
         int safety = 0;
 
-        // Loop de Geração
         while (roomsCreated < desiredRooms && pendingConnectors.Count > 0 && safety < 1000)
         {
             safety++;
-            
-            // Pega um conector aleatório
-            int rndIndex = Random.Range(0, pendingConnectors.Count);
-            var (parentIdx, parentConnIdx) = pendingConnectors[rndIndex];
+
+            int pendingIndex = Random.Range(0, pendingConnectors.Count);
+            var (parentIdx, parentConnIdx) = pendingConnectors[pendingIndex];
             VirtualRoom parentRoom = virtualRooms[parentIdx];
 
-            // TENTA GERAR A CADEIA: [CORREDOR] -> [SALA]
-            // Previsão de dois passos para evitar dead-ends curtos
+            // --- LÓGICA DE SELEÇÃO DE CANDIDATO ---
+            Room prefabToTry = null;
+            bool tryingSpecial = false;
+
+            // Regra: Se temos Minibosses pendentes, tente spawnar um deles com 40% de chance
+            // OU se estamos ficando sem espaço (roomsCreated > 70% do total), force o spawn deles.
+            bool forceSpecial = roomsCreated > (desiredRooms * 0.7f);
             
-            // A. Escolhe um Corredor Virtual
-            Room corridorPrefab = corridorPrefabs[Random.Range(0, corridorPrefabs.Length)];
-            VirtualRoom vCorridor = TryCalculateFit(parentRoom, parentConnIdx, corridorPrefab);
-
-            if (vCorridor != null && !CheckOverlap(vCorridor, virtualRooms))
+            if (requiredMiniBosses.Count > 0 && parentRoom.type == Room.RoomType.Corridor && (Random.value < 0.4f || forceSpecial))
             {
-                // B. Se o corredor cabe, tentamos colocar uma Sala na ponta dele
-                // Precisamos achar o conector de saída do corredor (geralmente o oposto ao de entrada)
-                // Assumindo: Entrada é index 0, Saída é index 1 (para corredores retos simples)
-                // Para ser genérico, pegamos qualquer conector do corredor que não seja o de entrada
+                prefabToTry = requiredMiniBosses[0];
+                tryingSpecial = true;
+            }
+            else
+            {
+                // Seleção Normal (Sala ou Corredor)
+                Room[] candidates = (parentRoom.type == Room.RoomType.Corridor) ? roomPrefabs : corridorPrefabs;
+                if (parentRoom.type == Room.RoomType.Start || parentRoom.type == Room.RoomType.Room || parentRoom.type == Room.RoomType.MiniBoss) 
+                    candidates = corridorPrefabs;
                 
-                // Mas espera: O vCorridor ainda não está na lista, seus conectores mundiais não foram calculados além da entrada.
-                // Vamos calcular temporariamente.
-                
-                // Escolhe uma sala aleatória
-                Room roomPrefab = roomPrefabs[Random.Range(0, roomPrefabs.Length)];
-                
-                // Conector de saída do corredor: vamos tentar todos exceto o 0 (que conectou no pai)
-                bool chainSuccess = false;
-                VirtualRoom vRoom = null;
+                prefabToTry = candidates[Random.Range(0, candidates.Length)];
+            }
 
-                for (int c = 1; c < vCorridor.availableConnectorsPoints.Count; c++)
+            RoomDataCache entryData = prefabCache[prefabToTry];
+            
+            // Lógica de Transformada (igual ao anterior)
+            TransformData childEntry = entryData.connectors[0]; 
+            Vector3 targetPos = parentRoom.connectorsPoints[parentConnIdx];
+            Quaternion targetRot = parentRoom.connectorsRots[parentConnIdx];
+
+            Quaternion requiredRot = (targetRot * Quaternion.Euler(0, 180, 0)) * Quaternion.Inverse(childEntry.localRot);
+            Vector3 requiredPos = targetPos - (requiredRot * childEntry.localPos);
+
+            if (IsPositionValid(requiredPos, virtualRooms))
+            {
+                VirtualRoom vNew = CreateVirtualRoom(prefabToTry, requiredPos, requiredRot);
+
+                // --- NOVO: Registra quem criou esta sala ---
+                vNew.parentIndex = parentIdx;
+                vNew.parentConnectorIndex = parentConnIdx;
+                // ------------------------------------------
+
+                virtualRooms.Add(vNew);
+                roomsCreated++;
+                int newRoomIdx = virtualRooms.Count - 1;
+
+                parentRoom.isConnectorUsed[parentConnIdx] = true;
+                vNew.isConnectorUsed[0] = true;
+
+                for (int i = 1; i < vNew.connectorsPoints.Count; i++)
+                    pendingConnectors.Add((newRoomIdx, i));
+
+                pendingConnectors.RemoveAt(pendingIndex);
+
+                // Se conseguimos colocar o Miniboss, removemos da lista de obrigatórios
+                if (tryingSpecial)
                 {
-                    vRoom = TryCalculateFit(vCorridor, c, roomPrefab);
-                    
-                    // Checagem CRÍTICA: 
-                    // 1. A Sala cabe? 
-                    // 2. A Sala não bate no próprio corredor que estamos criando? (Raro, mas possível em 'U')
-                    if (vRoom != null && !CheckOverlap(vRoom, virtualRooms) && !CheckOverlap(vRoom, new List<VirtualRoom>{vCorridor}))
-                    {
-                        chainSuccess = true;
-                        break; // Achamos um par válido!
-                    }
-                }
-
-                if (chainSuccess)
-                {
-                    // SUCESSO! Adiciona ambos (Corredor e Sala)
-                    
-                    // 1. Adiciona Corredor
-                    virtualRooms.Add(vCorridor);
-                    int corridorIdx = virtualRooms.Count - 1;
-                    
-                    // Adiciona conectores do corredor (caso tenha ramificações extras), exceto o usado pela sala
-                    // (Simplificação: adicionamos todos e removemos o usado depois, ou deixamos a lógica de build fechar)
-                    
-                    // 2. Adiciona Sala
-                    virtualRooms.Add(vRoom);
-                    int roomIdx = virtualRooms.Count - 1;
-                    roomsCreated++;
-
-                    // Adiciona conectores da NOVA SALA à lista de pendentes
-                    for (int k = 1; k < vRoom.availableConnectorsPoints.Count; k++)
-                    {
-                        pendingConnectors.Add((roomIdx, k));
-                    }
-
-                    // Remove o conector do pai usado
-                    pendingConnectors.RemoveAt(rndIndex);
-                }
-                else
-                {
-                    // Falha na previsão da sala. O corredor cabe, mas a sala na ponta não.
-                    // Estratégia: Desistimos desse conector POR AGORA? Ou tentamos outro prefab?
-                    // Para evitar loop infinito, apenas passamos a vez.
+                    requiredMiniBosses.RemoveAt(0);
                 }
             }
         }
 
-        // Tenta gerar Boss (Obrigatório) no final
+        // Se o loop terminou e ainda faltam minibosses, essa simulação falhou (se você considerar estrito)
+        // Para este exemplo, vamos considerar sucesso se a Boss Room couber, mas o ideal é verificar requiredMiniBosses.Count == 0
+
+        // 3. Boss Placement (Mesma lógica)
         if (roomsCreated >= desiredRooms)
         {
-            if (TryPlaceBoss(virtualRooms, pendingConnectors)) 
-                return virtualRooms;
-        }
+            float maxDist = 0;
+            int bestConnIndex = -1;
 
-        return null; // Falha se não atingiu meta ou boss
+            for(int i=0; i < pendingConnectors.Count; i++)
+            {
+                var (rIdx, cIdx) = pendingConnectors[i];
+                if (virtualRooms[rIdx].type == Room.RoomType.Corridor)
+                {
+                    float dist = Vector3.Distance(Vector3.zero, virtualRooms[rIdx].connectorsPoints[cIdx]);
+                    if(dist > maxDist) { maxDist = dist; bestConnIndex = i; }
+                }
+            }
+
+            if (bestConnIndex != -1)
+            {
+                var (pIdx, cIdx) = pendingConnectors[bestConnIndex];
+                VirtualRoom pRoom = virtualRooms[pIdx];
+                RoomDataCache bossData = prefabCache[bossRoomPrefab];
+                TransformData entryData = bossData.connectors[0];
+
+                Quaternion bossRot = (pRoom.connectorsRots[cIdx] * Quaternion.Euler(0, 180, 0)) * Quaternion.Inverse(entryData.localRot);
+                Vector3 bossPos = pRoom.connectorsPoints[cIdx] - (bossRot * entryData.localPos);
+
+                if (IsPositionValid(bossPos, virtualRooms))
+                {
+                    VirtualRoom vBoss = CreateVirtualRoom(bossRoomPrefab, bossPos, bossRot);
+                    // --- CORREÇÃO AQUI ---
+                    // Registramos o pai para que o sistema de Vizinhos (BuildDungeon)
+                    // e o Fog of War saibam que esta sala está conectada ao corredor anterior.
+                    vBoss.parentIndex = pIdx; 
+                    vBoss.parentConnectorIndex = cIdx;
+                    // ---------------------
+
+                    pRoom.isConnectorUsed[cIdx] = true;
+                    vBoss.isConnectorUsed[0] = true;
+                    virtualRooms.Add(vBoss);
+                    return virtualRooms;
+                }
+            }
+        }
+        return null;
     }
 
-    // Tenta calcular posição/rotação. Retorna null se erro matemático, retorna VirtualRoom (sem checar colisão ainda) se der certo.
-    VirtualRoom TryCalculateFit(VirtualRoom parent, int parentConnIdx, Room prefabToTry)
+    bool IsPositionValid(Vector3 pos, List<VirtualRoom> existingRooms)
     {
-        Vector3 targetPos = parent.availableConnectorsPoints[parentConnIdx];
-        Quaternion targetRot = parent.availableConnectorsRots[parentConnIdx];
-
-        TransformData entryConnData = prefabCache[prefabToTry].connectors[0];
-
-        // Rotação para alinhar (Opposite direction)
-        Quaternion requiredRotation = (targetRot * Quaternion.Euler(0, 180, 0)) * Quaternion.Inverse(entryConnData.localRot);
-        Vector3 requiredPosition = targetPos - (requiredRotation * entryConnData.localPos);
-
-        return CreateVirtualRoom(prefabToTry, requiredPosition, requiredRotation);
+        foreach(var room in existingRooms)
+        {
+            if(Vector3.Distance(pos, room.position) < roomRadius) return false;
+        }
+        return true;
     }
 
     VirtualRoom CreateVirtualRoom(Room prefab, Vector3 pos, Quaternion rot)
@@ -249,123 +299,252 @@ public class DungeonGenerator : MonoBehaviour
         vr.position = pos;
         vr.rotation = rot;
         vr.type = prefab.type;
-        vr.availableConnectorsPoints = new List<Vector3>();
-        vr.availableConnectorsRots = new List<Quaternion>();
+        vr.element = prefab.element; // Copia o elemento do prefab
+        vr.connectorsPoints = new List<Vector3>();
+        vr.connectorsRots = new List<Quaternion>();
 
-        var data = prefabCache[prefab];
+        var cachedData = prefabCache[prefab];
+        vr.isConnectorUsed = new bool[cachedData.connectorCount];
 
-        // Calcula Conectores no Mundo
-        foreach(var c in data.connectors)
+        foreach(var c in cachedData.connectors)
         {
-            vr.availableConnectorsPoints.Add(pos + (rot * c.localPos));
-            vr.availableConnectorsRots.Add(rot * c.localRot);
+            vr.connectorsPoints.Add(pos + (rot * c.localPos));
+            vr.connectorsRots.Add(rot * c.localRot);
         }
-
-        // Calcula Bounds no Mundo (AABB Aproximado)
-        // Rotacionar um AABB é complexo, a Unity faz isso recalculando o bounding box que engloba a rotação
-        Vector3 center = pos + (rot * data.localBounds.center);
-        
-        // Simples aproximação de tamanho rotacionado para 90 graus
-        // (Se suas salas giram em ângulos arbitrários, precisaria de lógica OBB, mas para dungeon geralmente é 90)
-        Vector3 size = data.localBounds.size;
-        
-        // Verifica se a rotação troca os eixos X e Z (aproximadamente)
-        float yRot = Quaternion.Angle(Quaternion.identity, rot); // Simplificado
-        // Maneira mais robusta de ver se girou 90 graus no Y:
-        Vector3 rotatedSize = Mathf.Abs(Vector3.Dot(transform.forward, rot * Vector3.forward)) < 0.5f 
-            ? new Vector3(size.z, size.y, size.x) 
-            : size;
-
-        vr.worldBounds = new Bounds(center, rotatedSize);
-        // Reduz levemente o bounds para permitir "encostar" paredes sem contar como sobreposição
-        vr.worldBounds.Expand(-0.1f); 
 
         return vr;
     }
 
-    // --- LÓGICA DE SOBREPOSIÇÃO (10%) ---
-    bool CheckOverlap(VirtualRoom newRoom, List<VirtualRoom> existingRooms)
-    {
-        foreach(var existing in existingRooms)
-        {
-            if (newRoom.worldBounds.Intersects(existing.worldBounds))
-            {
-                // Calcula volume da interseção
-                float intersectionVolume = GetIntersectionVolume(newRoom.worldBounds, existing.worldBounds);
-                
-                // Calcula volume da nova sala
-                float newRoomVolume = newRoom.worldBounds.size.x * newRoom.worldBounds.size.y * newRoom.worldBounds.size.z;
-
-                // Se a interseção for maior que X% do volume da sala nova, bloqueia
-                if (newRoomVolume > 0 && (intersectionVolume / newRoomVolume) > maxOverlapPercentage)
-                {
-                    return true; // Sobreposição detectada
-                }
-            }
-        }
-        return false;
-    }
-
-    float GetIntersectionVolume(Bounds b1, Bounds b2)
-    {
-        Vector3 min = Vector3.Max(b1.min, b2.min);
-        Vector3 max = Vector3.Min(b1.max, b2.max);
-
-        float x = Mathf.Max(0, max.x - min.x);
-        float y = Mathf.Max(0, max.y - min.y);
-        float z = Mathf.Max(0, max.z - min.z);
-
-        return x * y * z;
-    }
-
-    bool TryPlaceBoss(List<VirtualRoom> rooms, List<(int, int)> connectors)
-    {
-        // Tenta achar o ponto mais distante
-        float maxDist = 0;
-        int bestIdx = -1;
-        
-        for(int i=0; i < connectors.Count; i++)
-        {
-            var c = connectors[i];
-            float d = Vector3.Distance(Vector3.zero, rooms[c.Item1].availableConnectorsPoints[c.Item2]);
-            if(d > maxDist) { maxDist = d; bestIdx = i; }
-        }
-
-        if (bestIdx != -1)
-        {
-            var (pIdx, cIdx) = connectors[bestIdx];
-            VirtualRoom boss = TryCalculateFit(rooms[pIdx], cIdx, bossRoomPrefab);
-            if(boss != null && !CheckOverlap(boss, rooms))
-            {
-                rooms.Add(boss);
-                return true;
-            }
-        }
-        return false;
-    }
-
     void BuildDungeon(List<VirtualRoom> layout)
     {
+        List<Room> instantiatedRooms = new List<Room>();
+
+        // 1. Instanciação Física
         foreach (var vr in layout)
         {
             Room newRoom = Instantiate(vr.prefabReference, vr.position, vr.rotation, transform);
-            StartCoroutine(CloseHolesRoutine(newRoom));
+            
+            // Configuração do Manager (Inimigos/Portas)
+            RoomManager roomManager = newRoom.gameObject.GetComponent<RoomManager>();
+            if (roomManager == null) roomManager = newRoom.gameObject.AddComponent<RoomManager>();
+            roomManager.roomType = vr.type; 
+            
+            // Paredes e Portas
+            for(int i=0; i < vr.isConnectorUsed.Length; i++)
+            {
+                Transform connectorTrans = newRoom.connectors[i];
+                if (!vr.isConnectorUsed[i])
+                {
+                    if (wallPrefab != null)
+                    {
+                        Instantiate(wallPrefab, connectorTrans.position + (Vector3.up * 2f), connectorTrans.rotation, transform);
+                    }
+                }
+                else
+                {
+                    if (vr.type != Room.RoomType.Corridor && doorPrefab != null)
+                    {
+                        GameObject doorObj = Instantiate(doorPrefab, connectorTrans.position, connectorTrans.rotation, transform);
+                        DoorController doorCtrl = doorObj.GetComponent<DoorController>();
+                        if (doorCtrl != null) roomManager.myDoors.Add(doorCtrl);
+                    }
+                }
+            }
+
+            // Spawn System
+            if (vr.type == Room.RoomType.Start) SpawnSingleEntity(newRoom, playerPrefab, null);
+            else if (vr.type == Room.RoomType.Boss) SpawnSingleEntity(newRoom, mainBossEnemyPrefab, roomManager);
+            else if (vr.type == Room.RoomType.MiniBoss) SpawnMiniBossEnemies(newRoom, vr.element, roomManager);
+            else if (vr.type == Room.RoomType.Room && Random.value <= enemySpawnChance) SpawnStandardEnemies(newRoom, roomManager);
+
+            instantiatedRooms.Add(newRoom);
+        }
+
+        // 2. Linkagem de Vizinhos (ESSENCIAL PARA A VISIBILIDADE)
+        for (int i = 0; i < layout.Count; i++)
+        {
+            VirtualRoom vr = layout[i];
+            
+            // Conecta Filho <-> Pai
+            if (vr.parentIndex >= 0 && vr.parentIndex < instantiatedRooms.Count)
+            {
+                Room currentPhysRoom = instantiatedRooms[i];
+                Room parentPhysRoom = instantiatedRooms[vr.parentIndex];
+
+                if (!currentPhysRoom.neighbors.Contains(parentPhysRoom)) currentPhysRoom.neighbors.Add(parentPhysRoom);
+                if (!parentPhysRoom.neighbors.Contains(currentPhysRoom)) parentPhysRoom.neighbors.Add(currentPhysRoom);
+            }
+        }
+
+        // 3. Inicializa o Sistema de Visibilidade Otimizado
+        if (DungeonVisibilityManager.Instance == null)
+        {
+            GameObject managerObj = new GameObject("DungeonVisibilityManager");
+            managerObj.AddComponent<DungeonVisibilityManager>();
+        }
+
+        DungeonVisibilityManager.Instance.Initialize(instantiatedRooms);
+        
+        // Força a sala inicial a aparecer (junto com seus vizinhos imediatos)
+        if (instantiatedRooms.Count > 0)
+        {
+            DungeonVisibilityManager.Instance.UpdateVisibility(instantiatedRooms[0]);
         }
     }
 
-    System.Collections.IEnumerator CloseHolesRoutine(Room room)
+    // --- MÉTODOS DE SPAWN ---
+
+    void SpawnMiniBossEnemies(Room roomInstance, Room.RoomElement element, RoomManager manager)
     {
-        yield return new WaitForFixedUpdate(); 
-        foreach(Transform connector in room.connectors)
+        if (roomInstance.spawnPoints == null || roomInstance.spawnPoints.Count == 0) return;
+
+        List<Transform> availablePoints = new List<Transform>(roomInstance.spawnPoints);
+        
+        GameObject bossPrefabToSpawn = null;
+        switch (element)
         {
-            // Raycast físico para ver se tem sala conectada
-            // Como agora garantimos geometria via bounds, o raycast é seguro
-            if(!Physics.Raycast(connector.position, connector.forward, 2f)) // Raycast curto para fora
+            case Room.RoomElement.Fire: bossPrefabToSpawn = fireBossPrefab; break;
+            case Room.RoomElement.Ice: bossPrefabToSpawn = iceBossPrefab; break;
+            case Room.RoomElement.Earth: bossPrefabToSpawn = earthBossPrefab; break;
+        }
+
+        if (bossPrefabToSpawn != null)
+        {
+            Transform bossPoint = availablePoints[0];
+            GameObject bossObj = Instantiate(bossPrefabToSpawn, bossPoint.position, bossPoint.rotation, roomInstance.transform);
+            
+            // --- NOVO: Registra o Boss ---
+            if (manager != null) SetupEnemySpawn(bossObj, manager);
+
+            availablePoints.RemoveAt(0);
+        }
+
+        int minionsToSpawn = Random.Range(1, availablePoints.Count + 1);
+        
+        for(int i = 0; i < minionsToSpawn; i++)
+        {
+            if (availablePoints.Count == 0) break;
+            if (standardEnemyPrefabs == null || standardEnemyPrefabs.Length == 0) break;
+
+            int idx = Random.Range(0, availablePoints.Count);
+            GameObject minionPrefab = standardEnemyPrefabs[Random.Range(0, standardEnemyPrefabs.Length)];
+            
+            GameObject minionObj = Instantiate(minionPrefab, availablePoints[idx].position, availablePoints[idx].rotation, roomInstance.transform);
+            
+            // --- NOVO: Registra o Minion ---
+            if (manager != null) SetupEnemySpawn(minionObj, manager);
+            
+            availablePoints.RemoveAt(idx);
+        }
+    }
+
+    // Adicionado parâmetro RoomManager manager
+    void SpawnStandardEnemies(Room roomInstance, RoomManager manager)
+    {
+        if (standardEnemyPrefabs == null || standardEnemyPrefabs.Length == 0) return;
+        if (roomInstance.spawnPoints == null || roomInstance.spawnPoints.Count == 0) return;
+
+        int maxCount = Mathf.Min(maxEnemiesPerRoom, roomInstance.spawnPoints.Count);
+        int enemyCount = Random.Range(minEnemiesPerRoom, maxCount + 1);
+        List<Transform> availablePoints = new List<Transform>(roomInstance.spawnPoints);
+
+        for (int i = 0; i < enemyCount; i++)
+        {
+            if (availablePoints.Count == 0) break;
+            int idx = Random.Range(0, availablePoints.Count);
+            GameObject enemyPrefab = standardEnemyPrefabs[Random.Range(0, standardEnemyPrefabs.Length)];
+            
+            // Instancia
+            GameObject newEnemy = Instantiate(enemyPrefab, availablePoints[idx].position, availablePoints[idx].rotation, roomInstance.transform);
+            
+            // --- ALTERADO: Usa o método de setup ---
+            SetupEnemySpawn(newEnemy, manager);
+            // ---------------------------------------
+
+            availablePoints.RemoveAt(idx);
+        }
+    }
+
+    void CleanupDanglingCorridors(List<VirtualRoom> layout)
+    {
+        // Percorre de trás para frente para poder remover itens da lista com segurança
+        // Começamos do final, ignorando a sala 0 (Start)
+        for (int i = layout.Count - 1; i > 0; i--)
+        {
+            VirtualRoom currentRoom = layout[i];
+
+            // A lógica se aplica se for um CORREDOR
+            if (currentRoom.type == Room.RoomType.Corridor)
             {
-                 // Nota: Isso é um check simplista. O ideal é verificar se existe um outro conector alinhado.
-                 // Mas para fechar buracos visuais, funciona.
-                if(wallPrefab) Instantiate(wallPrefab, connector.position, connector.rotation, transform);
+                // Verifica se o corredor tem alguma saída usada (além da entrada [0])
+                bool hasChild = false;
+                for (int c = 1; c < currentRoom.isConnectorUsed.Length; c++)
+                {
+                    if (currentRoom.isConnectorUsed[c])
+                    {
+                        hasChild = true;
+                        break;
+                    }
+                }
+
+                // Se não tem filhos, é um corredor sem saída (beco) ou sobreposto
+                if (!hasChild)
+                {
+                    // 1. Identifica o Pai
+                    if (currentRoom.parentIndex >= 0 && currentRoom.parentIndex < layout.Count)
+                    {
+                        VirtualRoom parentRoom = layout[currentRoom.parentIndex];
+                        int connIdx = currentRoom.parentConnectorIndex;
+
+                        // 2. Avisa o pai que a conexão não está mais em uso
+                        // Isso fará o script BuildDungeon instanciar uma Parede neste local
+                        parentRoom.isConnectorUsed[connIdx] = false;
+                    }
+
+                    // 3. Remove este corredor da lista final
+                    layout.RemoveAt(i);
+                }
             }
         }
+    }
+
+
+    // Adicionado parâmetro RoomManager manager (pode ser nulo para o Player)
+    void SpawnSingleEntity(Room roomInstance, GameObject entityPrefab, RoomManager manager)
+    {
+        if (entityPrefab == null) return;
+        
+        if (roomInstance.spawnPoints == null || roomInstance.spawnPoints.Count == 0) 
+        {
+            Debug.LogWarning($"A sala {roomInstance.name} não tem Spawn Point!");
+            return;
+        }
+
+        Transform spawnPoint = roomInstance.spawnPoints[0];
+        GameObject entityObj = Instantiate(entityPrefab, spawnPoint.position, spawnPoint.rotation);
+        
+        // --- NOVO: Se tiver manager (caso do Boss), registra ---
+        if (manager != null) SetupEnemySpawn(entityObj, manager);
+    }
+
+
+    // Método auxiliar para preparar o inimigo logo após instanciar
+    void SetupEnemySpawn(GameObject enemyObj, RoomManager manager)
+    {
+        // Adiciona à lista do manager
+        if (manager != null) manager.myEnemies.Add(enemyObj);
+
+        // --- NOVA PARTE: Configura o "Dono" no Inimigo ---
+        EnemySpawnController spawnCtrl = enemyObj.GetComponent<EnemySpawnController>();
+        // Se não tiver (esquecimento do dev), adiciona automaticamente
+        if (spawnCtrl == null) spawnCtrl = enemyObj.AddComponent<EnemySpawnController>();
+
+        // Injeta as referências
+        spawnCtrl.ownerManager = manager;
+        spawnCtrl.ownerRoom = manager.GetComponent<Room>(); // Pega o componente Room do mesmo objeto
+        // -------------------------------------------------
+
+        // Prepara (enterra o inimigo e desativa AI)
+        spawnCtrl.PrepareForSpawn();
     }
 }
