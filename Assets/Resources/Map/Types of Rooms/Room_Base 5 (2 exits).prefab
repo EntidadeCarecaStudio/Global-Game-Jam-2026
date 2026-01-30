@@ -104,6 +104,7 @@ GameObject:
   - component: {fileID: 9110941809480860091}
   - component: {fileID: 6942316039000955726}
   - component: {fileID: 1353644845477148009}
+  - component: {fileID: 3959474218918712100}
   m_Layer: 6
   m_Name: Room_Base 5 (2 exits)
   m_TagString: Untagged
@@ -153,8 +154,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 10.263976, y: 4.03263, z: 10.267166}
-  m_Center: {x: 0.12128019, y: 2.0030336, z: 0.12128067}
+  m_Size: {x: 9.657404, y: 4.03263, z: 9.660595}
+  m_Center: {x: 0.15919113, y: 2.0030336, z: -0.10618377}
 --- !u!114 &1353644845477148009
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -168,6 +169,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 0
+  element: 0
   connectors:
   - {fileID: 7801008297790630677}
   - {fileID: 4140662641039619395}
@@ -175,6 +177,23 @@ MonoBehaviour:
   - {fileID: 3709124039053317524}
   - {fileID: 3519550946577926475}
   - {fileID: 1412692785465624371}
+--- !u!114 &3959474218918712100
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2408300002731752322}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4efd883ba90ac64eb74cd889bb9036f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isCleared: 0
+  isActive: 0
+  roomType: 0
+  myDoors: []
+  myEnemies: []
 --- !u!1 &5489086647077561234
 GameObject:
   m_ObjectHideFlags: 0

@@ -73,6 +73,7 @@ GameObject:
   - component: {fileID: 5625627014617720741}
   - component: {fileID: 3655269537258642943}
   - component: {fileID: 5276511597662811546}
+  - component: {fileID: 2465872822448518723}
   m_Layer: 6
   m_Name: Ice Miniboss Room
   m_TagString: Untagged
@@ -125,8 +126,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 20.542355, y: 3.9922395, z: 20.508991}
-  m_Center: {x: 0.016681671, y: 2.0069897, z: -0.033363342}
+  m_Size: {x: 19.91371, y: 3.9922395, z: 19.84542}
+  m_Center: {x: -0.018242836, y: 2.0069897, z: -0.050824642}
 --- !u!114 &5276511597662811546
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -148,6 +149,23 @@ MonoBehaviour:
   - {fileID: 2944670966615972753}
   - {fileID: 7263883243680080328}
   - {fileID: 4790234564817241490}
+--- !u!114 &2465872822448518723
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5456000403042154065}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4efd883ba90ac64eb74cd889bb9036f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isCleared: 0
+  isActive: 0
+  roomType: 0
+  myDoors: []
+  myEnemies: []
 --- !u!1 &7036065640357666299
 GameObject:
   m_ObjectHideFlags: 0

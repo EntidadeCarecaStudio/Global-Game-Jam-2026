@@ -1,18 +1,29 @@
 using UnityEngine;
 using System.Collections;
+using Unity.Cinemachine;
 
 [RequireComponent(typeof(Rigidbody))]
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, IDamageable
 {
-    [SerializeField] private float _movementSpeedX = 5.0f;
-    [SerializeField] private float _movementSpeedZ = 3.0f;
+
+    [SerializeField] private CharacterStats _characterStats;
     [SerializeField] private float _dodgeSpeedMultiplier = 2.0f;
-    [SerializeField] private float _dodgeDuration = 0.5f;
     [SerializeField] private AnimationCurve _dodgeCurve;
-    [SerializeField] private float _attackDuration = 0.4f;
-    [SerializeField] private int _maxHealth = 100;
     [SerializeField] private CharacterAnimationController _characterAnimationController;
     [SerializeField] private SpriteRenderer _spriteRenderer;
+    [SerializeField] private Transform _attackPoint;
+    [SerializeField] private float _attackRadius = 0.5f;
+    [SerializeField] private LayerMask _enemyLayer;
+    [SerializeField] private float _attackWindowStartPercentage = 0.3f;
+    [SerializeField] private float _attackWindowEndPercentage = 0.8f;
+
+    [Header("Interaction Settings")]
+    [SerializeField] private LayerMask _interactableLayer;
+    [SerializeField] private float _interactionRange = 2.0f;
+    [SerializeField] private float _interactionCheckInterval = 0.1f;
+
+    [Header("Cinemachine Impulse")]
+    [SerializeField] private CinemachineImpulseSource _impulseSource;
 
     private int m_currentHealth;
     private CharacterState m_currentState;
@@ -22,6 +33,12 @@ public class PlayerController : MonoBehaviour
     private bool m_canPerformAction = true;
     private Rigidbody m_rigidbody;
     private Vector3 m_facingDirection = Vector3.back;
+    private bool m_hasAttackedInCurrentWindow;
+
+    private IInteractable m_currentHighlightedInteractable;
+    private float m_interactionCheckTimer;
+
+    private Coroutine m_damageFeedbackCoroutine;
 
     public int CurrentHealth => m_currentHealth;
 
@@ -29,19 +46,33 @@ public class PlayerController : MonoBehaviour
     {
         m_rigidbody = GetComponent<Rigidbody>();
         m_rigidbody.freezeRotation = true;
+        if (_impulseSource == null)
+        {
+            _impulseSource = GetComponent<CinemachineImpulseSource>();
+            if (_impulseSource == null)
+            {
+                Debug.LogWarning("CinemachineImpulseSource not found on PlayerController or its GameObject. Camera shake on damage will not work.");
+            }
+        }
     }
 
     private void Start()
     {
-        m_currentHealth = _maxHealth;
+        if (_characterStats == null)
+        {
+            Debug.LogError("CharacterStats ScriptableObject not assigned to PlayerController.");
+            enabled = false;
+            return;
+        }
+        m_currentHealth = _characterStats.maxHealth;
         SetState(CharacterState.Idle);
     }
 
     private void Update()
     {
-        HandleInput();
         UpdateStateLogic();
         UpdateSpriteOrientation();
+        UpdateInteractableHighlight();
     }
 
     private void FixedUpdate()
@@ -55,6 +86,9 @@ public class PlayerController : MonoBehaviour
         {
             m_currentState = newState;
             m_stateTimer = 0f;
+            m_hasAttackedInCurrentWindow = false;
+            m_canPerformAction = (newState == CharacterState.Idle || newState == CharacterState.Run);
+
             if (_characterAnimationController != null)
             {
                 _characterAnimationController.UpdateAnimation(m_currentState);
@@ -64,33 +98,7 @@ public class PlayerController : MonoBehaviour
 
     private void HandleInput()
     {
-        if (m_currentState == CharacterState.Die)
-        {
-            m_movementInput = Vector3.zero;
-            return;
-        }
-
-        float horizontalInput = Input.GetAxisRaw("Horizontal");
-        float verticalInput = Input.GetAxisRaw("Vertical");
-
-        m_movementInput = new Vector3(horizontalInput, 0f, verticalInput).normalized;
-
-        if (m_movementInput.x != 0)
-        {
-            m_facingDirection = new Vector3(m_movementInput.x, 0f, 0f).normalized;
-        }
-
-        if (m_canPerformAction)
-        {
-            if (Input.GetButton("Attack"))
-            {
-                Attack();
-            }
-            else if (Input.GetButton("Dodge"))
-            {
-                Dodge();
-            }
-        }
+        
     }
 
     private void UpdateStateLogic()
@@ -138,40 +146,53 @@ public class PlayerController : MonoBehaviour
 
     private void HandleAttackStateLogic()
     {
-        if (m_stateTimer >= _attackDuration)
+        float normalizedTime = m_stateTimer / _characterStats.attackDuration;
+
+        if (normalizedTime >= _attackWindowStartPercentage && normalizedTime <= _attackWindowEndPercentage && !m_hasAttackedInCurrentWindow)
         {
-            m_canPerformAction = true;
-            if (m_movementInput != Vector3.zero)
+            PerformAttackDetection();
+            m_hasAttackedInCurrentWindow = true;
+        }
+
+        if (m_stateTimer >= _characterStats.attackDuration)
+        {
+            SetState(CharacterState.Idle);
+        }
+    }
+
+    private void PerformAttackDetection()
+    {
+        if (_attackPoint == null)
+        {
+            Debug.LogWarning("Attack point not assigned for player attack detection.");
+            return;
+        }
+
+        Collider[] hitEnemies = Physics.OverlapSphere(_attackPoint.position, _attackRadius, _enemyLayer);
+        foreach (Collider enemyCollider in hitEnemies)
+        {
+            if (enemyCollider.gameObject == gameObject || !enemyCollider.isTrigger)
+                continue;
+
+            if (enemyCollider.TryGetComponent(out IDamageable damageableEnemy))
             {
-                SetState(CharacterState.Run);
-            }
-            else
-            {
-                SetState(CharacterState.Idle);
+                damageableEnemy.TakeDamage(_characterStats.attackDamage);
             }
         }
     }
 
     private void HandleDodgeStateLogic()
     {
-        if (m_stateTimer >= _dodgeDuration)
+        if (m_stateTimer >= _characterStats.dodgeDuration)
         {
-            m_canPerformAction = true;
-            if (m_movementInput != Vector3.zero)
-            {
-                SetState(CharacterState.Run);
-            }
-            else
-            {
-                SetState(CharacterState.Idle);
-            }
+            SetState(CharacterState.Idle);
         }
         PerformDodgeMovement();
     }
 
     private void HandleTakeDamageStateLogic()
     {
-        if (m_stateTimer >= 0.3f)
+        if (m_stateTimer >= _characterStats.takeDamageStunDuration)
         {
             if (m_currentHealth <= 0)
             {
@@ -186,15 +207,11 @@ public class PlayerController : MonoBehaviour
 
     private void HandleDieStateLogic()
     {
-
+        
     }
 
     private void PerformMovement(Vector3 direction)
     {
-        if (m_currentState == CharacterState.Dodge)
-        {
-            return;
-        }
         if (m_currentState == CharacterState.Attack ||
             m_currentState == CharacterState.TakeDamage ||
             m_currentState == CharacterState.Die)
@@ -203,42 +220,37 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
+        if (m_currentState == CharacterState.Dodge)
+        {
+            return;
+        }
+
         Vector3 currentVelocity = m_rigidbody.linearVelocity;
-
-        currentVelocity.x = direction.x * _movementSpeedX;
-        currentVelocity.z = direction.z * _movementSpeedZ;
-
+        currentVelocity.x = direction.x * _characterStats.movementSpeedX;
+        currentVelocity.z = direction.z * _characterStats.movementSpeedZ;
         m_rigidbody.linearVelocity = currentVelocity;
     }
 
     private void PerformDodgeMovement()
     {
-        float curveFactor = _dodgeCurve.Evaluate(m_stateTimer / _dodgeDuration);
-
+        float curveFactor = _dodgeCurve.Evaluate(m_stateTimer / _characterStats.dodgeDuration);
+        
         Vector3 currentVelocity = m_rigidbody.linearVelocity;
-
-        currentVelocity.x = m_dodgeDirection.x * _movementSpeedX * _dodgeSpeedMultiplier * curveFactor;
-        currentVelocity.z = m_dodgeDirection.z * _movementSpeedZ * _dodgeSpeedMultiplier * curveFactor;
-
+        currentVelocity.x = m_dodgeDirection.x * _characterStats.movementSpeedX * _dodgeSpeedMultiplier * curveFactor;
+        currentVelocity.z = m_dodgeDirection.z * _characterStats.movementSpeedZ * _dodgeSpeedMultiplier * curveFactor;
         m_rigidbody.linearVelocity = currentVelocity;
     }
 
     private void Attack()
     {
-        if (m_currentState == CharacterState.Attack || m_currentState == CharacterState.Dodge ||
-            m_currentState == CharacterState.TakeDamage || m_currentState == CharacterState.Die) return;
-
         SetState(CharacterState.Attack);
-        m_canPerformAction = false;
     }
 
     private void Dodge()
     {
-        if (m_currentState == CharacterState.Attack || m_currentState == CharacterState.Dodge ||
-            m_currentState == CharacterState.TakeDamage || m_currentState == CharacterState.Die) return;
+        if (m_currentState == CharacterState.Attack || m_currentState == CharacterState.TakeDamage || m_currentState == CharacterState.Die) return;
 
         SetState(CharacterState.Dodge);
-        m_canPerformAction = false;
 
         if (m_movementInput != Vector3.zero)
         {
@@ -253,7 +265,7 @@ public class PlayerController : MonoBehaviour
     public void TakeDamage(int damage)
     {
         if (m_currentState == CharacterState.Die) return;
-        if (m_currentState == CharacterState.Dodge) return;
+        if (m_currentState == CharacterState.Dodge) return; // Invulnerável durante o Dodge
 
         m_currentHealth -= damage;
         if (m_currentHealth <= 0)
@@ -264,7 +276,19 @@ public class PlayerController : MonoBehaviour
         else
         {
             SetState(CharacterState.TakeDamage);
-            StartCoroutine(DamageFeedback());
+            m_rigidbody.linearVelocity = Vector3.zero; // Para o movimento imediatamente ao tomar dano
+
+            if (m_damageFeedbackCoroutine != null) StopCoroutine(m_damageFeedbackCoroutine);
+            m_damageFeedbackCoroutine = StartCoroutine(DamageFeedback());
+
+            if (_impulseSource != null)
+            {
+                _impulseSource.GenerateImpulse();
+            }
+            else
+            {
+                Debug.LogWarning("CinemachineImpulseSource not assigned or found. Camera shake will not work.");
+            }
         }
     }
 
@@ -272,6 +296,8 @@ public class PlayerController : MonoBehaviour
     {
         SetState(CharacterState.Die);
         Debug.Log("Player has died!");
+        m_rigidbody.linearVelocity = Vector3.zero;
+        m_canPerformAction = false;
         enabled = false;
     }
 
@@ -295,9 +321,132 @@ public class PlayerController : MonoBehaviour
         {
             Color originalColor = _spriteRenderer.color;
             _spriteRenderer.color = Color.red;
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(_characterStats.damageFeedbackDuration);
             _spriteRenderer.color = originalColor;
         }
+    }
+
+    private void UpdateInteractableHighlight()
+    {
+        m_interactionCheckTimer -= Time.deltaTime;
+        if (m_interactionCheckTimer <= 0)
+        {
+            m_interactionCheckTimer = _interactionCheckInterval;
+            
+            Collider[] hitColliders = Physics.OverlapSphere(transform.position, _interactionRange, _interactableLayer);
+
+            IInteractable closestInteractable = null;
+            float minDistance = float.MaxValue;
+
+            foreach (var hitCollider in hitColliders)
+            {
+                if (hitCollider.TryGetComponent(out IInteractable interactable))
+                {
+                    float distance = Vector3.Distance(transform.position, hitCollider.transform.position);
+                    if (distance < minDistance)
+                    {
+                        minDistance = distance;
+                        closestInteractable = interactable;
+                    }
+                }
+            }
+
+            if (closestInteractable != m_currentHighlightedInteractable)
+            {
+                if (m_currentHighlightedInteractable != null)
+                {
+                    m_currentHighlightedInteractable.HideUI();
+                }
+
+                m_currentHighlightedInteractable = closestInteractable;
+
+                if (m_currentHighlightedInteractable != null)
+                {
+                    m_currentHighlightedInteractable.ShowUI();
+                }
+            }
+        }
+    }
+
+    private void OnMove(Vector2 value)
+    {
+        if (m_currentState == CharacterState.Die || m_currentState == CharacterState.TakeDamage)
+        {
+            m_movementInput = Vector3.zero;
+            return;
+        }
+
+        m_movementInput = new Vector3(value.x, 0f, value.y).normalized;
+
+        if (m_movementInput.x != 0)
+            m_facingDirection = new Vector3(m_movementInput.x, 0f, 0f).normalized;
+    }
+
+    private void OnAttack()
+    {
+        if (m_currentState == CharacterState.Die ||
+            m_currentState == CharacterState.Attack ||
+            m_currentState == CharacterState.TakeDamage)
+            return;
+
+        if (m_currentState == CharacterState.Dodge || m_canPerformAction)
+        {
+            Attack();
+        }
+    }
+
+    private void OnDodge()
+    {
+        if (m_currentState == CharacterState.Die ||
+            m_currentState == CharacterState.Attack ||
+            m_currentState == CharacterState.TakeDamage)
+            return;
+
+        if (m_canPerformAction)
+            Dodge();
+    }
+
+    private void OnInteract()
+    {
+        if (m_currentState == CharacterState.Die ||
+            m_currentState == CharacterState.Attack ||
+            m_currentState == CharacterState.TakeDamage)
+            return;
+
+        if (m_canPerformAction && m_currentHighlightedInteractable != null)
+        {
+            m_currentHighlightedInteractable.Interact(gameObject);
+            UpdateInteractableHighlight(); 
+        }
+    }
+
+    private void OnHit()
+    {
+        // TakeDamage(1);
+    }
+
+    void OnEnable()
+    {
+        Manager_Events.Input.OnMove += OnMove;
+        Manager_Events.Input.OnAttack += OnAttack;
+        Manager_Events.Input.OnDodge += OnDodge;
+        Manager_Events.Input.OnInteract += OnInteract;
+        Manager_Events.Input.OnHit += OnHit;
+    }
+
+    void OnDisable()
+    {
+        Manager_Events.Input.OnMove -= OnMove;
+        Manager_Events.Input.OnAttack -= OnAttack;
+        Manager_Events.Input.OnDodge -= OnDodge;
+        Manager_Events.Input.OnInteract -= OnInteract;
+        Manager_Events.Input.OnHit -= OnHit;
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawWireSphere(transform.position, _interactionRange);
     }
 
 }

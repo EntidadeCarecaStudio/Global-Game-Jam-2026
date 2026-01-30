@@ -104,6 +104,7 @@ GameObject:
   - component: {fileID: 4477261027396755845}
   - component: {fileID: 2691483535685980693}
   - component: {fileID: 5946541285351160598}
+  - component: {fileID: -7003172696730724198}
   m_Layer: 6
   m_Name: Fire Miniboss Room
   m_TagString: Untagged
@@ -156,8 +157,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 20.542355, y: 3.9922395, z: 20.508991}
-  m_Center: {x: 0.016681671, y: 2.0069897, z: -0.033363342}
+  m_Size: {x: 19.820591, y: 3.9922395, z: 19.867428}
+  m_Center: {x: -0.06351423, y: 2.0069897, z: 0.04683304}
 --- !u!114 &5946541285351160598
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -179,6 +180,23 @@ MonoBehaviour:
   - {fileID: 7851950789278202699}
   - {fileID: 7224226635256080441}
   - {fileID: 3181852785688008860}
+--- !u!114 &-7003172696730724198
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4488251795470433481}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4efd883ba90ac64eb74cd889bb9036f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isCleared: 0
+  isActive: 0
+  roomType: 0
+  myDoors: []
+  myEnemies: []
 --- !u!1 &5226371203820829406
 GameObject:
   m_ObjectHideFlags: 0
