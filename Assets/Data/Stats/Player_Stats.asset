@@ -19,3 +19,6 @@ MonoBehaviour:
   attackDuration: 0.9
   dodgeDuration: 0.7
   attackCooldown: 1
+  takeDamageStunDuration: 0.5
+  damageFeedbackDuration: 0.1
+  knockbackForce: 5
