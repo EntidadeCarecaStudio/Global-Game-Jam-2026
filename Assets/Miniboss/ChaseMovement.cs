@@ -3,42 +3,45 @@ using UnityEngine.AI;
 
 public class ChaseMovement : MonoBehaviour, IMinibossMovement
 {
-    private NavMeshAgent agent;
-    [SerializeField] private Transform target;
+    private NavMeshAgent _agent;
+    private Transform _target;
     [SerializeField] private float repathInterval = 0.25f;
 
     private float repathTimer;
     private bool isMoving;
 
-    private void Awake()
+    private void Start()
     {
-        if (agent == null)
+        if (TryGetComponent<MinibossController>(out MinibossController controller))
         {
-            agent = GetComponent<NavMeshAgent>();
+            if (_agent == null)
+                _agent = controller.Agent;
+
+            _target = controller.Target;
         }
     }
 
     private void Update()
     {
-        if (!isMoving || target == null) return;
+        if (!isMoving || _target == null) return;
 
         repathTimer -= Time.deltaTime;
         if (repathTimer <= 0f)
         {
             repathTimer = repathInterval;
-            agent.SetDestination(target.position);
+            _agent.SetDestination(_target.position);
         }
     }
 
     public void StartMove()
     {
-        if (agent != null)
+        if (_agent != null)
         {
-            if (!agent.enabled || target == null) return;
-
+            if (!_agent.enabled || _target == null) return;
+            
             isMoving = true;
-            agent.isStopped = false;
-            agent.SetDestination(target.position);
+            _agent.isStopped = false;
+            _agent.SetDestination(_target.position);
             repathTimer = 0f;
         }
     }
@@ -47,17 +50,17 @@ public class ChaseMovement : MonoBehaviour, IMinibossMovement
     {
         isMoving = false;
 
-        if (agent != null)
+        if (_agent != null)
         {
-            if (!agent.enabled) return;
+            if (!_agent.enabled) return;
 
-            agent.isStopped = true;
-            agent.ResetPath();
+            _agent.isStopped = true;
+            _agent.ResetPath();
         }
     }
 
     public void SetTarget(Transform newTarget)
     {
-        target = newTarget;
+        _target = newTarget;
     }
 }

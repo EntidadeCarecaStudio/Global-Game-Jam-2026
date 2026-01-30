@@ -2,10 +2,10 @@ using UnityEngine;
 
 public class AnimationEventRelay : MonoBehaviour
 {
-    [SerializeField] private MinibossController controller;
+    [SerializeField] private MinibossController _controller;
 
-    public void OnAnimationEvent(string eventName)
+    public void OnAttackFinished(string eventName)
     {
-        controller.OnAnimationEvent(eventName);
+        _controller.ChangeState(_controller.AttackState);
     }
 }

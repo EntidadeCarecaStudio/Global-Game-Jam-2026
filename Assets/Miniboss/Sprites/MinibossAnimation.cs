@@ -14,8 +14,15 @@ public class MinibossAnimation : MonoBehaviour
         animator.SetBool("b_isRunning", true);
     }
 
-    public void PlayAttack()
+    public void PlayMeleeAttack()
     {
-        animator.SetTrigger("t_onAttack");
+        animator.SetTrigger("t_onMeleeAttack");
+    }
+
+    public void PlayDashAttack(float dashDuration, AnimationClip clip)
+    {
+        animator.speed = clip.length / dashDuration;
+        animator.Play("DashAttack");
+        //animator.SetTrigger("t_onDashAttack");
     }
 }

@@ -11,4 +11,5 @@ public class SO_MinibossStats : ScriptableObject
     [Min(0.1f)] public float moveAcceleration = 8f;
     [Range(0f, 1f)] public float criticalChance = 0.08f;
     [Min(1f)] public float criticalMultiplier = 3f;
+    [Min(0.1f)] public float attackEnterRange = 2f;
 }

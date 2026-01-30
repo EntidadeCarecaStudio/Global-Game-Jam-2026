@@ -20,3 +20,4 @@ MonoBehaviour:
   moveAcceleration: 8
   criticalChance: 0.08
   criticalMultiplier: 2
+  attackEnterRange: 2
