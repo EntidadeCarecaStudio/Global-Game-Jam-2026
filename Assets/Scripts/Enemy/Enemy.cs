@@ -68,7 +68,8 @@ public class Enemy : MonoBehaviour
         {
             if (index < paths.Count - 1)
             {
-                index++;
+                //index++;
+                index = Random.Range(0, paths.Count - 1);
             }
             else
             {
@@ -88,6 +89,11 @@ public class Enemy : MonoBehaviour
         Collider[] colision = Physics.OverlapSphere(this.transform.position, this.lookRadius, playerMasck);
         if(colision != null && colision.Length > 0)
         {
+            /*Vector3 positionCurrent = this.transform.position;
+            Vector3 positionTarget = colision[0].transform.position;
+            Vector3 direction = positionTarget - positionCurrent;
+            direction = direction.normalized; */ //PHYSICS.RAYCAST_COMPLETAR ESSE PARAMETRO DE CÓDIGO.
+            
             this.Target = colision[0].transform;
         }
         else
