@@ -1,6 +1,6 @@
 using UnityEngine;
 using System.Collections;
-using System.Linq; // Adicionado para o método OrderBy do LINQ
+using Unity.Cinemachine;
 
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerController : MonoBehaviour, IDamageable
@@ -20,7 +20,10 @@ public class PlayerController : MonoBehaviour, IDamageable
     [Header("Interaction Settings")]
     [SerializeField] private LayerMask _interactableLayer;
     [SerializeField] private float _interactionRange = 2.0f;
-    [SerializeField] private float _interactionCheckInterval = 0.1f; // Frequência da verificação de interactables
+    [SerializeField] private float _interactionCheckInterval = 0.1f;
+
+    [Header("Cinemachine Impulse")]
+    [SerializeField] private CinemachineImpulseSource _impulseSource;
 
     private int m_currentHealth;
     private CharacterState m_currentState;
@@ -35,12 +38,22 @@ public class PlayerController : MonoBehaviour, IDamageable
     private IInteractable m_currentHighlightedInteractable;
     private float m_interactionCheckTimer;
 
+    private Coroutine m_damageFeedbackCoroutine;
+
     public int CurrentHealth => m_currentHealth;
 
     private void Awake()
     {
         m_rigidbody = GetComponent<Rigidbody>();
         m_rigidbody.freezeRotation = true;
+        if (_impulseSource == null)
+        {
+            _impulseSource = GetComponent<CinemachineImpulseSource>();
+            if (_impulseSource == null)
+            {
+                Debug.LogWarning("CinemachineImpulseSource not found on PlayerController or its GameObject. Camera shake on damage will not work.");
+            }
+        }
     }
 
     private void Start()
@@ -57,7 +70,6 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     private void Update()
     {
-        HandleInput();
         UpdateStateLogic();
         UpdateSpriteOrientation();
         UpdateInteractableHighlight();
@@ -75,6 +87,8 @@ public class PlayerController : MonoBehaviour, IDamageable
             m_currentState = newState;
             m_stateTimer = 0f;
             m_hasAttackedInCurrentWindow = false;
+            m_canPerformAction = (newState == CharacterState.Idle || newState == CharacterState.Run);
+
             if (_characterAnimationController != null)
             {
                 _characterAnimationController.UpdateAnimation(m_currentState);
@@ -142,15 +156,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         if (m_stateTimer >= _characterStats.attackDuration)
         {
-            m_canPerformAction = true;
-            if (m_movementInput != Vector3.zero)
-            {
-                SetState(CharacterState.Run);
-            }
-            else
-            {
-                SetState(CharacterState.Idle);
-            }
+            SetState(CharacterState.Idle);
         }
     }
 
@@ -179,22 +185,14 @@ public class PlayerController : MonoBehaviour, IDamageable
     {
         if (m_stateTimer >= _characterStats.dodgeDuration)
         {
-            m_canPerformAction = true;
-            if (m_movementInput != Vector3.zero)
-            {
-                SetState(CharacterState.Run);
-            }
-            else
-            {
-                SetState(CharacterState.Idle);
-            }
+            SetState(CharacterState.Idle);
         }
         PerformDodgeMovement();
     }
 
     private void HandleTakeDamageStateLogic()
     {
-        if (m_stateTimer >= 0.3f)
+        if (m_stateTimer >= _characterStats.takeDamageStunDuration)
         {
             if (m_currentHealth <= 0)
             {
@@ -209,20 +207,21 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     private void HandleDieStateLogic()
     {
-
+        
     }
 
     private void PerformMovement(Vector3 direction)
     {
-        if (m_currentState == CharacterState.Dodge)
-        {
-            return;
-        }
         if (m_currentState == CharacterState.Attack ||
             m_currentState == CharacterState.TakeDamage ||
             m_currentState == CharacterState.Die)
         {
             m_rigidbody.linearVelocity = Vector3.zero;
+            return;
+        }
+
+        if (m_currentState == CharacterState.Dodge)
+        {
             return;
         }
 
@@ -244,9 +243,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     private void Attack()
     {
-        // Ao chamar SetState(CharacterState.Attack), a esquiva (se estiver ativa) será interrompida.
         SetState(CharacterState.Attack);
-        m_canPerformAction = false; // Bloqueia outras ações durante o ataque.
     }
 
     private void Dodge()
@@ -254,7 +251,6 @@ public class PlayerController : MonoBehaviour, IDamageable
         if (m_currentState == CharacterState.Attack || m_currentState == CharacterState.TakeDamage || m_currentState == CharacterState.Die) return;
 
         SetState(CharacterState.Dodge);
-        m_canPerformAction = false;
 
         if (m_movementInput != Vector3.zero)
         {
@@ -280,7 +276,19 @@ public class PlayerController : MonoBehaviour, IDamageable
         else
         {
             SetState(CharacterState.TakeDamage);
-            StartCoroutine(DamageFeedback());
+            m_rigidbody.linearVelocity = Vector3.zero; // Para o movimento imediatamente ao tomar dano
+
+            if (m_damageFeedbackCoroutine != null) StopCoroutine(m_damageFeedbackCoroutine);
+            m_damageFeedbackCoroutine = StartCoroutine(DamageFeedback());
+
+            if (_impulseSource != null)
+            {
+                _impulseSource.GenerateImpulse();
+            }
+            else
+            {
+                Debug.LogWarning("CinemachineImpulseSource not assigned or found. Camera shake will not work.");
+            }
         }
     }
 
@@ -288,6 +296,8 @@ public class PlayerController : MonoBehaviour, IDamageable
     {
         SetState(CharacterState.Die);
         Debug.Log("Player has died!");
+        m_rigidbody.linearVelocity = Vector3.zero;
+        m_canPerformAction = false;
         enabled = false;
     }
 
@@ -311,7 +321,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         {
             Color originalColor = _spriteRenderer.color;
             _spriteRenderer.color = Color.red;
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(_characterStats.damageFeedbackDuration);
             _spriteRenderer.color = originalColor;
         }
     }
@@ -332,9 +342,6 @@ public class PlayerController : MonoBehaviour, IDamageable
             {
                 if (hitCollider.TryGetComponent(out IInteractable interactable))
                 {
-                    if (!hitCollider.isTrigger)
-                        continue;
-
                     float distance = Vector3.Distance(transform.position, hitCollider.transform.position);
                     if (distance < minDistance)
                     {
@@ -363,7 +370,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     private void OnMove(Vector2 value)
     {
-        if (m_currentState == CharacterState.Die)
+        if (m_currentState == CharacterState.Die || m_currentState == CharacterState.TakeDamage)
         {
             m_movementInput = Vector3.zero;
             return;
@@ -382,8 +389,6 @@ public class PlayerController : MonoBehaviour, IDamageable
             m_currentState == CharacterState.TakeDamage)
             return;
 
-        // Permite que o ataque ocorra se o jogador estiver no estado Dodge OU se m_canPerformAction for true.
-        // Isso interromperá o Dodge se o ataque for iniciado.
         if (m_currentState == CharacterState.Dodge || m_canPerformAction)
         {
             Attack();
@@ -392,18 +397,20 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     private void OnDodge()
     {
-        if (m_currentState == CharacterState.Die)
+        if (m_currentState == CharacterState.Die ||
+            m_currentState == CharacterState.Attack ||
+            m_currentState == CharacterState.TakeDamage)
             return;
 
-        // Ação de esquiva só pode ser realizada se m_canPerformAction for true
-        // (i.e., não está atacando, esquivando, ou tomando dano)
         if (m_canPerformAction)
             Dodge();
     }
 
     private void OnInteract()
     {
-        if (m_currentState == CharacterState.Die)
+        if (m_currentState == CharacterState.Die ||
+            m_currentState == CharacterState.Attack ||
+            m_currentState == CharacterState.TakeDamage)
             return;
 
         if (m_canPerformAction && m_currentHighlightedInteractable != null)
@@ -413,12 +420,18 @@ public class PlayerController : MonoBehaviour, IDamageable
         }
     }
 
+    private void OnHit()
+    {
+        // TakeDamage(1);
+    }
+
     void OnEnable()
     {
         Manager_Events.Input.OnMove += OnMove;
         Manager_Events.Input.OnAttack += OnAttack;
         Manager_Events.Input.OnDodge += OnDodge;
-        Manager_Events.Input.OnInteract += OnInteract; // Assina o novo evento de interação
+        Manager_Events.Input.OnInteract += OnInteract;
+        Manager_Events.Input.OnHit += OnHit;
     }
 
     void OnDisable()
@@ -426,7 +439,8 @@ public class PlayerController : MonoBehaviour, IDamageable
         Manager_Events.Input.OnMove -= OnMove;
         Manager_Events.Input.OnAttack -= OnAttack;
         Manager_Events.Input.OnDodge -= OnDodge;
-        Manager_Events.Input.OnInteract -= OnInteract; // Desassina o novo evento de interação
+        Manager_Events.Input.OnInteract -= OnInteract;
+        Manager_Events.Input.OnHit -= OnHit;
     }
 
     private void OnDrawGizmosSelected()

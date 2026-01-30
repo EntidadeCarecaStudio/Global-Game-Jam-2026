@@ -32,6 +32,7 @@ public static class Manager_Events
         public static Event OnAttack;
         public static Event OnDodge;
         public static Event OnInteract;
+        public static Event OnHit;
     }
 
     public static class Settings
