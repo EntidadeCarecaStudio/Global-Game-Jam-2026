@@ -87,6 +87,8 @@ public class PlayerController : MonoBehaviour, IDamageable
             m_currentState = newState;
             m_stateTimer = 0f;
             m_hasAttackedInCurrentWindow = false;
+            
+            // Reavalia m_canPerformAction ao mudar de estado
             m_canPerformAction = (newState == CharacterState.Idle || newState == CharacterState.Run);
 
             if (_characterAnimationController != null)
@@ -98,7 +100,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     private void HandleInput()
     {
-        
+        // Input é tratado via eventos, este método está vazio.
     }
 
     private void UpdateStateLogic()
@@ -156,7 +158,14 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         if (m_stateTimer >= _characterStats.attackDuration)
         {
-            SetState(CharacterState.Idle);
+            if (m_movementInput != Vector3.zero)
+            {
+                SetState(CharacterState.Run);
+            }
+            else
+            {
+                SetState(CharacterState.Idle);
+            }
         }
     }
 
@@ -171,12 +180,14 @@ public class PlayerController : MonoBehaviour, IDamageable
         Collider[] hitEnemies = Physics.OverlapSphere(_attackPoint.position, _attackRadius, _enemyLayer);
         foreach (Collider enemyCollider in hitEnemies)
         {
+            // RESTAURADO: A verificação original do usuário.
             if (enemyCollider.gameObject == gameObject || !enemyCollider.isTrigger)
                 continue;
-
+            
             if (enemyCollider.TryGetComponent(out IDamageable damageableEnemy))
             {
-                damageableEnemy.TakeDamage(_characterStats.attackDamage);
+                // Passa a posição do player como hitSourcePosition para o alvo calcular o knockback
+                damageableEnemy.TakeDamage(_characterStats.attackDamage, transform.position);
             }
         }
     }
@@ -185,7 +196,14 @@ public class PlayerController : MonoBehaviour, IDamageable
     {
         if (m_stateTimer >= _characterStats.dodgeDuration)
         {
-            SetState(CharacterState.Idle);
+            if (m_movementInput != Vector3.zero)
+            {
+                SetState(CharacterState.Run);
+            }
+            else
+            {
+                SetState(CharacterState.Idle);
+            }
         }
         PerformDodgeMovement();
     }
@@ -200,26 +218,43 @@ public class PlayerController : MonoBehaviour, IDamageable
             }
             else
             {
-                SetState(CharacterState.Idle);
+                if (m_movementInput != Vector3.zero)
+                {
+                    SetState(CharacterState.Run);
+                }
+                else
+                {
+                    SetState(CharacterState.Idle);
+                }
             }
         }
     }
 
     private void HandleDieStateLogic()
     {
-        
+        // Nenhuma lógica ativa no UpdateStateLogic para o estado Die, já que o script será desabilitado.
     }
 
     private void PerformMovement(Vector3 direction)
     {
+        // Bloqueia movimento de input durante estados específicos.
+        // O knockback (força aplicada) ainda agirá no Rigidbody durante TakeDamage.
         if (m_currentState == CharacterState.Attack ||
-            m_currentState == CharacterState.TakeDamage ||
             m_currentState == CharacterState.Die)
         {
-            m_rigidbody.linearVelocity = Vector3.zero;
+            m_rigidbody.linearVelocity = Vector3.zero; // Zera a velocidade completamente nesses estados
             return;
         }
 
+        // Se estiver em TakeDamage, o movimento de input é bloqueado no OnMove,
+        // mas a velocidade do Rigidbody pode ser alterada por forças externas (knockback)
+        // e se dissipará naturalmente. Não zeramos a velocity aqui para permitir o knockback.
+        if (m_currentState == CharacterState.TakeDamage)
+        {
+            return;
+        }
+
+        // Dodge tem sua própria lógica de movimento em PerformDodgeMovement
         if (m_currentState == CharacterState.Dodge)
         {
             return;
@@ -262,10 +297,10 @@ public class PlayerController : MonoBehaviour, IDamageable
         }
     }
 
-    public void TakeDamage(int damage)
+    public void TakeDamage(int damage, Vector3 hitSourcePosition)
     {
         if (m_currentState == CharacterState.Die) return;
-        if (m_currentState == CharacterState.Dodge) return; // Invulnerável durante o Dodge
+        if (m_currentState == CharacterState.Dodge) return;
 
         m_currentHealth -= damage;
         if (m_currentHealth <= 0)
@@ -276,7 +311,11 @@ public class PlayerController : MonoBehaviour, IDamageable
         else
         {
             SetState(CharacterState.TakeDamage);
-            m_rigidbody.linearVelocity = Vector3.zero; // Para o movimento imediatamente ao tomar dano
+            
+            // Aplica o knockback
+            Vector3 knockbackDirection = (transform.position - hitSourcePosition).normalized;
+            Vector3 flatKnockbackDirection = new Vector3(knockbackDirection.x, 0f, knockbackDirection.z).normalized;
+            m_rigidbody.AddForce(flatKnockbackDirection * _characterStats.knockbackForce, ForceMode.Impulse);
 
             if (m_damageFeedbackCoroutine != null) StopCoroutine(m_damageFeedbackCoroutine);
             m_damageFeedbackCoroutine = StartCoroutine(DamageFeedback());
@@ -297,7 +336,6 @@ public class PlayerController : MonoBehaviour, IDamageable
         SetState(CharacterState.Die);
         Debug.Log("Player has died!");
         m_rigidbody.linearVelocity = Vector3.zero;
-        m_canPerformAction = false;
         enabled = false;
     }
 
@@ -385,8 +423,10 @@ public class PlayerController : MonoBehaviour, IDamageable
     private void OnAttack()
     {
         if (m_currentState == CharacterState.Die ||
-            m_currentState == CharacterState.Attack ||
             m_currentState == CharacterState.TakeDamage)
+            return;
+        
+        if (m_currentState == CharacterState.Attack) // Não permite re-atacar se já está atacando
             return;
 
         if (m_currentState == CharacterState.Dodge || m_canPerformAction)
@@ -420,18 +460,12 @@ public class PlayerController : MonoBehaviour, IDamageable
         }
     }
 
-    private void OnHit()
-    {
-        // TakeDamage(1);
-    }
-
     void OnEnable()
     {
         Manager_Events.Input.OnMove += OnMove;
         Manager_Events.Input.OnAttack += OnAttack;
         Manager_Events.Input.OnDodge += OnDodge;
         Manager_Events.Input.OnInteract += OnInteract;
-        Manager_Events.Input.OnHit += OnHit;
     }
 
     void OnDisable()
@@ -440,7 +474,6 @@ public class PlayerController : MonoBehaviour, IDamageable
         Manager_Events.Input.OnAttack -= OnAttack;
         Manager_Events.Input.OnDodge -= OnDodge;
         Manager_Events.Input.OnInteract -= OnInteract;
-        Manager_Events.Input.OnHit -= OnHit;
     }
 
     private void OnDrawGizmosSelected()

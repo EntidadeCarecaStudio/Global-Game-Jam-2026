@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections;
 
 [RequireComponent(typeof(Rigidbody))]
-public class EnemyTestController : MonoBehaviour, IDamageable
+public class EnemyController : MonoBehaviour, IDamageable
 {
     [SerializeField] private CharacterStats _characterStats;
     [SerializeField] private CharacterAnimationController _characterAnimationController;
@@ -97,6 +97,9 @@ public class EnemyTestController : MonoBehaviour, IDamageable
             case CharacterState.Attack:
                 HandleAttackStateLogic();
                 break;
+            case CharacterState.Dodge:
+                // Inimigos não têm Dodge por padrão neste script
+                break;
             case CharacterState.TakeDamage:
                 HandleTakeDamageStateLogic();
                 break;
@@ -110,8 +113,8 @@ public class EnemyTestController : MonoBehaviour, IDamageable
     {
         if (m_playerTransform == null) return;
 
-        float distanceToPlayer = Vector3.Distance(transform.position, m_playerTransform.position);
-        if (distanceToPlayer <= _detectionRange)
+        float distanceSqrToPlayer = (transform.position - m_playerTransform.position).sqrMagnitude;
+        if (distanceSqrToPlayer <= _detectionRange * _detectionRange)
         {
             SetState(CharacterState.Run);
         }
@@ -121,13 +124,13 @@ public class EnemyTestController : MonoBehaviour, IDamageable
     {
         if (m_playerTransform == null) return;
 
-        float distanceToPlayer = Vector3.Distance(transform.position, m_playerTransform.position);
+        float distanceSqrToPlayer = (transform.position - m_playerTransform.position).sqrMagnitude;
 
-        if (distanceToPlayer <= _attackRange && m_attackCooldownTimer <= 0)
+        if (distanceSqrToPlayer <= _attackRange * _attackRange && m_attackCooldownTimer <= 0)
         {
             SetState(CharacterState.Attack);
         }
-        else if (distanceToPlayer > _detectionRange)
+        else if (distanceSqrToPlayer > _detectionRange * _detectionRange)
         {
             SetState(CharacterState.Idle);
         }
@@ -160,7 +163,7 @@ public class EnemyTestController : MonoBehaviour, IDamageable
         if (m_stateTimer >= _characterStats.attackDuration)
         {
             m_attackCooldownTimer = _characterStats.attackCooldown;
-            if (m_playerTransform != null && Vector3.Distance(transform.position, m_playerTransform.position) <= _detectionRange)
+            if (m_playerTransform != null && (transform.position - m_playerTransform.position).sqrMagnitude <= _detectionRange * _detectionRange)
             {
                 SetState(CharacterState.Run);
             }
@@ -189,14 +192,15 @@ public class EnemyTestController : MonoBehaviour, IDamageable
 
             if (playerCollider.TryGetComponent(out IDamageable damageablePlayer))
             {
-                damageablePlayer.TakeDamage(_characterStats.attackDamage);
+                // Passa a posição do ponto de ataque do inimigo como hitSourcePosition
+                damageablePlayer.TakeDamage(_characterStats.attackDamage, _attackPoint.position);
             }
         }
     }
 
     private void HandleTakeDamageStateLogic()
     {
-        if (m_stateTimer >= 0.3f)
+        if (m_stateTimer >= _characterStats.takeDamageStunDuration)
         {
             if (m_currentHealth <= 0)
             {
@@ -204,7 +208,7 @@ public class EnemyTestController : MonoBehaviour, IDamageable
             }
             else
             {
-                if (m_playerTransform != null && Vector3.Distance(transform.position, m_playerTransform.position) <= _detectionRange)
+                if (m_playerTransform != null && (transform.position - m_playerTransform.position).sqrMagnitude <= _detectionRange * _detectionRange)
                 {
                     SetState(CharacterState.Run);
                 }
@@ -238,7 +242,7 @@ public class EnemyTestController : MonoBehaviour, IDamageable
         m_rigidbody.linearVelocity = currentVelocity;
     }
 
-    public void TakeDamage(int damage)
+    public void TakeDamage(int damage, Vector3 hitSourcePosition)
     {
         if (m_currentState == CharacterState.Die || m_currentState == CharacterState.TakeDamage) return;
 
@@ -251,6 +255,10 @@ public class EnemyTestController : MonoBehaviour, IDamageable
         else
         {
             SetState(CharacterState.TakeDamage);
+            // Você pode adicionar knockback para inimigos aqui se desejar
+            // Vector3 knockbackDirection = (transform.position - hitSourcePosition).normalized;
+            // Vector3 flatKnockbackDirection = new Vector3(knockbackDirection.x, 0f, knockbackDirection.z).normalized;
+            // m_rigidbody.AddForce(flatKnockbackDirection * _characterStats.knockbackForce, ForceMode.Impulse);
         }
     }
 

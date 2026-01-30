@@ -12,4 +12,5 @@ public class CharacterStats : ScriptableObject
     public float attackCooldown = 1.0f;
     public float takeDamageStunDuration = 0.5f;
     public float damageFeedbackDuration = 0.1f;
+    public float knockbackForce = 10.0f;
 }
