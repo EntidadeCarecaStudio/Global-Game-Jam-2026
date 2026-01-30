@@ -26,6 +26,15 @@ public static class Manager_Events
         public static Event OnPause;
     }
 
+    public static class Input
+    {
+        public static Event<Vector2> OnMove;
+        public static Event OnAttack;
+        public static Event OnDodge;
+        public static Event OnInteract;
+        public static Event OnHit;
+    }
+
     public static class Settings
     {
         public static Event<float> OnSoundMaster;
