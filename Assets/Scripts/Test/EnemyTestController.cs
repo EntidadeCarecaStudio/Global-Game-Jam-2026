@@ -1,12 +1,9 @@
+// EnemyController.cs
 using UnityEngine;
 using System.Collections;
 
-[RequireComponent(typeof(Rigidbody))]
-public class EnemyTestController : MonoBehaviour, IDamageable
+public class EnemyTestController : BaseCharacterController
 {
-    [SerializeField] private CharacterStats _characterStats;
-    [SerializeField] private CharacterAnimationController _characterAnimationController;
-    [SerializeField] private SpriteRenderer _spriteRenderer;
     [SerializeField] private Transform _attackPoint;
     [SerializeField] private float _attackRadius = 0.5f;
     [SerializeField] private LayerMask _playerLayer;
@@ -16,31 +13,14 @@ public class EnemyTestController : MonoBehaviour, IDamageable
     [SerializeField] private float _attackWindowStartPercentage = 0.3f;
     [SerializeField] private float _attackWindowEndPercentage = 0.8f;
 
-    private int m_currentHealth;
-    private CharacterState m_currentState;
-    private Rigidbody m_rigidbody;
     private Transform m_playerTransform;
-    private float m_stateTimer;
     private float m_attackCooldownTimer;
     private bool m_hasDealtDamageInCurrentAttack;
     private Vector3 m_facingDirection = Vector3.back;
 
-    private void Awake()
+    protected override void Start()
     {
-        m_rigidbody = GetComponent<Rigidbody>();
-        m_rigidbody.freezeRotation = true;
-    }
-
-    private void Start()
-    {
-        if (_characterStats == null)
-        {
-            Debug.LogError("CharacterStats ScriptableObject not assigned to EnemyController.");
-            enabled = false;
-            return;
-        }
-        m_currentHealth = _characterStats.maxHealth;
-        SetState(CharacterState.Idle);
+        base.Start(); // Chama o Start da classe base
 
         GameObject playerObject = GameObject.FindWithTag("Player");
         if (playerObject != null)
@@ -51,12 +31,15 @@ public class EnemyTestController : MonoBehaviour, IDamageable
         {
             Debug.LogWarning("Player GameObject not found! Enemy will not chase.");
         }
+        SetState(CharacterState.Idle);
     }
 
-    private void Update()
+    protected override void Update()
     {
+        base.Update(); // Chama o Update da classe base
         UpdateStateLogic();
-        UpdateSpriteOrientation();
+        UpdateSpriteOrientation(m_facingDirection); // Usa o método do base
+
         if (m_attackCooldownTimer > 0)
         {
             m_attackCooldownTimer -= Time.deltaTime;
@@ -68,24 +51,8 @@ public class EnemyTestController : MonoBehaviour, IDamageable
         PerformMovement();
     }
 
-    private void SetState(CharacterState newState)
-    {
-        if (m_currentState != newState)
-        {
-            m_currentState = newState;
-            m_stateTimer = 0f;
-            m_hasDealtDamageInCurrentAttack = false;
-            if (_characterAnimationController != null)
-            {
-                _characterAnimationController.UpdateAnimation(m_currentState);
-            }
-        }
-    }
-
     private void UpdateStateLogic()
     {
-        m_stateTimer += Time.deltaTime;
-
         switch (m_currentState)
         {
             case CharacterState.Idle:
@@ -100,9 +67,10 @@ public class EnemyTestController : MonoBehaviour, IDamageable
             case CharacterState.TakeDamage:
                 HandleTakeDamageStateLogic();
                 break;
-            case CharacterState.Die:
-                HandleDieStateLogic();
+            case CharacterState.Dodge:
+                // Inimigos não têm Dodge por padrão neste script
                 break;
+            // O estado Die não precisa de um HandleDieStateLogic aqui, pois o método Die() já lida com as ações finais.
         }
     }
 
@@ -110,8 +78,8 @@ public class EnemyTestController : MonoBehaviour, IDamageable
     {
         if (m_playerTransform == null) return;
 
-        float distanceToPlayer = Vector3.Distance(transform.position, m_playerTransform.position);
-        if (distanceToPlayer <= _detectionRange)
+        float distanceSqrToPlayer = (transform.position - m_playerTransform.position).sqrMagnitude;
+        if (distanceSqrToPlayer <= _detectionRange * _detectionRange)
         {
             SetState(CharacterState.Run);
         }
@@ -121,13 +89,13 @@ public class EnemyTestController : MonoBehaviour, IDamageable
     {
         if (m_playerTransform == null) return;
 
-        float distanceToPlayer = Vector3.Distance(transform.position, m_playerTransform.position);
+        float distanceSqrToPlayer = (transform.position - m_playerTransform.position).sqrMagnitude;
 
-        if (distanceToPlayer <= _attackRange && m_attackCooldownTimer <= 0)
+        if (m_attackCooldownTimer <= 0 && distanceSqrToPlayer <= _attackRange * _attackRange)
         {
             SetState(CharacterState.Attack);
         }
-        else if (distanceToPlayer > _detectionRange)
+        else if (distanceSqrToPlayer > _detectionRange * _detectionRange)
         {
             SetState(CharacterState.Idle);
         }
@@ -149,7 +117,7 @@ public class EnemyTestController : MonoBehaviour, IDamageable
     {
         m_rigidbody.linearVelocity = Vector3.zero;
 
-        float normalizedTime = m_stateTimer / _characterStats.attackDuration;
+        float normalizedTime = m_stateTimer / m_effectiveStats.attackDuration;
 
         if (normalizedTime >= _attackWindowStartPercentage && normalizedTime <= _attackWindowEndPercentage && !m_hasDealtDamageInCurrentAttack)
         {
@@ -157,10 +125,10 @@ public class EnemyTestController : MonoBehaviour, IDamageable
             m_hasDealtDamageInCurrentAttack = true;
         }
 
-        if (m_stateTimer >= _characterStats.attackDuration)
+        if (m_stateTimer >= m_effectiveStats.attackDuration)
         {
-            m_attackCooldownTimer = _characterStats.attackCooldown;
-            if (m_playerTransform != null && Vector3.Distance(transform.position, m_playerTransform.position) <= _detectionRange)
+            m_attackCooldownTimer = m_effectiveStats.attackCooldown;
+            if (m_playerTransform != null && (transform.position - m_playerTransform.position).sqrMagnitude <= _detectionRange * _detectionRange)
             {
                 SetState(CharacterState.Run);
             }
@@ -189,22 +157,31 @@ public class EnemyTestController : MonoBehaviour, IDamageable
 
             if (playerCollider.TryGetComponent(out IDamageable damageablePlayer))
             {
-                damageablePlayer.TakeDamage(_characterStats.attackDamage);
+                damageablePlayer.TakeDamage(m_effectiveStats.attackDamage, _attackPoint.position);
             }
         }
     }
 
     private void HandleTakeDamageStateLogic()
     {
-        if (m_stateTimer >= 0.3f)
+        if (m_stateTimer >= m_effectiveStats.takeDamageStunDuration)
         {
             if (m_currentHealth <= 0)
             {
-                Die();
+                // Este caminho já foi coberto por Die() no TakeDamage base.
+                // Aqui podemos simplesmente ir para Run/Idle se o inimigo não morre imediatamente.
+                if (m_playerTransform != null && (transform.position - m_playerTransform.position).sqrMagnitude <= _detectionRange * _detectionRange)
+                {
+                    SetState(CharacterState.Run);
+                }
+                else
+                {
+                    SetState(CharacterState.Idle);
+                }
             }
             else
             {
-                if (m_playerTransform != null && Vector3.Distance(transform.position, m_playerTransform.position) <= _detectionRange)
+                if (m_playerTransform != null && (transform.position - m_playerTransform.position).sqrMagnitude <= _detectionRange * _detectionRange)
                 {
                     SetState(CharacterState.Run);
                 }
@@ -216,12 +193,25 @@ public class EnemyTestController : MonoBehaviour, IDamageable
         }
     }
 
-    private void HandleDieStateLogic()
+    // Implementação específica de Die() para o Inimigo
+    protected override void Die()
     {
-        if (m_stateTimer >= _timeToDestroyAfterDeath)
+        SetState(CharacterState.Die); // Define o estado para animação, se houver
+        m_rigidbody.linearVelocity = Vector3.zero; // Para movimento
+        m_rigidbody.isKinematic = true; // Impede que o inimigo seja empurrado após morrer
+        Collider ownCollider = GetComponent<Collider>();
+        if (ownCollider != null)
         {
-            Destroy(gameObject);
+            ownCollider.enabled = false; // Desabilita colisão
         }
+        enabled = false; // Desabilita o script do inimigo
+        StartCoroutine(DestroyAfterDelay(_timeToDestroyAfterDeath)); // Corotina para destruir o inimigo após morrer
+    }
+
+    private IEnumerator DestroyAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        Destroy(gameObject);
     }
 
     private void PerformMovement()
@@ -233,52 +223,9 @@ public class EnemyTestController : MonoBehaviour, IDamageable
         }
 
         Vector3 currentVelocity = m_rigidbody.linearVelocity;
-        currentVelocity.x = direction.x * _characterStats.movementSpeedX;
-        currentVelocity.z = direction.z * _characterStats.movementSpeedZ;
+        currentVelocity.x = direction.x * m_effectiveStats.movementSpeedX;
+        currentVelocity.z = direction.z * m_effectiveStats.movementSpeedZ;
         m_rigidbody.linearVelocity = currentVelocity;
-    }
-
-    public void TakeDamage(int damage)
-    {
-        if (m_currentState == CharacterState.Die || m_currentState == CharacterState.TakeDamage) return;
-
-        m_currentHealth -= damage;
-        if (m_currentHealth <= 0)
-        {
-            m_currentHealth = 0;
-            Die();
-        }
-        else
-        {
-            SetState(CharacterState.TakeDamage);
-        }
-    }
-
-    private void Die()
-    {
-        SetState(CharacterState.Die);
-        m_rigidbody.linearVelocity = Vector3.zero;
-        m_rigidbody.isKinematic = true;
-        Collider ownCollider = GetComponent<Collider>();
-        if (ownCollider != null)
-        {
-            ownCollider.enabled = false;
-        }
-        enabled = false;
-    }
-
-    private void UpdateSpriteOrientation()
-    {
-        if (_spriteRenderer == null) return;
-
-        if (m_facingDirection.x < 0)
-        {
-            _spriteRenderer.flipX = true;
-        }
-        else if (m_facingDirection.x > 0)
-        {
-            _spriteRenderer.flipX = false;
-        }
     }
 
     private void OnDrawGizmosSelected()

@@ -77,7 +77,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22fe62f0a283e3c4083462ecfff5e827, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _characterStats: {fileID: 11400000, guid: 9e552baa7b07f954ab31f10bb3e83df3, type: 2}
+  _baseCharacterStats: {fileID: 11400000, guid: 9e552baa7b07f954ab31f10bb3e83df3, type: 2}
+  _spriteRenderer: {fileID: 2409612177802681648}
+  _characterAnimationController: {fileID: 8419245732700947589}
   _dodgeSpeedMultiplier: 1.5
   _dodgeCurve:
     serializedVersion: 2
@@ -130,8 +132,6 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  _characterAnimationController: {fileID: 8419245732700947589}
-  _spriteRenderer: {fileID: 2409612177802681648}
   _attackPoint: {fileID: 5592010271331587846}
   _attackRadius: 0.5
   _enemyLayer:
