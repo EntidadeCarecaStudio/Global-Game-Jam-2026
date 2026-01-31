@@ -646,7 +646,7 @@ MonoBehaviour:
     scaleMax: 0
     scaleMin: 0
     useRainbowEffect: 0
-    rainbowWidth: 0
+    rainbowWidth: 0.001
     rainbowDirection: 0
     rainbow:
       serializedVersion: 2
