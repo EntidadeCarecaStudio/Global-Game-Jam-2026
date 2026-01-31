@@ -17,27 +17,34 @@ MonoBehaviour:
     characterID: _fire
     characterDescription: Arrogant...
     characterColor: {r: 1, g: 0.9121163, b: 0.41037738, a: 1}
-    characterSprite: {fileID: 21300000, guid: ba8bfd5754f12ad4882c21e9adedc179, type: 3}
+    characterSprite: {fileID: -1072914442, guid: 5385b860ca83e964f9adbbc85966cfb6, type: 3}
     speechSFXBlips:
     - {fileID: 8300000, guid: 6859d58be09970142880a7ca11d86e6c, type: 3}
   - characterName: "Bar\xE3o da Casa de Cervo"
     characterID: _earth
     characterDescription: Angry...
     characterColor: {r: 0.6792453, g: 0.26318908, b: 0.086507656, a: 1}
-    characterSprite: {fileID: 21300000, guid: b9d57320982503a41bba7639796bd65b, type: 3}
+    characterSprite: {fileID: -265616685, guid: fc925dc1da2084f488c4484cff32ab29, type: 3}
     speechSFXBlips:
     - {fileID: 8300000, guid: 20aebd89d4cdbad429003c03468feee3, type: 3}
   - characterName: "Bar\xE3o da Casa do Cavalo-Marinho"
     characterID: _ice
     characterDescription: Cold...
     characterColor: {r: 0.2783019, g: 0.6209759, b: 1, a: 1}
-    characterSprite: {fileID: 21300000, guid: f6dcb4b7f0ade5a49a40bac8ddbf4a0e, type: 3}
+    characterSprite: {fileID: 1730529780, guid: 13480d66ea4b98e41864405b77b61bd8, type: 3}
     speechSFXBlips:
     - {fileID: 8300000, guid: 37c14e74db407d84d95fb186b7f92ac1, type: 3}
-  - characterName: Mick
-    characterID: character_mick
-    characterDescription: Turdle..
-    characterColor: {r: 0.9960785, g: 0.49803925, b: 0.08627451, a: 1}
+  - characterName: "Mercen\xE1rio"
+    characterID: _main
+    characterDescription: Greedy...
+    characterColor: {r: 1, g: 1, b: 1, a: 1}
     characterSprite: {fileID: 21300000, guid: 7c49d3f2ac31e1242a1ed576ea6fe705, type: 3}
     speechSFXBlips:
-    - {fileID: 8300000, guid: 37c14e74db407d84d95fb186b7f92ac1, type: 3}
+    - {fileID: 8300000, guid: 4d12b5e118e74b945ae06d6f791eee50, type: 3}
+  - characterName: Cultista
+    characterID: _cult
+    characterDescription: Mysteryous
+    characterColor: {r: 0.6132076, g: 0.6132076, b: 0.6132076, a: 1}
+    characterSprite: {fileID: 21300000, guid: 7c49d3f2ac31e1242a1ed576ea6fe705, type: 3}
+    speechSFXBlips:
+    - {fileID: 8300000, guid: 4d12b5e118e74b945ae06d6f791eee50, type: 3}
