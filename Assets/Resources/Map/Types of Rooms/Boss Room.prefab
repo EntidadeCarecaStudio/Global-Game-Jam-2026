@@ -110,6 +110,7 @@ MonoBehaviour:
   element: 0
   connectors:
   - {fileID: 4827634733591406579}
+  neighbors: []
   spawnPoints:
   - {fileID: 333555209639916138}
 --- !u!114 &3502088505600348547
@@ -520,7 +521,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5948552445692102896, guid: 0b2a8dff98628364986226bf7c909876, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: 5948552445692102896, guid: 0b2a8dff98628364986226bf7c909876, type: 3}
       propertyPath: m_LocalRotation.x
@@ -528,7 +529,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5948552445692102896, guid: 0b2a8dff98628364986226bf7c909876, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: 0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: 5948552445692102896, guid: 0b2a8dff98628364986226bf7c909876, type: 3}
       propertyPath: m_LocalRotation.z
@@ -540,7 +541,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5948552445692102896, guid: 0b2a8dff98628364986226bf7c909876, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: 90
       objectReference: {fileID: 0}
     - target: {fileID: 5948552445692102896, guid: 0b2a8dff98628364986226bf7c909876, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
