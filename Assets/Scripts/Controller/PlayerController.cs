@@ -36,6 +36,10 @@ public class PlayerController : BaseCharacterController
     public static event Action OnPlayerGetHit;
     public static event Action OnPlayerGetKilled;
 
+    [Header("Rotation Settings")]
+    [SerializeField] private float _rotationDuration = 0.25f; // Tempo para girar 90 graus
+    private bool _isRotating = false; // Trava para não spamar o botão
+
     protected override void Awake()
     {
         base.Awake();
@@ -252,19 +256,31 @@ public class PlayerController : BaseCharacterController
             return;
         }
 
+        // Transforma a direção local (baseada no transform do player) em direção de mundo
+        Vector3 worldDirection = transform.TransformDirection(new Vector3(direction.x, 0, direction.z));
+
         Vector3 currentVelocity = m_rigidbody.linearVelocity;
-        currentVelocity.x = direction.x * m_effectiveStats.movementSpeedX;
-        currentVelocity.z = direction.z * m_effectiveStats.movementSpeedZ;
+
+        currentVelocity.x = worldDirection.x * m_effectiveStats.movementSpeedX;
+        currentVelocity.z = worldDirection.z * m_effectiveStats.movementSpeedZ;
         m_rigidbody.linearVelocity = currentVelocity;
     }
 
     private void PerformDodgeMovement()
     {
         float curveFactor = _dodgeCurve.Evaluate(m_stateTimer / m_effectiveStats.dodgeDuration);
-        
+
+        // CORREÇÃO AQUI:
+        // O m_dodgeDirection guarda (0,0,1) se apertou W.
+        // O TransformDirection converte esse (0,0,1) para a frente ATUAL do personagem no mundo.
+        Vector3 worldDodgeDir = transform.TransformDirection(m_dodgeDirection);
+
         Vector3 currentVelocity = m_rigidbody.linearVelocity;
-        currentVelocity.x = m_dodgeDirection.x * m_effectiveStats.movementSpeedX * _dodgeSpeedMultiplier * curveFactor;
-        currentVelocity.z = m_dodgeDirection.z * m_effectiveStats.movementSpeedZ * _dodgeSpeedMultiplier * curveFactor;
+
+        // Usa a direção de MUNDO calculada acima
+        currentVelocity.x = worldDodgeDir.x * m_effectiveStats.movementSpeedX * _dodgeSpeedMultiplier * curveFactor;
+        currentVelocity.z = worldDodgeDir.z * m_effectiveStats.movementSpeedZ * _dodgeSpeedMultiplier * curveFactor;
+
         m_rigidbody.linearVelocity = currentVelocity;
     }
 
@@ -436,6 +452,9 @@ public class PlayerController : BaseCharacterController
         Manager_Events.Input.OnAttack += OnAttack;
         Manager_Events.Input.OnDodge += OnDodge;
         Manager_Events.Input.OnInteract += OnInteract;
+
+        // Inscreve no novo evento de rotação
+        WorldRotationManager.OnRotateRequest += RotatePlayer;
     }
 
     void OnDisable()
@@ -444,6 +463,9 @@ public class PlayerController : BaseCharacterController
         Manager_Events.Input.OnAttack -= OnAttack;
         Manager_Events.Input.OnDodge -= OnDodge;
         Manager_Events.Input.OnInteract -= OnInteract;
+
+        // DesInscreve no novo evento de rotação
+        WorldRotationManager.OnRotateRequest -= RotatePlayer;
     }
 
     private void OnDrawGizmosSelected()
@@ -451,4 +473,40 @@ public class PlayerController : BaseCharacterController
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireSphere(transform.position, _interactionRange);
     }
+
+
+    private void RotatePlayer(float angle)
+    {
+        // Não gira se estiver morto, atacando ou JÁ girando
+        if (m_currentState == CharacterState.Die || _isRotating) return;
+
+        StartCoroutine(RotateSmoothlyRoutine(angle));
+    }
+
+    private System.Collections.IEnumerator RotateSmoothlyRoutine(float angle)
+    {
+        _isRotating = true;
+
+        Quaternion startRotation = transform.rotation;
+        // Calcula a rotação alvo somando ao que já existe
+        Quaternion targetRotation = startRotation * Quaternion.Euler(0, angle, 0);
+
+        float elapsed = 0f;
+
+        while (elapsed < _rotationDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / _rotationDuration;
+
+            // Slerp faz a interpolação esférica (suave)
+            transform.rotation = Quaternion.Slerp(startRotation, targetRotation, t);
+
+            yield return null;
+        }
+
+        // Garante que termine exatamente no ângulo certo (evita erros flutuantes)
+        transform.rotation = targetRotation;
+        _isRotating = false;
+    }
+
 }
