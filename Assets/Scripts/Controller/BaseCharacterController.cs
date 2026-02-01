@@ -41,6 +41,8 @@ public abstract class BaseCharacterController : MonoBehaviour, IDamageable
     public int CurrentHealth => m_currentHealth;
     public CharacterState CurrentState => m_currentState;
 
+    public static event Action<float> OnGlobalRotation;
+
     protected virtual void Awake()
     {
         m_rigidbody = GetComponent<Rigidbody>();
@@ -208,4 +210,28 @@ public abstract class BaseCharacterController : MonoBehaviour, IDamageable
     }
 
     protected abstract void Die();
+
+    // 2. INSCRIÇÃO NO EVENTO: Ao ligar/desligar o objeto, ele começa/para de ouvir
+    protected virtual void OnEnable()
+    {
+        OnGlobalRotation += HandleGlobalRotation;
+    }
+
+    protected virtual void OnDisable()
+    {
+        OnGlobalRotation -= HandleGlobalRotation;
+    }
+
+    // 3. A LÓGICA DE GIRO: Todos (Player e Inimigos) executam isso
+    protected virtual void HandleGlobalRotation(float angle)
+    {
+        // Gira o objeto no próprio eixo Y
+        transform.Rotate(0f, angle, 0f);
+    }
+
+    // 4. FUNÇÃO PARA DISPARAR (Apenas o Player vai chamar isso)
+    public static void TriggerRotation(float angle)
+    {
+        OnGlobalRotation?.Invoke(angle);
+    }
 }

@@ -12,14 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f401f9fac846588418060beb96cd5eac, type: 3}
   m_Name: EnemyTest_Stats
   m_EditorClassIdentifier: 
-  maxHealth: 100
+  maxHealth: 20
   attackDamage: 10
   movementSpeedX: 5
   movementSpeedZ: 3
   attackDuration: 0.9
   dodgeDuration: 0.7
-  attackCooldown: 1
+  attackCooldown: 2
   takeDamageStunDuration: 0.5
   damageFeedbackDuration: 0.1
-  knockbackForce: 5
-  knockbackResistance: 0
+  knockbackForce: 1
+  knockbackResistance: 0.5

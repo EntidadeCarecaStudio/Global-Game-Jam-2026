@@ -1,5 +1,6 @@
 using UnityEngine;
 using Unity.Cinemachine;
+using System.Runtime.InteropServices;
 
 public class PlayerController : BaseCharacterController
 {
@@ -53,6 +54,24 @@ public class PlayerController : BaseCharacterController
         UpdateStateLogic();
         UpdateSpriteOrientation(m_facingDirection);
         UpdateInteractableHighlight();
+
+        // Mecanica de Giro
+        HandleRotationInput();
+    }
+
+    // Mecanica de Giro
+    private void HandleRotationInput()
+    {
+        // Se apertar Q, gira -90 (Esquerda)
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            BaseCharacterController.TriggerRotation(-90f);
+        }
+        // Se apertar E, gira +90 (Direita)
+        else if (Input.GetKeyDown(KeyCode.E))
+        {
+            BaseCharacterController.TriggerRotation(90f);
+        }
     }
 
     private void FixedUpdate()
@@ -239,20 +258,48 @@ public class PlayerController : BaseCharacterController
             return;
         }
 
-        Vector3 currentVelocity = m_rigidbody.linearVelocity;
-        currentVelocity.x = direction.x * m_effectiveStats.movementSpeedX;
-        currentVelocity.z = direction.z * m_effectiveStats.movementSpeedZ;
-        m_rigidbody.linearVelocity = currentVelocity;
+        // --- A MUDANÇA COMEÇA AQUI ---
+
+        // 2. Calculamos a velocidade desejada RELATIVA ao input
+        // (Ex: Se apertou W, quer se mover na velocidade Z para frente)
+        Vector3 localVelocity = new Vector3(
+            direction.x * m_effectiveStats.movementSpeedX, // Velocidade lateral (Strafe)
+            0f,
+            direction.z * m_effectiveStats.movementSpeedZ  // Velocidade frontal
+        );
+
+        // 3. Convertemos de Local (Input) para Global (Mundo)
+        // O TransformDirection pega o vetor e aplica a rotação atual do Player nele.
+        Vector3 globalVelocity = transform.TransformDirection(localVelocity);
+
+        // 4. Preservamos a gravidade (velocidade Y atual)
+        globalVelocity.y = m_rigidbody.linearVelocity.y;
+
+        // 5. Aplicamos no Rigidbody
+        m_rigidbody.linearVelocity = globalVelocity;
     }
 
     private void PerformDodgeMovement()
     {
+        // 1. Obtém o fator da curva de animação
         float curveFactor = _dodgeCurve.Evaluate(m_stateTimer / m_effectiveStats.dodgeDuration);
         
-        Vector3 currentVelocity = m_rigidbody.linearVelocity;
-        currentVelocity.x = m_dodgeDirection.x * m_effectiveStats.movementSpeedX * _dodgeSpeedMultiplier * curveFactor;
-        currentVelocity.z = m_dodgeDirection.z * m_effectiveStats.movementSpeedZ * _dodgeSpeedMultiplier * curveFactor;
-        m_rigidbody.linearVelocity = currentVelocity;
+        // 2. Calcula a velocidade LOCAL (Relativa ao corpo do personagem)
+        // Aqui assumimos que m_dodgeDirection já é um vetor normalizado de input (ex: 0,0,1 para frente)
+        Vector3 localDodgeVelocity = new Vector3(
+            m_dodgeDirection.x * m_effectiveStats.movementSpeedX * _dodgeSpeedMultiplier * curveFactor, 0f, // Y é zero no local space para não voar para cima
+            m_dodgeDirection.z * m_effectiveStats.movementSpeedZ * _dodgeSpeedMultiplier * curveFactor
+        );
+
+        // 3. Converte de Local para Global baseado na rotação atual do Player
+        // Isso garante que se o player girou 90 graus, a esquiva "para frente" acompanha o giro.
+        Vector3 globalDodgeVelocity = transform.TransformDirection(localDodgeVelocity);
+
+        // 4. Preserva a gravidade atual (Velocidade Y do mundo)
+        globalDodgeVelocity.y = m_rigidbody.linearVelocity.y;
+
+        // 5. Aplica a velocidade final
+        m_rigidbody.linearVelocity = globalDodgeVelocity;
     }
 
     private void Attack()
@@ -409,16 +456,22 @@ public class PlayerController : BaseCharacterController
         }
     }
 
-    void OnEnable()
+    protected override void OnEnable()
     {
+        //Pegar Eventos do BaseCharacterController
+        base.OnEnable();
+
         Manager_Events.Input.OnMove += OnMove;
         Manager_Events.Input.OnAttack += OnAttack;
         Manager_Events.Input.OnDodge += OnDodge;
         Manager_Events.Input.OnInteract += OnInteract;
     }
 
-    void OnDisable()
+    protected override void OnDisable()
     {
+        //Pegar Eventos do BaseCharacterController
+        base.OnDisable();
+
         Manager_Events.Input.OnMove -= OnMove;
         Manager_Events.Input.OnAttack -= OnAttack;
         Manager_Events.Input.OnDodge -= OnDodge;

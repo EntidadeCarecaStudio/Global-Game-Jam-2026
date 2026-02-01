@@ -17,7 +17,7 @@ MonoBehaviour:
   maxHealthModifier: 0
   attackDamageModifier: 0
   movementSpeedModifier: 0
-  attackDurationModifier: -0.05
+  attackDurationModifier: -0.5
   dodgeDurationModifier: 0
   attackCooldownModifier: 0
   takeDamageStunDurationModifier: 0
