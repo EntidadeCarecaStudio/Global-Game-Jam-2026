@@ -19,6 +19,7 @@ public class MinibossController : BaseCharacterController
     private StatsBinder _stats;
     private MinibossAnimation _animator;
     [SerializeField] private IMinibossMovement _movement;
+    private SpriteRenderer _spriteRenderer;
 
     private AttackSelector _attackSelector;
     private AttackExecutor _attackExecutor;
@@ -49,6 +50,7 @@ public class MinibossController : BaseCharacterController
         _stats = GetComponent<StatsBinder>();
         _animator = GetComponent<MinibossAnimation>();
         _movement = GetComponent<IMinibossMovement>();
+        _spriteRenderer = GetComponent<SpriteRenderer>(); // <--- ADICIONAR ISSO AQUI
 
         _attackSelector = GetComponent<AttackSelector>();
         _attackExecutor = GetComponent<AttackExecutor>();
