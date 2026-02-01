@@ -134,7 +134,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &123388378
 Transform:
   m_ObjectHideFlags: 0
@@ -431,7 +431,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &640479864
 Transform:
   m_ObjectHideFlags: 0
@@ -1263,10 +1263,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1952279047}
-  - component: {fileID: 1952279048}
   - component: {fileID: 1952279049}
   - component: {fileID: 1952279050}
   - component: {fileID: 1952279051}
+  - component: {fileID: 1952279048}
+  - component: {fileID: 1952279052}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Untagged
@@ -1424,6 +1425,28 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 0.2}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1952279052
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1952279046}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2635ad31edcdf1e478f701b9a1697510, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _baseCharacterStats: {fileID: 0}
+  _spriteRenderer: {fileID: 0}
+  _characterAnimationController: {fileID: 0}
+  _attackPoint: {fileID: 0}
+  _attackRadius: 0.5
+  _playerLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  _attackWindowStartPercentage: 0.3
+  _attackWindowEndPercentage: 0.8
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

@@ -1,82 +1,170 @@
 using UnityEngine;
 
-using UnityEngine;
-
-public class AttackEnemy : MonoBehaviour
+public class Enemy_Test : BaseCharacterController
 {
-    [Header("Attack Settings")]
-    [SerializeField] private Transform attackPoint;
-    [SerializeField] private float attackRadius = 0.5f;
-    [SerializeField] private LayerMask playerLayer;
-    [SerializeField] private int attackDamage = 10;
-    [SerializeField] private float attackCooldown = 1.0f;
+    [SerializeField] private Transform _attackPoint;
+    [SerializeField] private float _attackRadius = 0.5f;
+    [SerializeField] private LayerMask _playerLayer;
+    [SerializeField] private float _attackWindowStartPercentage = 0.3f;
+    [SerializeField] private float _attackWindowEndPercentage = 0.8f;
 
-    [Header("Gizmos")]
-    [SerializeField] private bool showGizmos = true;
-    [SerializeField] private Color gizmoColor = Color.red;
+    private Vector3 m_facingDirection = Vector3.back;
+    private bool m_hasAttackedInCurrentWindow;
 
-    private bool canAttack = true;
-    private float attackTimer = 0f;
-
-    void Start()
+    protected override void Start()
     {
-        if (attackPoint == null)
+        base.Start();
+        SetState(CharacterState.Idle);
+    }
+
+    protected override void Update()
+    {
+        base.Update();
+        UpdateStateLogic();
+        UpdateSpriteOrientation(m_facingDirection);
+    }
+
+    private void UpdateStateLogic()
+    {
+        switch (m_currentState)
         {
-            // Se não houver attackPoint definido, usa o transform do próprio objeto
-            attackPoint = transform;
-            Debug.LogWarning("Attack point not set. Using enemy's transform as attack point.");
+            case CharacterState.Idle:
+                // Não faz nada, a IA controla quando atacar
+                break;
+            case CharacterState.Attack:
+                HandleAttackStateLogic();
+                break;
+            case CharacterState.TakeDamage:
+                HandleTakeDamageStateLogic();
+                break;
+            case CharacterState.Die:
+                // Não faz nada, aguardando destruição ou animação
+                break;
         }
     }
 
-    void Update()
+    private void HandleAttackStateLogic()
     {
-        // Temporizador para cooldown do ataque
-        if (!canAttack)
+        float normalizedTime = m_stateTimer / m_effectiveStats.attackDuration;
+
+        if (normalizedTime >= _attackWindowStartPercentage && normalizedTime <= _attackWindowEndPercentage && !m_hasAttackedInCurrentWindow)
         {
-            attackTimer += Time.deltaTime;
-            if (attackTimer >= attackCooldown)
-            {
-                canAttack = true;
-                attackTimer = 0f;
-            }
+            PerformAttackDetection();
+            m_hasAttackedInCurrentWindow = true;
         }
 
-        // Se pode atacar, tenta realizar o ataque
-        if (canAttack)
+        if (m_stateTimer >= m_effectiveStats.attackDuration)
         {
-            PerformAttack();
+            // Volta para o estado Idle após o ataque
+            SetState(CharacterState.Idle);
         }
     }
 
-    private void PerformAttack()
+    private void PerformAttackDetection()
     {
-        // Detecta o jogador na área de ataque
-        Collider2D hitPlayer = Physics2D.OverlapCircle(attackPoint.position, attackRadius, playerLayer);
-
-        if (hitPlayer != null)
+        if (_attackPoint == null)
         {
-            // Tenta causar dano ao jogador
-            if (hitPlayer.TryGetComponent<IDamageable>(out var damageable))
-            {
-                damageable.TakeDamage(attackDamage, transform.position);
-                Debug.Log($"Enemy attacked player for {attackDamage} damage.");
-            }
-            else
-            {
-                Debug.LogWarning("Player does not have an IDamageable component.");
-            }
+            Debug.Log("O Inimigo está batendo");
+            //Debug.LogWarning("Attack point not assigned for enemy attack detection.");
+            return;
+        }
 
-            // Inicia o cooldown
-            canAttack = false;
+        Collider[] hitPlayers = Physics.OverlapSphere(_attackPoint.position, _attackRadius, _playerLayer);
+        foreach (Collider playerCollider in hitPlayers)
+        {
+            if (playerCollider.gameObject == gameObject || !playerCollider.isTrigger)
+                continue;
+
+            if (playerCollider.TryGetComponent(out IDamageable damageablePlayer))
+            {
+                damageablePlayer.TakeDamage(m_effectiveStats.attackDamage, transform.position);
+            }
         }
     }
+
+    private void HandleTakeDamageStateLogic()
+    {
+        if (m_stateTimer >= m_effectiveStats.takeDamageStunDuration)
+        {
+            // Após o tempo de stun, volta para o estado Idle
+            SetState(CharacterState.Idle);
+        }
+    }
+
+    protected override void Die()
+    {
+        SetState(CharacterState.Die);
+        m_rigidbody.linearVelocity = Vector3.zero;
+        enabled = false;
+        Debug.Log("Enemy has died!");
+    }
+
+    // Método para a IA iniciar um ataque
+    public void StartAttack()
+    {
+        if (m_currentState == CharacterState.Idle)
+        {
+            SetState(CharacterState.Attack);
+            m_hasAttackedInCurrentWindow = false;
+        }
+    }
+
+    // Método para a IA definir a direção de enfrentamento
+    public void SetFacingDirection(Vector3 direction)
+    {
+        if (direction != Vector3.zero)
+        {
+            m_facingDirection = direction.normalized;
+        }
+    }
+
+    // Sobrescrevendo o TakeDamage para que o inimigo possa receber dano
+    public override void TakeDamage(int damage, Vector3 hitSourcePosition)
+    {
+        if (m_currentState == CharacterState.Die) return;
+
+        base.TakeDamage(damage, hitSourcePosition);
+
+        // Se ainda estiver vivo, entra no estado de tomar dano
+        if (m_currentHealth > 0)
+        {
+            SetState(CharacterState.TakeDamage);
+        }
+    }
+
+    protected override void UpdateSpriteOrientation(Vector3 direction)
+    {
+        base.UpdateSpriteOrientation(direction);
+
+        // Ajusta a posição do ponto de ataque baseado na direção
+        if (_attackPoint != null)
+        {
+            if (direction.x > 0)
+            {
+                var position = _attackPoint.localPosition;
+                var x = Mathf.Abs(position.x);
+                position.x = x;
+                _attackPoint.localPosition = position;
+            }
+            else if (direction.x < 0)
+            {
+                var position = _attackPoint.localPosition;
+                var x = Mathf.Abs(position.x);
+                position.x = -x;
+                _attackPoint.localPosition = position;
+            }
+        }
+    }
+
+    // Não há mais input, então removemos os métodos OnMove, OnAttack, etc.
+    // Também removemos os eventos de input.
 
     private void OnDrawGizmosSelected()
     {
-        if (showGizmos && attackPoint != null)
+        if (_attackPoint != null)
         {
-            Gizmos.color = gizmoColor;
-            Gizmos.DrawWireSphere(attackPoint.position, attackRadius);
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(_attackPoint.position, _attackRadius);
         }
     }
 }
