@@ -74,6 +74,7 @@ GameObject:
   - component: {fileID: 3655269537258642943}
   - component: {fileID: 5276511597662811546}
   - component: {fileID: 2465872822448518723}
+  - component: {fileID: -3214927702048938655}
   m_Layer: 6
   m_Name: Ice Miniboss Room
   m_TagString: Untagged
@@ -168,6 +169,18 @@ MonoBehaviour:
   roomType: 0
   myDoors: []
   myEnemies: []
+--- !u!114 &-3214927702048938655
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5456000403042154065}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ade26f0860269a4c822a401e5d35e9a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7036065640357666299
 GameObject:
   m_ObjectHideFlags: 0
