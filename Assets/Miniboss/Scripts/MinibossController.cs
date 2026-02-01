@@ -10,6 +10,7 @@ public class MinibossController : BaseCharacterController
     [SerializeField] private Transform _player;
     [SerializeField] private LayerMask _playerLayer;
     [SerializeField] private Transform _attackPoint;
+    [SerializeField] private float _attackRadius = 0.5f;
     [SerializeField] private Slider _healthSlider;
 
     [Header("Combat Context (for debugging purposes only)")]
@@ -60,6 +61,8 @@ public class MinibossController : BaseCharacterController
         ChaseState = new ChaseState(this, _movement);
         AttackState = new AttackState(this);
         DieState = new DieState(this);
+
+        _combatContext.ResetAttackTimers();
     }
 
     protected override void Start()
@@ -123,7 +126,7 @@ public class MinibossController : BaseCharacterController
                     _attackPoint.localPosition.z);
             }
 
-            PerformAttackDetection(_attackPoint, 0.5f);
+            PerformAttackDetection(_attackPoint, _attackRadius);
         }
     }
 
@@ -138,8 +141,10 @@ public class MinibossController : BaseCharacterController
 
             if (playerCollider.TryGetComponent(out IDamageable damageablePlayer))
             {
+                _combatContext.ResetAttackTimers();
                 damageablePlayer.TakeDamage(m_effectiveStats.attackDamage, transform.position);
             }
+            else _combatContext.RegisterFailedAttack();
         }
     }
 

@@ -112,7 +112,7 @@ public class AttackState : IMinibossState
             executor = controller.AttackExecutor
         };
 
-        controller.CombatContext.ResetAttackTimers();
+        //controller.CombatContext.ResetAttackTimers();
 
         bool executed = controller.AttackExecutor.ExecuteAttack(currentAttack, context);
         if (executed)
