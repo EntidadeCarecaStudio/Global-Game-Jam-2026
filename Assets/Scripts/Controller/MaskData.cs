@@ -8,8 +8,7 @@ public class MaskData : ScriptableObject
 
     public int maxHealthModifier = 0;
     public int attackDamageModifier = 0;
-    public float movementSpeedXModifier = 0f;
-    public float movementSpeedZModifier = 0f;
+    public float movementSpeedModifier = 0f;
     public float attackDurationModifier = 0f;
     public float dodgeDurationModifier = 0f;
     public float attackCooldownModifier = 0f;

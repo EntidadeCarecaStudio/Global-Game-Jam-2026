@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System;
+using System.Linq;
 
 [Serializable]
 public struct EffectiveStats
@@ -22,8 +23,11 @@ public struct EffectiveStats
 public abstract class BaseCharacterController : MonoBehaviour, IDamageable
 {
     [SerializeField] protected CharacterStats _baseCharacterStats;
-    [SerializeField] protected SpriteRenderer _spriteRenderer;
+    [SerializeField] protected Transform _spriteRendererRoot;
     [SerializeField] protected CharacterAnimationController _characterAnimationController;
+
+    private SpriteRenderer[] m_sprites;
+    private Vector3 m_startScale;
 
     protected Rigidbody m_rigidbody;
     protected int m_currentHealth;
@@ -41,6 +45,13 @@ public abstract class BaseCharacterController : MonoBehaviour, IDamageable
     {
         m_rigidbody = GetComponent<Rigidbody>();
         m_rigidbody.freezeRotation = true;
+
+        m_sprites =
+            _spriteRendererRoot.GetComponents<SpriteRenderer>()
+                .Concat(_spriteRendererRoot.GetComponentsInChildren<SpriteRenderer>())
+                .ToArray();
+                
+        m_startScale = _spriteRendererRoot.localScale;
     }
 
     protected virtual void Start()
@@ -83,8 +94,8 @@ public abstract class BaseCharacterController : MonoBehaviour, IDamageable
         {
             m_effectiveStats.maxHealth += m_currentEquippedMask.maxHealthModifier;
             m_effectiveStats.attackDamage += m_currentEquippedMask.attackDamageModifier;
-            m_effectiveStats.movementSpeedX += m_currentEquippedMask.movementSpeedXModifier;
-            m_effectiveStats.movementSpeedZ += m_currentEquippedMask.movementSpeedZModifier;
+            m_effectiveStats.movementSpeedX += m_effectiveStats.movementSpeedX * m_currentEquippedMask.movementSpeedModifier / 100f;
+            m_effectiveStats.movementSpeedZ += m_effectiveStats.movementSpeedZ * m_currentEquippedMask.movementSpeedModifier / 100f;
             m_effectiveStats.attackDuration += m_currentEquippedMask.attackDurationModifier;
             m_effectiveStats.dodgeDuration += m_currentEquippedMask.dodgeDurationModifier;
             m_effectiveStats.attackCooldown += m_currentEquippedMask.attackCooldownModifier;
@@ -131,7 +142,7 @@ public abstract class BaseCharacterController : MonoBehaviour, IDamageable
         {
             m_currentState = newState;
             m_stateTimer = 0f;
-            
+
             if (_characterAnimationController != null)
             {
                 _characterAnimationController.UpdateAnimation(m_currentState);
@@ -142,9 +153,9 @@ public abstract class BaseCharacterController : MonoBehaviour, IDamageable
     public virtual void TakeDamage(int damage, Vector3 hitSourcePosition)
     {
         if (m_currentState == CharacterState.Die) return;
-        
+
         float effectiveDamage = damage;
-        
+
         m_currentHealth -= Mathf.RoundToInt(effectiveDamage);
 
         if (m_currentHealth <= 0)
@@ -155,10 +166,10 @@ public abstract class BaseCharacterController : MonoBehaviour, IDamageable
         else
         {
             SetState(CharacterState.TakeDamage);
-            
+
             Vector3 knockbackDirection = (transform.position - hitSourcePosition).normalized;
             Vector3 flatKnockbackDirection = new Vector3(knockbackDirection.x, 0f, knockbackDirection.z).normalized;
-            
+
             float finalKnockbackForce = m_effectiveStats.knockbackForce * (1f - m_effectiveStats.knockbackResistance);
 
             if (finalKnockbackForce > 0.01f && m_rigidbody != null)
@@ -173,27 +184,27 @@ public abstract class BaseCharacterController : MonoBehaviour, IDamageable
 
     protected IEnumerator DamageFeedback()
     {
-        if (_spriteRenderer != null)
+        if (_spriteRendererRoot != null)
         {
-            Color originalColor = _spriteRenderer.color;
-            _spriteRenderer.color = Color.red;
+            foreach (var sprite in m_sprites)
+                sprite.color = Color.red;
+
             yield return new WaitForSeconds(m_effectiveStats.damageFeedbackDuration);
-            _spriteRenderer.color = originalColor;
+
+            foreach (var sprite in m_sprites)
+                sprite.color = Color.white;
+
         }
     }
 
     protected virtual void UpdateSpriteOrientation(Vector3 direction)
     {
-        if (_spriteRenderer == null) return;
+        if (_spriteRendererRoot == null) return;
 
         if (direction.x < 0)
-        {
-            _spriteRenderer.flipX = true;
-        }
+            _spriteRendererRoot.localScale = new(m_startScale.x, m_startScale.y, m_startScale.z);
         else if (direction.x > 0)
-        {
-            _spriteRenderer.flipX = false;
-        }
+            _spriteRendererRoot.localScale = new(-m_startScale.x, m_startScale.y, m_startScale.z);
     }
 
     protected abstract void Die();

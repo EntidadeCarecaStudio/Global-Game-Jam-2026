@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e0c15defba87b8042ab39d94020a83a1, type: 3}
-  m_Name: Mask_1
+  m_Name: Mask_3
   m_EditorClassIdentifier: 
-  maskName: First
-  maskIcon: {fileID: 21300000, guid: c5fd6cdac3bf857478e5d4f51ea359b6, type: 3}
+  maskName: Third
+  maskIcon: {fileID: 21300000, guid: b4c057a33e116524895750fa26705dd5, type: 3}
   maxHealthModifier: 0
-  attackDamageModifier: 0
-  movementSpeedModifier: 5
+  attackDamageModifier: 10
+  movementSpeedModifier: 0
   attackDurationModifier: 0
   dodgeDurationModifier: 0
   attackCooldownModifier: 0
