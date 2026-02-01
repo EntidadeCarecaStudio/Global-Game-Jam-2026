@@ -1,7 +1,8 @@
 using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
+using System;
 
+[Serializable]
 public struct EffectiveStats
 {
     public int maxHealth;
@@ -31,7 +32,7 @@ public abstract class BaseCharacterController : MonoBehaviour, IDamageable
     protected Coroutine m_damageFeedbackCoroutine;
     protected EffectiveStats m_effectiveStats;
 
-    protected List<MaskData> m_equippedMasks = new List<MaskData>();
+    protected MaskData m_currentEquippedMask;
 
     public int CurrentHealth => m_currentHealth;
     public CharacterState CurrentState => m_currentState;
@@ -78,18 +79,18 @@ public abstract class BaseCharacterController : MonoBehaviour, IDamageable
             knockbackResistance = _baseCharacterStats.knockbackResistance
         };
 
-        foreach (MaskData mask in m_equippedMasks)
+        if (m_currentEquippedMask != null)
         {
-            m_effectiveStats.maxHealth += mask.attackDamageModifier;
-            m_effectiveStats.attackDamage += mask.attackDamageModifier;
-            m_effectiveStats.movementSpeedX += mask.movementSpeedXModifier;
-            m_effectiveStats.movementSpeedZ += mask.movementSpeedZModifier;
-            m_effectiveStats.attackDuration += mask.attackDurationModifier;
-            m_effectiveStats.dodgeDuration += mask.dodgeDurationModifier;
-            m_effectiveStats.attackCooldown += mask.attackCooldownModifier;
-            m_effectiveStats.takeDamageStunDuration += mask.takeDamageStunDurationModifier;
-            m_effectiveStats.knockbackForce += mask.knockbackForceModifier;
-            m_effectiveStats.knockbackResistance = Mathf.Clamp01(m_effectiveStats.knockbackResistance + mask.knockbackResistanceModifier);
+            m_effectiveStats.maxHealth += m_currentEquippedMask.maxHealthModifier;
+            m_effectiveStats.attackDamage += m_currentEquippedMask.attackDamageModifier;
+            m_effectiveStats.movementSpeedX += m_currentEquippedMask.movementSpeedXModifier;
+            m_effectiveStats.movementSpeedZ += m_currentEquippedMask.movementSpeedZModifier;
+            m_effectiveStats.attackDuration += m_currentEquippedMask.attackDurationModifier;
+            m_effectiveStats.dodgeDuration += m_currentEquippedMask.dodgeDurationModifier;
+            m_effectiveStats.attackCooldown += m_currentEquippedMask.attackCooldownModifier;
+            m_effectiveStats.takeDamageStunDuration += m_currentEquippedMask.takeDamageStunDurationModifier;
+            m_effectiveStats.knockbackForce += m_currentEquippedMask.knockbackForceModifier;
+            m_effectiveStats.knockbackResistance = Mathf.Clamp01(m_effectiveStats.knockbackResistance + m_currentEquippedMask.knockbackResistanceModifier);
         }
 
         m_effectiveStats.maxHealth = Mathf.Max(1, m_effectiveStats.maxHealth);
@@ -100,30 +101,27 @@ public abstract class BaseCharacterController : MonoBehaviour, IDamageable
         m_effectiveStats.knockbackForce = Mathf.Max(0f, m_effectiveStats.knockbackForce);
     }
 
-    public void EquipMask(MaskData mask)
+    public void EquipMask(MaskData newMask)
     {
-        if (mask == null) return;
-        if (!m_equippedMasks.Contains(mask))
+        if (newMask == null) return;
+
+        m_currentEquippedMask = newMask;
+        CalculateEffectiveStats();
+        if (m_currentHealth > m_effectiveStats.maxHealth)
         {
-            m_equippedMasks.Add(mask);
-            CalculateEffectiveStats();
-            if (m_currentHealth > m_effectiveStats.maxHealth)
-            {
-                m_currentHealth = m_effectiveStats.maxHealth;
-            }
+            m_currentHealth = m_effectiveStats.maxHealth;
         }
     }
 
-    public void UnequipMask(MaskData mask)
+    public void UnequipCurrentMask()
     {
-        if (mask == null) return;
-        if (m_equippedMasks.Remove(mask))
+        if (m_currentEquippedMask == null) return;
+
+        m_currentEquippedMask = null;
+        CalculateEffectiveStats();
+        if (m_currentHealth > m_effectiveStats.maxHealth)
         {
-            CalculateEffectiveStats();
-            if (m_currentHealth > m_effectiveStats.maxHealth)
-            {
-                m_currentHealth = m_effectiveStats.maxHealth;
-            }
+            m_currentHealth = m_effectiveStats.maxHealth;
         }
     }
 
@@ -144,7 +142,7 @@ public abstract class BaseCharacterController : MonoBehaviour, IDamageable
     public virtual void TakeDamage(int damage, Vector3 hitSourcePosition)
     {
         if (m_currentState == CharacterState.Die) return;
-
+        
         float effectiveDamage = damage;
         
         m_currentHealth -= Mathf.RoundToInt(effectiveDamage);
