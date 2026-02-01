@@ -21,5 +21,5 @@ MonoBehaviour:
   attackCooldown: 0
   takeDamageStunDuration: 0.5
   damageFeedbackDuration: 0.1
-  knockbackForce: 2
+  knockbackForce: 5
   knockbackResistance: 0.3

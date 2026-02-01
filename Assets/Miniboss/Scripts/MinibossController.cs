@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
@@ -6,11 +6,15 @@ using static Observer;
 
 public class MinibossController : BaseCharacterController
 {
+    [Header("↑ Só BaseCharacterStats está sendo usado ↑")]
+
     [Header("References")]
     [SerializeField] private Transform _player;
     [SerializeField] private LayerMask _playerLayer;
     [SerializeField] private Transform _attackPoint;
+    [SerializeField] private float _attackRadius = 0.5f;
     [SerializeField] private Slider _healthSlider;
+    [SerializeField] private SpriteRenderer _spriteRenderer;
 
     [Header("Combat Context (for debugging purposes only)")]
     [SerializeField] private CombatContext _combatContext = new CombatContext();
@@ -46,6 +50,8 @@ public class MinibossController : BaseCharacterController
 
     protected override void Awake()
     {
+        _player = GameObject.FindGameObjectWithTag("Player").transform;
+
         _agent = GetComponent<NavMeshAgent>();
         _stats = GetComponent<StatsBinder>();
         _animator = GetComponent<MinibossAnimation>();
@@ -62,6 +68,8 @@ public class MinibossController : BaseCharacterController
         ChaseState = new ChaseState(this, _movement);
         AttackState = new AttackState(this);
         DieState = new DieState(this);
+
+        _combatContext.ResetAttackTimers();
     }
 
     protected override void Start()
@@ -125,7 +133,7 @@ public class MinibossController : BaseCharacterController
                     _attackPoint.localPosition.z);
             }
 
-            PerformAttackDetection(_attackPoint, 0.5f);
+            PerformAttackDetection(_attackPoint, _attackRadius);
         }
     }
 
@@ -140,8 +148,10 @@ public class MinibossController : BaseCharacterController
 
             if (playerCollider.TryGetComponent(out IDamageable damageablePlayer))
             {
+                _combatContext.ResetAttackTimers();
                 damageablePlayer.TakeDamage(m_effectiveStats.attackDamage, transform.position);
             }
+            else _combatContext.RegisterFailedAttack();
         }
     }
 
