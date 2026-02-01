@@ -13,11 +13,13 @@ MonoBehaviour:
   m_Name: GroundMiniboss_DashAttack
   m_EditorClassIdentifier: 
   attackName: DashAttack
-  minRange: 1.5
-  maxRange: 5
-  cooldown: 3
-  minCombatTime: 0
+  attackAnimationClip: {fileID: 7400000, guid: bef9136d332b66249ab2d011e8fa90e1, type: 2}
+  attackRadius: 1
+  minRange: 2
+  maxRange: 4
+  cooldown: 6
+  recoveryTime: 3
+  minCombatTime: 10
   minFailedAttempts: 0
-  dashAttackAnimationClip: {fileID: 7400000, guid: bef9136d332b66249ab2d011e8fa90e1, type: 2}
-  dashDuration: 0.6
-  speedMultiplier: 2.5
+  dashDuration: 0.7
+  speedMultiplier: 5

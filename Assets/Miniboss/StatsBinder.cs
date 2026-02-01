@@ -1,41 +1,34 @@
 using UnityEngine;
 using UnityEngine.AI;
-using static Observer;
 
 public class StatsBinder : MonoBehaviour
 {
-    [SerializeField] private SO_MinibossStats stats;
-    private NavMeshAgent agent;
+    [SerializeField] private SO_MinibossStats _stats;
+    [SerializeField] private CharacterStats _cStats;
 
-    public float CurrentMoveSpeed => agent.speed;
+    private NavMeshAgent _agent;
 
-    private void Awake()
+    public SO_MinibossStats Stats => _stats;
+    public CharacterStats CStats => _cStats;
+
+    private void Start()
     {
-        if (agent == null)
-        {
-            agent = GetComponent<NavMeshAgent>();
-        }
+        if (TryGetComponent<MinibossController>(out MinibossController controller))
+            _agent = controller.Agent;
+        else
+            Debug.LogError("Needs MinibossController component!");
 
         ApplyStats();
     }
 
     private void ApplyStats()
     {
-        if (agent != null && stats != null)
+        if (_agent != null && _stats != null)
         {
-            agent.speed = stats.moveSpeed;
-            agent.acceleration = stats.moveAcceleration;
-            agent.angularSpeed = 0f;
-            agent.stoppingDistance = 1f;
-            //agent.avoidancePriority = 50;
-        }
-    }
-
-    public void BuffMoveSpeed(float multiplier)
-    {
-        if (agent != null && stats != null)
-        {
-            agent.speed = stats.moveSpeed * multiplier;
+            _agent.speed = _cStats.movementSpeedX; //_stats.moveSpeed;
+            _agent.acceleration = _stats.moveAcceleration;
+            _agent.angularSpeed = 0f;
+            _agent.stoppingDistance = _stats.stopDistance;
         }
     }
 }

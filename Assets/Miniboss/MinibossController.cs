@@ -1,73 +1,76 @@
-using System.Collections.Generic;
-using Unity.VisualScripting.Antlr3.Runtime.Misc;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
+using static Observer;
 
-public class MinibossController : MonoBehaviour
+public class MinibossController : BaseCharacterController
 {
     [Header("References")]
     [SerializeField] private Transform _player;
-    [SerializeField] private NavMeshAgent _agent;
+    [SerializeField] private LayerMask _playerLayer;
+    [SerializeField] private Transform _attackPoint;
+    [SerializeField] private Slider _healthSlider;
 
-    [Header("Combat")]
-    [SerializeField] private SO_MinibossStats _stats;
-    [SerializeField] private List<SO_AttackData> _attacks;
-
-    [Header("Combat Context")]
+    [Header("Combat Context (for debugging purposes only)")]
     [SerializeField] private CombatContext _combatContext = new CombatContext();
 
+    private NavMeshAgent _agent;
+    private StatsBinder _stats;
     private MinibossAnimation _animator;
-    private IMinibossMovement _movement;
+    [SerializeField] private IMinibossMovement _movement;
 
-    private AttackContext _attackContext;
+    private AttackSelector _attackSelector;
+    private AttackExecutor _attackExecutor;
+
     private IMinibossState _currentState;
 
     public Transform Target => _player;
+    public Transform AttackPoint => _attackPoint;
     public NavMeshAgent Agent => _agent;
-    public SO_MinibossStats Stats => _stats;
+    public StatsBinder StatsBinder => _stats;
     public MinibossAnimation Animator => _animator;
-    public AttackContext AttackContext => _attackContext;
-    public CombatContext CombatContext => _combatContext;
+    public IMinibossMovement Move => _movement;
 
-    public AttackSelector AttackSelector { get; private set; }
+    public AttackSelector AttackSelector => _attackSelector;
+    public AttackExecutor AttackExecutor => _attackExecutor;
+
+    public CombatContext CombatContext => _combatContext;
+    public SpriteRenderer SpriteRenderer => _spriteRenderer;
+
+    public IMinibossState IdleState { get; private set; }
     public IMinibossState ChaseState { get; private set; }
     public IMinibossState AttackState { get; private set; }
+    public IMinibossState DieState { get; private set; }
 
-    private void Awake()
+    protected override void Awake()
     {
-        if(_agent == null)
-        {
-            if (TryGetComponent<NavMeshAgent>(out NavMeshAgent agent))
-            {
-                _agent = agent;
-            }
-        }
-
+        _agent = GetComponent<NavMeshAgent>();
+        _stats = GetComponent<StatsBinder>();
         _animator = GetComponent<MinibossAnimation>();
         _movement = GetComponent<IMinibossMovement>();
 
-        _attackContext = new AttackContext
-        {
-            runner = this,
-            attacker = transform,
-            target = _player,
-            agent = _agent,
-            animator = _animator,
-            coroutineRunner = this
-        };
+        _attackSelector = GetComponent<AttackSelector>();
+        _attackExecutor = GetComponent<AttackExecutor>();
 
-        AttackSelector = new AttackSelector(_attacks);
+        m_rigidbody = GetComponent<Rigidbody>();
+        m_rigidbody.freezeRotation = true;
 
+        IdleState = new IdleState(this);
         ChaseState = new ChaseState(this, _movement);
         AttackState = new AttackState(this);
+        DieState = new DieState(this);
     }
 
-    private void Start()
+    protected override void Start()
     {
-        ChangeState(ChaseState);
+        CalculateEffectiveStats();
+        m_currentHealth = m_effectiveStats.maxHealth;
+
+        ChangeState(IdleState);
     }
 
-    private void Update()
+    protected override void Update()
     {
         UpdateCombatContext();
         _currentState?.Tick();
@@ -75,20 +78,24 @@ public class MinibossController : MonoBehaviour
 
     public void ChangeState(IMinibossState newState)
     {
-        _currentState?.ExitState();
+        _currentState?.Exit();
         _currentState = newState;
-        _currentState.EnterState();
+        _currentState.Enter();
+    }
+
+    public float DistanceToPlayer()
+    {
+        return Vector3.Distance(transform.position, _player.position);
     }
 
     private void UpdateCombatContext()
     {
-
         _combatContext.timeInCombat += Time.deltaTime;
         _combatContext.timeSinceLastAttack += Time.deltaTime;
 
-        _combatContext.currentDistance = Vector3.Distance( transform.position, Target.position );
+        _combatContext.currentDistance = DistanceToPlayer();
 
-        if (_combatContext.currentDistance <= _stats.attackEnterRange)
+        if (_combatContext.currentDistance <= _stats.Stats.attackRange)
         {
             _combatContext.timeSincePlayerInRange += Time.deltaTime;
         }
@@ -100,9 +107,106 @@ public class MinibossController : MonoBehaviour
 
     public void OnAnimationEvent(string eventName)
     {
-        if (_currentState is AttackState attackState)
+        if (eventName == "AttackEnds")
         {
-            attackState.OnAttackFinished();
+            if (_currentState is AttackState attackState)
+                attackState.OnAttackFinished();
         }
+
+        if (eventName == "HitDetection")
+        {
+            if ((_spriteRenderer.flipX ? -1f : 1f) * _attackPoint.localPosition.x < 0f)
+            {
+                _attackPoint.localPosition = new Vector3(
+                    _attackPoint.localPosition.x * -1f,
+                    _attackPoint.localPosition.y,
+                    _attackPoint.localPosition.z);
+            }
+
+            PerformAttackDetection(_attackPoint, 0.5f);
+        }
+    }
+
+
+    public void PerformAttackDetection(Transform attackPoint, float attackRadius)
+    {
+        Collider[] hitPlayer = Physics.OverlapSphere(attackPoint.position, attackRadius, _playerLayer);
+        foreach (Collider playerCollider in hitPlayer)
+        {
+            if (playerCollider.gameObject == gameObject || !playerCollider.isTrigger)
+                continue;
+
+            if (playerCollider.TryGetComponent(out IDamageable damageablePlayer))
+            {
+                damageablePlayer.TakeDamage(m_effectiveStats.attackDamage, transform.position);
+            }
+        }
+    }
+
+    public override void TakeDamage(int damage, Vector3 hitSourcePosition)
+    {
+        if (_currentState is DieState dieState) return;
+
+        float effectiveDamage = damage;
+
+        m_currentHealth -= Mathf.RoundToInt(effectiveDamage);
+
+        UpdateHealthUI();
+
+        if (m_currentHealth <= 0)
+        {
+            m_currentHealth = 0;
+            ChangeState(DieState);
+        }
+        else
+        {
+            //ChangeState(StunState);
+
+            Vector3 knockbackDirection = (transform.position - hitSourcePosition).normalized;
+            Vector3 flatKnockbackDirection = new Vector3(knockbackDirection.x, 0f, knockbackDirection.z).normalized;
+            
+            float finalKnockbackForce = m_effectiveStats.knockbackForce * (1f - m_effectiveStats.knockbackResistance);
+
+            if (finalKnockbackForce > 0.01f && m_rigidbody != null)
+            {
+                //m_rigidbody.AddForce(flatKnockbackDirection * finalKnockbackForce, ForceMode.Impulse);
+                StartCoroutine(Knockback(flatKnockbackDirection, finalKnockbackForce));
+            }
+
+            if (m_damageFeedbackCoroutine != null) StopCoroutine(m_damageFeedbackCoroutine);
+            m_damageFeedbackCoroutine = StartCoroutine(DamageFeedback());
+        }
+    }
+
+    private IEnumerator Knockback(Vector3 knockDir, float force)
+    {
+        _agent.enabled = false;
+        m_rigidbody.isKinematic = false;
+
+        m_rigidbody.AddForce(knockDir * force, ForceMode.Impulse);
+
+        yield return new WaitForSeconds(0.2f);
+
+        m_rigidbody.linearVelocity = Vector3.zero;
+        m_rigidbody.isKinematic = true;
+        _agent.enabled = true;
+    }
+
+    private void UpdateHealthUI()
+    {
+        if (_healthSlider != null)
+        {
+            _healthSlider.maxValue = m_effectiveStats.maxHealth;
+            _healthSlider.value = m_currentHealth;
+        }
+    }
+
+    public void OnDie()
+    {
+        Die();
+    }
+    protected override void Die()
+    {
+        _animator.PlayDie();
     }
 }

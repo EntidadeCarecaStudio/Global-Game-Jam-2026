@@ -33,11 +33,11 @@ TagManager:
   - 
   - 
   - 
-  - Player
+  - 
   - Enemy
   - Ground
-  - Obstacle
-  - Sensor
+  - 
+  - 
   - 
   - 
   m_SortingLayers:

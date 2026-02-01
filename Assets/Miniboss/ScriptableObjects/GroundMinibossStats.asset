@@ -18,6 +18,7 @@ MonoBehaviour:
   moveSpeed: 1
   dashSpeed: 3
   moveAcceleration: 8
+  chaseRange: 12
+  attackRange: 12
   criticalChance: 0.08
   criticalMultiplier: 2
-  attackEnterRange: 2

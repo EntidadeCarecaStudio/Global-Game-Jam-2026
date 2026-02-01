@@ -2,93 +2,156 @@ using UnityEngine;
 
 public interface IMinibossState
 {
-    void EnterState();
+    void Enter();
     void Tick();
-    void ExitState();
+    void Exit();
 }
 
 public class IdleState : IMinibossState
 {
-    public void EnterState() { }
-    public void Tick() { }
-    public void ExitState() { }
+    private readonly MinibossController controller;
+
+    public IdleState(MinibossController controller)
+    {
+        this.controller = controller;
+    }
+
+    public void Enter()
+    {
+        controller.Agent.isStopped = true;
+        controller.Animator.PlayIdle();
+    }
+    public void Tick()
+    {
+        if (controller.DistanceToPlayer() <= controller.StatsBinder.Stats.chaseRange)
+        {
+            controller.ChangeState(controller.ChaseState);
+        }
+    }
+    public void Exit() { }
 }
 
 public class ChaseState : IMinibossState
 {
-    private readonly MinibossController _controller;
-    private IMinibossMovement _movement;
+    private readonly MinibossController controller;
 
     private float attackCheckInterval = 0.25f;
     private float timer;
 
     public ChaseState(MinibossController controller, IMinibossMovement movement)
     {
-        this._controller = controller;
-        this._movement = movement;
+        this.controller = controller;
     }
 
-    public void EnterState()
+    public void Enter()
     {
         timer = 0f;
-        _movement.StartMove();
+        controller.Move.StartMove();
+        controller.Animator.PlayRun();
     }
 
     public void Tick()
     {
+        controller.Move.ChaseMove(controller.Target.position);
 
         timer += Time.deltaTime;
-        if (timer < attackCheckInterval)
-            return;
+        if (timer < attackCheckInterval) return;
         timer = 0f;
-        bool hasAttack = _controller.AttackSelector.SelectAttack(_controller.CombatContext) != null;
+
+        bool hasAttack = controller.AttackSelector.SelectAttack(controller.CombatContext, controller.AttackExecutor) != null;
 
         if (hasAttack)
-        {
-            Debug.Log("É pra estar chamando um ataque");
-            _controller.ChangeState(_controller.AttackState);
-        }
+            controller.ChangeState(controller.AttackState);
     }
 
-    public void ExitState()
+    public void Exit()
     {
-        _movement.StopMove();
+        controller.Move.StopMove();
     }
 }
 
 public class AttackState : IMinibossState
 {
-    private readonly MinibossController _controller;
-    private SO_AttackData _currentAttack;
+    private readonly MinibossController controller;
 
     public AttackState(MinibossController controller)
     {
-        this._controller = controller;
+        this.controller = controller;
     }
 
-    public void EnterState()
+    public void Enter()
     {
-        Debug.Log("Entrou em AttackState");
-        _currentAttack = _controller.AttackSelector.SelectAttack(_controller.CombatContext);
+        TryAttack();
+    }
 
-        if (_currentAttack == null)
+    public void Tick()
+    {
+        if (!controller.AttackExecutor.IsBusy)
         {
-            _controller.CombatContext.RegisterFailedAttack();
-            _controller.ChangeState(_controller.ChaseState);
+            controller.ChangeState(controller.ChaseState);
+        }
+    }
+    public void Exit() { }
+
+    public void TryAttack()
+    {
+        var currentAttack = controller.AttackSelector.SelectAttack(controller.CombatContext, controller.AttackExecutor);
+
+        if (currentAttack == null)
+        {
+            controller.CombatContext.RegisterFailedAttack();
+            controller.ChangeState(controller.ChaseState);
             return;
         }
 
-        _controller.CombatContext.ResetAttackTimers();
+        AttackContext context = new AttackContext
+        {
+            attacker = controller.transform,
+            target = controller.Target,
+            agent = controller.Agent,
+            executor = controller.AttackExecutor
+        };
 
-        _currentAttack.Execute(_controller.AttackContext);
-        _currentAttack.StartCooldown(_controller);
+        controller.CombatContext.ResetAttackTimers();
+
+        bool executed = controller.AttackExecutor.ExecuteAttack(currentAttack, context);
+        if (executed)
+            controller.Animator.PlayAttack(currentAttack);
     }
-
-    public void Tick() { }
-    public void ExitState() { }
 
     public void OnAttackFinished()
     {
-        _controller.ChangeState(this);
+        controller.ChangeState(this);
     }
+}
+
+public class StunState : IMinibossState
+{
+    private readonly MinibossController controller;
+
+    public StunState(MinibossController controller)
+    {
+        this.controller = controller;
+    }
+
+    public void Enter() { }
+    public void Tick() { }
+    public void Exit() { }
+}
+
+public class DieState : IMinibossState
+{
+    private readonly MinibossController controller;
+
+    public DieState(MinibossController controller)
+    {
+        this.controller = controller;
+    }
+
+    public void Enter()
+    {
+        controller.OnDie();
+    }
+    public void Tick() { }
+    public void Exit() { }
 }

@@ -5,26 +5,29 @@ using UnityEngine;
 public class SO_DashAttackData : SO_AttackData
 {
     [Header("Dash Parameters")]
-    public AnimationClip dashAttackAnimationClip;
     public float dashDuration = 0.6f;
-    public float speedMultiplier = 2.5f;
+    public float speedMultiplier = 3f;
 
     public override void Execute(AttackContext context)
     {
-        context.attacker.GetComponent<MinibossController>().Animator.PlayDashAttack(dashDuration, dashAttackAnimationClip);
-        context.runner.StartCoroutine(DashRoutine(context));
+        if (context.agent.enabled)
+            context.agent.isStopped = false;
+
+        context.executor.StartCoroutine(DashRoutine(context));
     }
 
     private IEnumerator DashRoutine(AttackContext context)
     {
-        float baseSpeed = context.agent.speed;
+        //float baseSpeed = context.attacker.gameObject.GetComponent<MinibossController>().StatsBinder.Stats.moveSpeed;
+        float baseSpeed = context.attacker.gameObject.GetComponent<MinibossController>().StatsBinder.CStats.movementSpeedX;
         context.agent.speed *= speedMultiplier;
 
-        float elapsed = 0f;
-        while (elapsed < dashDuration)
+        float timer = 0f;
+        while (timer < dashDuration)
         {
             context.agent.SetDestination(context.target.position);
-            elapsed += Time.deltaTime;
+
+            timer += Time.deltaTime;
             yield return null;
         }
 

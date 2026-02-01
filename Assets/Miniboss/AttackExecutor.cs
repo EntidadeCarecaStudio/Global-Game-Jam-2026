@@ -1,42 +1,53 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
 
 public class AttackExecutor : MonoBehaviour
 {
-    [SerializeField] private NavMeshAgent agent;
-    [SerializeField] private Transform target;
+    private Dictionary<SO_AttackData, bool> cooldowns = new Dictionary<SO_AttackData, bool>();
 
-    private Coroutine dashRoutine;
+    private bool isInRecovery;
 
-    public void ExecuteAttack(SO_AttackData attack)
+    public bool IsBusy => isInRecovery;
+
+    public bool CanExecute(SO_AttackData attack)
     {
-        if (attack is SO_DashAttackData dashAttack)
-            StartDash(dashAttack);
+        if (isInRecovery) return false;
+        if (cooldowns.TryGetValue(attack, out bool onCooldown))
+            return !onCooldown;
+
+        return true;
     }
 
-    private void StartDash(SO_DashAttackData dashAttack)
+    public bool ExecuteAttack(SO_AttackData attack, AttackContext context)
     {
-        if (dashRoutine != null)
-            StopCoroutine(dashRoutine);
+        if (!CanExecute(attack)) return false;
 
-        dashRoutine = StartCoroutine(DashCoroutine(dashAttack));
+        if (attack.cooldown > 0)
+            cooldowns[attack] = true;
+
+        attack.Execute(context);
+
+        if (attack.cooldown > 0)
+            StartCoroutine(CooldownRoutine(attack, attack.cooldown));
+
+        if (attack.recoveryTime > 0)
+            StartCoroutine(RecoveryRoutine(attack.recoveryTime));
+
+        return true;
     }
 
-    private IEnumerator DashCoroutine(SO_DashAttackData dashAttack)
+    private IEnumerator CooldownRoutine(SO_AttackData attack, float time)
     {
-        float originalSpeed = agent.speed;
-        agent.speed *= dashAttack.speedMultiplier;
+        cooldowns[attack] = true;
+        yield return new WaitForSeconds(time);
+        cooldowns[attack] = false;
+    }
 
-        float timer = 0f;
-        while (timer < dashAttack.dashDuration)
-        {
-            agent.SetDestination(target.position);
-            timer += Time.deltaTime;
-            yield return null;
-        }
-
-        agent.speed = originalSpeed;
-        dashRoutine = null;
+    private IEnumerator RecoveryRoutine(float time)
+    {
+        isInRecovery = true;
+        yield return new WaitForSeconds(time);
+        isInRecovery = false;
     }
 }

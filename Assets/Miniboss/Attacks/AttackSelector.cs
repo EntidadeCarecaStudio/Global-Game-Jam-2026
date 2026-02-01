@@ -3,22 +3,21 @@ using UnityEngine;
 
 public class AttackSelector : MonoBehaviour
 {
-    private readonly List<SO_AttackData> _attacks;
+    [Header("Attacks")]
+    [SerializeField] private List<SO_AttackData> _attacks;
 
-    public AttackSelector(List<SO_AttackData> attacks)
+    public SO_AttackData SelectAttack(CombatContext context, AttackExecutor executor)
     {
-        this._attacks = attacks;
-    }
-
-    public SO_AttackData SelectAttack(CombatContext context)
-    {
-        Debug.Log("Vai tentar selecionar um ataque");
         foreach (var attack in _attacks)
         {
-            if (attack.CanExecute(context))
-                return attack;
+            if (!attack.IsValid(context))
+                continue;
+
+            if (!executor.CanExecute(attack))
+                continue;
+
+            return attack;
         }
-        Debug.Log("Deu ruim ao tentar selecionar uma ataque");
         return null;
     }
 }

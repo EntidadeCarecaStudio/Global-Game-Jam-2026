@@ -3,53 +3,33 @@ using UnityEngine.AI;
 
 public class ChaseMovement : MonoBehaviour, IMinibossMovement
 {
-    private NavMeshAgent _agent;
-    private Transform _target;
     [SerializeField] private float repathInterval = 0.25f;
 
-    private float repathTimer;
-    private bool isMoving;
+    private NavMeshAgent _agent;
+
+    private float repathTimer = 0f;
 
     private void Start()
     {
         if (TryGetComponent<MinibossController>(out MinibossController controller))
-        {
-            if (_agent == null)
-                _agent = controller.Agent;
-
-            _target = controller.Target;
-        }
-    }
-
-    private void Update()
-    {
-        if (!isMoving || _target == null) return;
-
-        repathTimer -= Time.deltaTime;
-        if (repathTimer <= 0f)
-        {
-            repathTimer = repathInterval;
-            _agent.SetDestination(_target.position);
-        }
+            _agent = controller.Agent;
+        else
+            Debug.LogError("Needs MinibossController component!");
     }
 
     public void StartMove()
     {
         if (_agent != null)
         {
-            if (!_agent.enabled || _target == null) return;
+            if (!_agent.enabled) return;
             
-            isMoving = true;
             _agent.isStopped = false;
-            _agent.SetDestination(_target.position);
             repathTimer = 0f;
         }
     }
 
     public void StopMove()
     {
-        isMoving = false;
-
         if (_agent != null)
         {
             if (!_agent.enabled) return;
@@ -59,8 +39,21 @@ public class ChaseMovement : MonoBehaviour, IMinibossMovement
         }
     }
 
-    public void SetTarget(Transform newTarget)
+    public void ChaseMove(Vector3 targetPosition)
     {
-        _target = newTarget;
+        if (!_agent.enabled) return;
+        if (_agent.isStopped || targetPosition == null) return;
+
+        repathTimer -= Time.deltaTime;
+        if (repathTimer <= 0f)
+        {
+            repathTimer = repathInterval;
+            _agent.SetDestination(targetPosition);
+        }
+    }
+
+    public bool IsInRange(Vector3 targetPosition, float range)
+    {
+        return Vector3.Distance(_agent.transform.position, targetPosition) <= range;
     }
 }

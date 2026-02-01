@@ -4,8 +4,8 @@ public class AnimationEventRelay : MonoBehaviour
 {
     [SerializeField] private MinibossController _controller;
 
-    public void OnAttackFinished(string eventName)
+    public void OnAnimationEvent(string eventName)
     {
-        _controller.ChangeState(_controller.AttackState);
+        _controller.OnAnimationEvent(eventName);
     }
 }
