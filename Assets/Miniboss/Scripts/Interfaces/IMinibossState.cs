@@ -19,6 +19,7 @@ public class IdleState : IMinibossState
     public void Enter()
     {
         controller.Agent.isStopped = true;
+        controller.Agent.enabled = false;
         controller.Animator.PlayIdle();
     }
     public void Tick()
@@ -46,6 +47,7 @@ public class ChaseState : IMinibossState
     public void Enter()
     {
         timer = 0f;
+        controller.Agent.enabled = true;
         controller.Move.StartMove();
         controller.Animator.PlayRun();
     }

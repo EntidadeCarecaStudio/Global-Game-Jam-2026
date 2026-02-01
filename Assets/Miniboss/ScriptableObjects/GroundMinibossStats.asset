@@ -12,13 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d6dab2bba0da9649b4467a8e751413b, type: 3}
   m_Name: GroundMinibossStats
   m_EditorClassIdentifier: 
-  maxHealth: 100
-  force: 2
-  defense: 3
-  moveSpeed: 1
-  dashSpeed: 3
   moveAcceleration: 8
-  chaseRange: 12
-  attackRange: 12
+  stopDistance: 1
+  chaseRange: 8
+  attackRange: 6
   criticalChance: 0.08
   criticalMultiplier: 2
