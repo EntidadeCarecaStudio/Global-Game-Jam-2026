@@ -1,5 +1,6 @@
 using UnityEngine;
 using Unity.Cinemachine;
+using System;
 
 public class PlayerController : BaseCharacterController
 {
@@ -27,6 +28,13 @@ public class PlayerController : BaseCharacterController
 
     private IInteractable m_currentHighlightedInteractable;
     private float m_interactionCheckTimer;
+
+
+    // Eventos de som
+    public static event Action OnPlayerDodge;
+    public static event Action OnPlayerAttack;
+    public static event Action OnPlayerGetHit;
+    public static event Action OnPlayerGetKilled;
 
     protected override void Awake()
     {
@@ -184,8 +192,11 @@ public class PlayerController : BaseCharacterController
 
     private void HandleTakeDamageStateLogic()
     {
+
         if (m_stateTimer >= m_effectiveStats.takeDamageStunDuration)
         {
+            // EVENTO
+            OnPlayerGetHit?.Invoke();
             m_canPerformAction = true;
             if (m_currentHealth <= 0)
             {
@@ -215,6 +226,8 @@ public class PlayerController : BaseCharacterController
     protected override void Die()
     {
         SetState(CharacterState.Die);
+        // EVENTO
+        OnPlayerGetKilled?.Invoke();
         m_rigidbody.linearVelocity = Vector3.zero;
         enabled = false;
         Debug.Log("Player has died!");
@@ -258,6 +271,10 @@ public class PlayerController : BaseCharacterController
     private void Attack()
     {
         SetState(CharacterState.Attack);
+
+        // 2. Dispara evento
+        OnPlayerAttack?.Invoke();
+
         m_canPerformAction = false;
         m_hasAttackedInCurrentWindow = false;
     }
@@ -267,6 +284,10 @@ public class PlayerController : BaseCharacterController
         if (m_currentState == CharacterState.Attack || m_currentState == CharacterState.TakeDamage || m_currentState == CharacterState.Die) return;
 
         SetState(CharacterState.Dodge);
+
+        // 2. DISPARE O EVENTO
+        OnPlayerDodge?.Invoke();
+
         m_canPerformAction = false;
 
         if (m_movementInput != Vector3.zero)

@@ -23,7 +23,7 @@ public class MinibossController : BaseCharacterController
     private StatsBinder _stats;
     private MinibossAnimation _animator;
     [SerializeField] private IMinibossMovement _movement;
-    private SpriteRenderer _spriteRenderer;
+    //private SpriteRenderer _spriteRenderer;
 
     private AttackSelector _attackSelector;
     private AttackExecutor _attackExecutor;

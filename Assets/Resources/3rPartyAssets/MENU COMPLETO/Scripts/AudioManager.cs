@@ -18,6 +18,10 @@ public class AudioManager : MonoBehaviour
     // Dicionário para busca rápida de sons
     private Dictionary<string, SoundData> soundMap = new Dictionary<string, SoundData>();
 
+    // Adicione esta variável lá em cima junto com o soundMap
+    private Dictionary<string, float> soundCooldowns = new Dictionary<string, float>();
+    public float globalCooldownThreshold = 1f; // Tempo mínimo entre o mesmo som (0.1s)
+
     // --- PARTE 3: INICIALIZAÇÃO ---
     private void Awake()
     {
@@ -63,25 +67,25 @@ public class AudioManager : MonoBehaviour
     {
         if (soundLibrary == null) return;
 
-        // Cria um AudioSource para cada som configurado na Library
         foreach (SoundData s in soundLibrary.sounds)
         {
-            // Cria um objeto filho para organizar a hierarquia
             GameObject soundObj = new GameObject("Sound_" + s.id);
             soundObj.transform.SetParent(this.transform);
 
             AudioSource source = soundObj.AddComponent<AudioSource>();
 
-            // Configura o source com os dados do Scriptable Object
+            // --- CONFIGURAÇÃO PADRÃO (ANTI-DISTORÇÃO) ---
             source.clip = s.clip;
             source.volume = s.volume;
-            source.pitch = s.pitch;
+            source.pitch = 1f;            // FORÇA velocidade normal
             source.loop = s.loop;
+            source.spatialBlend = 0f;     // FORÇA som 2D (Crucial para músicas não ficarem "longe")
+            source.playOnAwake = false;   // Garante que não toque sozinho
 
-            // Opcional: Roteia para o Mixer Group correto (Music ou SFX) se desejar
-            // source.outputAudioMixerGroup = ... (Isso pode ser adicionado no SoundData depois)
+            // Se tiver o Mixer configurado, aplica aqui
+            // source.outputAudioMixerGroup = ...; 
 
-            s.source = source; // Guarda a referência no objeto de dados runtime
+            s.source = source;
 
             if (!soundMap.ContainsKey(s.id))
             {
@@ -90,12 +94,30 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    // --- PARTE 5: MÉTODOS PÚBLICOS (API PARA OS PROGRAMADORES) ---
-
     public void Play(string soundId)
     {
         if (soundMap.TryGetValue(soundId, out SoundData s))
         {
+            // --- PROTEÇÃO ANTI-METRALHADORA ---
+            // Verifica se este som específico tocou há muito pouco tempo
+            if (soundCooldowns.ContainsKey(soundId))
+            {
+                float lastTime = soundCooldowns[soundId];
+                if (Time.time - lastTime < globalCooldownThreshold)
+                {
+                    return; // Sai da função e ignora o pedido de tocar
+                }
+                soundCooldowns[soundId] = Time.time; // Atualiza o tempo
+            }
+            else
+            {
+                soundCooldowns.Add(soundId, Time.time); // Registra a primeira vez
+            }
+            // ----------------------------------
+
+            // Reafirma o volume (útil para ajustes em tempo real)
+            s.source.volume = s.volume;
+
             if (s.loop)
             {
                 if (!s.source.isPlaying) s.source.Play();
@@ -107,7 +129,7 @@ public class AudioManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning($"AudioManager: Som '{soundId}' não encontrado na Library!");
+            Debug.LogWarning($"AudioManager: Som '{soundId}' não encontrado!");
         }
     }
 

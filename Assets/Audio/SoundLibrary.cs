@@ -1,16 +1,18 @@
 using UnityEngine;
-using UnityEngine.Audio;
 
 [System.Serializable]
 public class SoundData
 {
-    public string id;             // O nome que o programador vai usar (ex: "PlayerJump")
-    public AudioClip clip;        // O ficheiro de áudio real
-    [Range(0f, 1f)] public float volume = 1f;
-    [Range(0.1f, 3f)] public float pitch = 1f;
-    public bool loop;
+    public string id;             // Ex: "BGM_Fase1"
+    public AudioClip clip;        // O arquivo de áudio
 
-    [HideInInspector] public AudioSource source; // Usado internamente pelo Manager
+    [Range(0f, 1f)]
+    public float volume = 1f;     // Única coisa que você quer mexer
+
+    public bool loop;             // Se é música ou ambiente, marque isso
+
+    [HideInInspector]
+    public AudioSource source;    // Uso interno do sistema
 }
 
 [CreateAssetMenu(fileName = "NewSoundLibrary", menuName = "Audio/Sound Library")]
