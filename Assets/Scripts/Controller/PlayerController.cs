@@ -60,6 +60,28 @@ public class PlayerController : BaseCharacterController
         PerformMovement(m_movementInput);
     }
 
+    protected new void SetState(CharacterState newState)
+    {
+        if (m_currentState != newState)
+        {
+            m_currentState = newState;
+            m_stateTimer = 0f;
+            m_hasAttackedInCurrentWindow = false;
+            
+            m_canPerformAction = (newState == CharacterState.Idle || newState == CharacterState.Run);
+
+            if (_characterAnimationController != null)
+            {
+                _characterAnimationController.UpdateAnimation(m_currentState);
+            }
+        }
+    }
+
+    private void HandleInput()
+    {
+        
+    }
+
     private void UpdateStateLogic()
     {
         switch (m_currentState)
