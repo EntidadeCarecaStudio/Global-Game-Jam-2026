@@ -966,7 +966,9 @@ MonoBehaviour:
   roomRadius: 10
   gridSize: 10
   standardEnemyPrefabs:
-  - {fileID: 2266345566208212972, guid: f290bc9591b7f11449db95477a6a69c4, type: 3}
+  - {fileID: 2285911381739752932, guid: f07824b99708e174f84768af8cd7e5cd, type: 3}
+  - {fileID: 7775358467214554592, guid: ebc27032c6bd91649b959ea80fa2dd4c, type: 3}
+  - {fileID: 115522448172367894, guid: 0c6b17d2a44cd7847b0d70cf42150548, type: 3}
   minEnemiesPerRoom: 1
   maxEnemiesPerRoom: 3
   enemySpawnChance: 1

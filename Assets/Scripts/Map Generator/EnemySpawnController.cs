@@ -38,7 +38,7 @@ public class EnemySpawnController : MonoBehaviour
     {
         if (hasSpawned) return;
 
-        finalPosition = transform.position;
+        finalPosition = transform.position + new Vector3(0, 0.6f, 0);
         hiddenPosition = finalPosition - (Vector3.up * depthOffset);
 
         // Esconde o inimigo no subsolo
