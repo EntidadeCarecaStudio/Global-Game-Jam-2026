@@ -16,9 +16,10 @@ MonoBehaviour:
   attackDamage: 10
   movementSpeedX: 5
   movementSpeedZ: 3
-  attackDuration: 0.9
-  dodgeDuration: 0.7
+  attackDuration: 1.05
+  dodgeDuration: 0.6666665
   attackCooldown: 1
-  takeDamageStunDuration: 0.5
+  takeDamageStunDuration: 0.6666667
   damageFeedbackDuration: 0.1
   knockbackForce: 5
+  knockbackResistance: 0
