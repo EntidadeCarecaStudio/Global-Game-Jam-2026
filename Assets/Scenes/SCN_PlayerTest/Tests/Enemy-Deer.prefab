@@ -861,7 +861,7 @@ GameObject:
   - component: {fileID: 9095389940530016403}
   - component: {fileID: 4152231264604034544}
   - component: {fileID: 6626156358494241436}
-  - component: {fileID: 7982654773135676997}
+  - component: {fileID: 4753113703444300087}
   m_Layer: 0
   m_Name: Sprites
   m_TagString: Untagged
@@ -920,7 +920,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &7982654773135676997
+--- !u!114 &4753113703444300087
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1227,7 +1227,7 @@ Transform:
   m_GameObject: {fileID: 7775358467214554592}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.744, y: 0.5, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 0.25}
   m_ConstrainProportionsScale: 0
   m_Children:

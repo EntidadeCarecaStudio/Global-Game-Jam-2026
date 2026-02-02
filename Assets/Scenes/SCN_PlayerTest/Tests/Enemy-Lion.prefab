@@ -278,7 +278,7 @@ Transform:
   m_GameObject: {fileID: 2285911381739752932}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.48, y: 0.5, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 0.25}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1351,7 +1351,7 @@ GameObject:
   - component: {fileID: 1716414204215450281}
   - component: {fileID: 2657671920197341398}
   - component: {fileID: 6071170884264349427}
-  - component: {fileID: 4657491969878393013}
+  - component: {fileID: 3091324576784561208}
   m_Layer: 0
   m_Name: Sprites
   m_TagString: Untagged
@@ -1410,7 +1410,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &4657491969878393013
+--- !u!114 &3091324576784561208
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

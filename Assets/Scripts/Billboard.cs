@@ -18,7 +18,7 @@ public class Billboard : MonoBehaviour
         if (_mainCameraTransform == null) return;
 
         // Opção A: Olhar diretamente para a câmera (pode inclinar se a câmera estiver alta)
-        // transform.LookAt(_mainCameraTransform);
+        //transform.LookAt(_mainCameraTransform);
 
         // Opção B: Rotação Cilíndrica (Mais comum em jogos 2.5D)
         // O sprite rotaciona apenas no eixo Y, ficando sempre reto.
@@ -28,6 +28,6 @@ public class Billboard : MonoBehaviour
 
         // Ajuste de inversão: Dependendo de como seu sprite foi desenhado, 
         // ele pode aparecer de costas. Se isso ocorrer, descomente a linha abaixo:
-        // transform.Rotate(0, 180, 0);
+        //transform.Rotate(0, 180, 0);
     }
 }
