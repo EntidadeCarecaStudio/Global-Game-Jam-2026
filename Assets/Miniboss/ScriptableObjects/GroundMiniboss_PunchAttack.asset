@@ -19,5 +19,5 @@ MonoBehaviour:
   maxRange: 1.5
   cooldown: 4
   recoveryTime: 2
-  minCombatTime: 0
+  minCombatTime: 2
   minFailedAttempts: 0

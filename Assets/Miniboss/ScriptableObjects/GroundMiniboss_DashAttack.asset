@@ -19,7 +19,7 @@ MonoBehaviour:
   maxRange: 4
   cooldown: 6
   recoveryTime: 3
-  minCombatTime: 20
+  minCombatTime: 15
   minFailedAttempts: 0
   dashDuration: 0.7
   speedMultiplier: 5

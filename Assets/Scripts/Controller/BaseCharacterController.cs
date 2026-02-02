@@ -26,8 +26,8 @@ public abstract class BaseCharacterController : MonoBehaviour, IDamageable
     [SerializeField] protected Transform _spriteRendererRoot;
     [SerializeField] protected CharacterAnimationController _characterAnimationController;
 
-    private SpriteRenderer[] m_sprites;
-    private Vector3 m_startScale;
+    protected SpriteRenderer[] m_sprites;
+    protected Vector3 m_startScale;
 
     protected Rigidbody m_rigidbody;
     protected int m_currentHealth;
@@ -201,10 +201,17 @@ public abstract class BaseCharacterController : MonoBehaviour, IDamageable
     {
         if (_spriteRendererRoot == null) return;
 
+        _spriteRendererRoot.localScale = new(
+            m_startScale.x * (direction.x < 0 ? 1f : -1f), 
+            m_startScale.y, 
+            m_startScale.z);
+
+        /*
         if (direction.x < 0)
             _spriteRendererRoot.localScale = new(m_startScale.x, m_startScale.y, m_startScale.z);
         else if (direction.x > 0)
             _spriteRendererRoot.localScale = new(-m_startScale.x, m_startScale.y, m_startScale.z);
+        */
     }
 
     protected abstract void Die();

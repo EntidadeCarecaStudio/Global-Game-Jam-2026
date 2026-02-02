@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: FireMinibossStats
   m_EditorClassIdentifier: 
   moveAcceleration: 8
-  stopDistance: 1.5
-  chaseRange: 8
-  minSafeDistance: 1.5
+  stopDistance: 1.2
+  chaseRange: 12
+  minSafeDistance: 1.2
   repositionRadius: 3
   attackRange: 8
   criticalChance: 0.08

@@ -174,13 +174,26 @@ public class StunState : IMinibossState
 {
     private readonly MinibossController controller;
 
+    private float stunTimer;
+
     public StunState(MinibossController controller)
     {
         this.controller = controller;
     }
 
-    public void Enter() { }
-    public void Tick() { }
+    public void Enter()
+    {
+        stunTimer = 0f;
+        controller.Animator.PlayHit();
+    }
+    public void Tick()
+    {
+        stunTimer += Time.deltaTime;
+        if (stunTimer < controller.StatsBinder.CStats.takeDamageStunDuration) return;
+        stunTimer = 0f;
+
+        controller.ChangeState(controller.ChaseState);
+    }
     public void Exit() { }
 }
 

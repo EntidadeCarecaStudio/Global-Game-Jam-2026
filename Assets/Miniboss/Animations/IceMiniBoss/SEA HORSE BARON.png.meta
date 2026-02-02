@@ -1,0 +1,487 @@
+fileFormatVersion: 2
+guid: 237c727751c817843950dc0816e10ddf
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 0
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 512
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: SEA HORSE BARON_0
+      rect:
+        serializedVersion: 2
+        x: 217
+        y: 1009
+        width: 109
+        height: 199
+      alignment: 9
+      pivot: {x: 0.5978685, y: 0.8252395}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ddd3d29540d07bf419e109dcaef61813
+      internalID: 2000924674
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SEA HORSE BARON_1
+      rect:
+        serializedVersion: 2
+        x: 416
+        y: 1033
+        width: 539
+        height: 545
+      alignment: 9
+      pivot: {x: 0.50019103, y: 0.19591479}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5c2ea195126cdd445bd54a755b00ce2c
+      internalID: -1044016220
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SEA HORSE BARON_2
+      rect:
+        serializedVersion: 2
+        x: 1033
+        y: 1009
+        width: 113
+        height: 199
+      alignment: 9
+      pivot: {x: 0.4844301, y: 0.83833903}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 31ddc6305370fe84e985b0aa851fbd3f
+      internalID: 1860779948
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SEA HORSE BARON_3
+      rect:
+        serializedVersion: 2
+        x: 1428
+        y: 556
+        width: 468
+        height: 527
+      alignment: 9
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cb17c5e667d1fce41971596f8cbed076
+      internalID: -849711473
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SEA HORSE BARON_4
+      rect:
+        serializedVersion: 2
+        x: 225
+        y: 759
+        width: 85
+        height: 156
+      alignment: 9
+      pivot: {x: 0.61334336, y: 0.91903293}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d0c1c17d0b5c34d4ab57c5c60f7e694b
+      internalID: -740422269
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SEA HORSE BARON_5
+      rect:
+        serializedVersion: 2
+        x: 557
+        y: 712
+        width: 242
+        height: 285
+      alignment: 9
+      pivot: {x: 0.4954892, y: 0.9054889}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 48e8e0690203842419ca98173ab380bf
+      internalID: 1196080178
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SEA HORSE BARON_6
+      rect:
+        serializedVersion: 2
+        x: 1053
+        y: 744
+        width: 78
+        height: 159
+      alignment: 9
+      pivot: {x: 0.50129116, y: 0.8361148}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c09b0e63d4c88504089138b0f1024ea6
+      internalID: 957769062
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SEA HORSE BARON_7
+      rect:
+        serializedVersion: 2
+        x: 197
+        y: 533
+        width: 98
+        height: 97
+      alignment: 9
+      pivot: {x: 0.5585808, y: 0.75245273}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: be5deaa7223075d4d878e518377e922c
+      internalID: -762915609
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SEA HORSE BARON_8
+      rect:
+        serializedVersion: 2
+        x: 608
+        y: 490
+        width: 124
+        height: 175
+      alignment: 9
+      pivot: {x: 0.52554667, y: 0.8788344}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 09421d0e9a07da8489ffeff69a747f70
+      internalID: 1165952176
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SEA HORSE BARON_9
+      rect:
+        serializedVersion: 2
+        x: 1057
+        y: 529
+        width: 97
+        height: 97
+      alignment: 9
+      pivot: {x: 0.45684627, y: 0.725579}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 63c2927348afdb54e9acabbf09a1537e
+      internalID: -1268597268
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SEA HORSE BARON_10
+      rect:
+        serializedVersion: 2
+        x: 369
+        y: 330
+        width: 82
+        height: 183
+      alignment: 9
+      pivot: {x: 0.6039935, y: 0.868904}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2eddf7601472045469d291c5f19ed320
+      internalID: -1399062966
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SEA HORSE BARON_11
+      rect:
+        serializedVersion: 2
+        x: 889
+        y: 326
+        width: 82
+        height: 183
+      alignment: 9
+      pivot: {x: 0.47683567, y: 0.8546598}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fa30775cacdd7d542915530a8f0f2b07
+      internalID: -1110321757
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SEA HORSE BARON_12
+      rect:
+        serializedVersion: 2
+        x: 162
+        y: 57
+        width: 109
+        height: 66
+      alignment: 9
+      pivot: {x: 0.78918767, y: 0.59243494}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6aaaba77df768e045bdfafbbc43763f8
+      internalID: -1571751146
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SEA HORSE BARON_13
+      rect:
+        serializedVersion: 2
+        x: 369
+        y: 76
+        width: 74
+        height: 176
+      alignment: 9
+      pivot: {x: 0.4227093, y: 0.8738412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a35f900e3ee0e8143832f1f6bc641043
+      internalID: 1366681485
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SEA HORSE BARON_14
+      rect:
+        serializedVersion: 2
+        x: 682
+        y: 53
+        width: 109
+        height: 70
+      alignment: 9
+      pivot: {x: 0.71744365, y: 0.63305956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1383aa4296f53814da59dc92c57391aa
+      internalID: 1698538697
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SEA HORSE BARON_15
+      rect:
+        serializedVersion: 2
+        x: 897
+        y: 76
+        width: 74
+        height: 176
+      alignment: 9
+      pivot: {x: 0.49316075, y: 0.8590303}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1bc5991eb4470d444892084956495c75
+      internalID: -496406121
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: ea6e5fa7af724d047b469a8536fe8b96
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":9,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      SEA HORSE BARON_0: 2000924674
+      SEA HORSE BARON_1: -1044016220
+      SEA HORSE BARON_10: -1399062966
+      SEA HORSE BARON_11: -1110321757
+      SEA HORSE BARON_12: -1571751146
+      SEA HORSE BARON_13: 1366681485
+      SEA HORSE BARON_14: 1698538697
+      SEA HORSE BARON_15: -496406121
+      SEA HORSE BARON_2: 1860779948
+      SEA HORSE BARON_3: -849711473
+      SEA HORSE BARON_4: -740422269
+      SEA HORSE BARON_5: 1196080178
+      SEA HORSE BARON_6: 957769062
+      SEA HORSE BARON_7: -762915609
+      SEA HORSE BARON_8: 1165952176
+      SEA HORSE BARON_9: -1268597268
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

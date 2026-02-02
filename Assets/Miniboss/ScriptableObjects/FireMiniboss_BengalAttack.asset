@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: FireMiniboss_BengalAttack
   m_EditorClassIdentifier: 
   attackName: BengalAttack
-  attackAnimationClip: {fileID: 7400000, guid: 3b1cf0001f9ee0348b33299c0a979107, type: 2}
+  attackAnimationClip: {fileID: 7400000, guid: 7278f6f333abdac439321f426d36dca5, type: 2}
   attackRadius: 0.7
   minRange: 0
   maxRange: 2
   cooldown: 3
   recoveryTime: 2
-  minCombatTime: 25
+  minCombatTime: 5
   minFailedAttempts: 0

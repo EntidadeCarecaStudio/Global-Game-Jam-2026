@@ -2,18 +2,16 @@
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
-using static Observer;
 
 public class MinibossController : BaseCharacterController
 {
-    [Header("↑ Só BaseCharacterStats está sendo usado ↑")]
+    [Header("↑ CharacterAnimationController não está sendo usado ↑")]
 
     [Header("References")]
     [SerializeField] private LayerMask _playerLayer;
     [SerializeField] private Transform _attackPoint;
     [SerializeField] private float _attackRadius = 0.5f;
     [SerializeField] private Slider _healthSlider;
-    [SerializeField] private SpriteRenderer _spriteRenderer;
 
     [Header("Combat Context (for debugging purposes only)")]
     [SerializeField] private CombatContext _combatContext = new CombatContext();
@@ -39,6 +37,7 @@ public class MinibossController : BaseCharacterController
     public IMinibossState IdleState { get; private set; }
     public IMinibossState ChaseState { get; private set; }
     public IMinibossState AttackState { get; private set; }
+    public IMinibossState StunState { get; private set; }
     public IMinibossState DieState { get; private set; }
 
     protected override void Awake()
@@ -52,8 +51,7 @@ public class MinibossController : BaseCharacterController
         _attackSelector = GetComponent<AttackSelector>();
         _attackExecutor = GetComponent<AttackExecutor>();
 
-        m_rigidbody = GetComponent<Rigidbody>();
-        m_rigidbody.freezeRotation = true;
+        base.Awake();
 
         MovementContext = new MovementContext
         {
@@ -70,6 +68,7 @@ public class MinibossController : BaseCharacterController
         IdleState = new IdleState(this);
         ChaseState = new ChaseState(this);
         AttackState = new AttackState(this);
+        StunState = new StunState(this);
         DieState = new DieState(this);
 
         _combatContext.ResetAttackTimers();
@@ -88,6 +87,18 @@ public class MinibossController : BaseCharacterController
         UpdateMovementContext();
         UpdateCombatContext();
         CurrentBossState?.Tick();
+    }
+
+    void LateUpdate()
+    {
+        NavMeshAgent agent = MovementContext.Agent;
+        if (agent.enabled)
+        {
+            float x = agent.desiredVelocity.x;
+
+            if (Mathf.Abs(x) > 0.01f)
+                base.UpdateSpriteOrientation(new Vector3(x, 0f, 0f));
+        }
     }
 
     public void ChangeState(IMinibossState newState)
@@ -119,26 +130,20 @@ public class MinibossController : BaseCharacterController
         }
     }
 
-    public void OnAnimationEvent(string eventName)
+    public void OnAnimationEvent(AnimationEventType eventType)
     {
-        if (eventName == "AttackEnds")
+        if (eventType == AnimationEventType.AttackEnds)
         {
             if (CurrentBossState is AttackState attackState)
                 attackState.OnAttackFinished();
         }
 
-        if (eventName == "HitDetection")
+        if (eventType == AnimationEventType.HitDetection)
         {
-            if ((_spriteRenderer.flipX ? -1f : 1f) * _attackPoint.localPosition.x < 0f)
-            {
-                _attackPoint.localPosition = new Vector3(
-                    _attackPoint.localPosition.x * -1f,
-                    _attackPoint.localPosition.y,
-                    _attackPoint.localPosition.z);
-            }
-
             PerformAttackDetection(_attackPoint, _attackRadius);
         }
+
+        if (eventType == AnimationEventType.PlayVFX) { }
     }
 
 
@@ -176,7 +181,7 @@ public class MinibossController : BaseCharacterController
         }
         else
         {
-            //ChangeState(StunState);
+            ChangeState(StunState);
 
             Vector3 knockbackDirection = (transform.position - hitSourcePosition).normalized;
             Vector3 flatKnockbackDirection = new Vector3(knockbackDirection.x, 0f, knockbackDirection.z).normalized;
@@ -223,6 +228,7 @@ public class MinibossController : BaseCharacterController
     }
     protected override void Die()
     {
+        _healthSlider.enabled = false;
         _animator.PlayDie();
     }
 }

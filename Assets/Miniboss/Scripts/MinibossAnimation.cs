@@ -31,6 +31,10 @@ public class MinibossAnimation : MonoBehaviour
         animator.Play("Attack");
     }
 
-    public void PlayHit() => animator.Play("TakeHit");
+    public void PlayHit()
+    {
+        animator.SetBool("b_isRunning", false);
+        animator.Play("TakeHit");
+    }
     public void PlayDie() => animator.Play("Die");
 }

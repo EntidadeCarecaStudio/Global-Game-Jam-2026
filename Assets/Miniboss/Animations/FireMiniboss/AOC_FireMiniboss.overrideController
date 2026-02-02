@@ -6,6 +6,6 @@ AnimatorOverrideController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: AOC_FireMiniboss
-  m_Controller: {fileID: 9100000, guid: f801faaf3dbfbb14183422b0d0a25843, type: 2}
+  m_Name: AOC_FireMiniBoss
+  m_Controller: {fileID: 9100000, guid: 89b7544b8393b2a4194352429ff81e27, type: 2}
   m_Clips: []
