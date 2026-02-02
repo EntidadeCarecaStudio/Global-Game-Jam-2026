@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: GroundMiniBoss_PunchAttack
   m_EditorClassIdentifier: 
   attackName: PunchAttack
-  attackAnimationClip: {fileID: 7400000, guid: 4b990378b9d9a5b4aa8d1391bebd532f, type: 2}
+  attackAnimationClip: {fileID: 7400000, guid: 2def43841b58717428ad6aa9bac414fc, type: 2}
   attackRadius: 0.5
   minRange: 0
   maxRange: 1.5
   cooldown: 4
   recoveryTime: 2
-  minCombatTime: 2
+  minCombatTime: 5
   minFailedAttempts: 0

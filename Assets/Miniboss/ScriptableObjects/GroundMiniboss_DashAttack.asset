@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: GroundMiniBoss_DashAttack
   m_EditorClassIdentifier: 
   attackName: DashAttack
-  attackAnimationClip: {fileID: 7400000, guid: bef9136d332b66249ab2d011e8fa90e1, type: 2}
+  attackAnimationClip: {fileID: 7400000, guid: e1ea59f7fc43bc14dac1d6fa69914601, type: 2}
   attackRadius: 1
   minRange: 2
   maxRange: 4
