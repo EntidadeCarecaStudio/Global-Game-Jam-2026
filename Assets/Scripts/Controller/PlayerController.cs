@@ -10,6 +10,7 @@ public class PlayerController : BaseCharacterController
     [SerializeField] private LayerMask _enemyLayer;
     [SerializeField] private float _attackWindowStartPercentage = 0.3f;
     [SerializeField] private float _attackWindowEndPercentage = 0.8f;
+    
 
     [Header("Interaction Settings")]
     [SerializeField] private LayerMask _interactableLayer;
@@ -238,6 +239,7 @@ public class PlayerController : BaseCharacterController
         SetState(CharacterState.Attack);
         m_canPerformAction = false;
         m_hasAttackedInCurrentWindow = false;
+        hit.GetComponent<AnimationControl>().OnHit();
     }
 
     private void Dodge()
