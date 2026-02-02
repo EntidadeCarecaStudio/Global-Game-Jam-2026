@@ -18,13 +18,13 @@ public class IdleState : IMinibossState
 
     public void Enter()
     {
-        controller.Agent.isStopped = true;
-        controller.Agent.enabled = false;
+        controller.MovementContext.Agent.isStopped = true;
+        controller.MovementContext.Agent.enabled = false;
         controller.Animator.PlayIdle();
     }
     public void Tick()
     {
-        if (controller.DistanceToPlayer() <= controller.StatsBinder.Stats.chaseRange)
+        if (controller.MovementContext.DistanceToTarget <= controller.StatsBinder.Stats.chaseRange)
         {
             controller.ChangeState(controller.ChaseState);
         }
@@ -36,29 +36,58 @@ public class ChaseState : IMinibossState
 {
     private readonly MinibossController controller;
 
-    private float attackCheckInterval = 0.25f;
-    private float timer;
+    private readonly IMinibossMovement chaseMovement;
+    private readonly RepositionMovement repositionMovement;
 
-    public ChaseState(MinibossController controller, IMinibossMovement movement)
+    private IMinibossMovement currentMovement;
+
+    private const float RepositionCooldown = 2f;
+    private float repositionTimer;
+
+    private float attackCheckInterval = 0.25f;
+    private float attckTimer;
+
+    public ChaseState(MinibossController controller)
     {
         this.controller = controller;
+
+        chaseMovement = new ChaseMovement();
+        repositionMovement = new RepositionMovement();
     }
 
     public void Enter()
     {
-        timer = 0f;
-        controller.Agent.enabled = true;
-        controller.Move.StartMove();
-        controller.Animator.PlayRun();
+        repositionTimer = 0f;
+        attckTimer = 0f;
+
+        controller.MovementContext.Agent.enabled = true;
+
+        SetMovement(chaseMovement);
     }
 
     public void Tick()
     {
-        controller.Move.ChaseMove(controller.Target.position);
+        var context = controller.MovementContext;
 
-        timer += Time.deltaTime;
-        if (timer < attackCheckInterval) return;
-        timer = 0f;
+        repositionTimer -= context.DeltaTime;
+
+        if (ShouldReposition(context))
+        {
+            SetMovement(repositionMovement);
+        }
+
+        currentMovement.Tick(context);
+
+        if (currentMovement == repositionMovement &&
+            repositionMovement.IsFinished)
+        {
+            repositionTimer = RepositionCooldown;
+            SetMovement(chaseMovement);
+        }
+
+        attckTimer += Time.deltaTime;
+        if (attckTimer < attackCheckInterval) return;
+        attckTimer = 0f;
 
         bool hasAttack = controller.AttackSelector.SelectAttack(controller.CombatContext, controller.AttackExecutor) != null;
 
@@ -68,7 +97,23 @@ public class ChaseState : IMinibossState
 
     public void Exit()
     {
-        controller.Move.StopMove();
+        currentMovement?.StopMove(controller.MovementContext);
+    }
+
+    private bool ShouldReposition(MovementContext context)
+    {
+        return context.DistanceToTarget < context.MinSafeDistance &&
+               repositionTimer <= 0f &&
+               currentMovement != repositionMovement;
+    }
+
+    private void SetMovement(IMinibossMovement movement)
+    {
+        currentMovement?.StopMove(controller.MovementContext);
+        currentMovement = movement;
+        currentMovement.StartMove(controller.MovementContext);
+
+        controller.Animator.PlayRun();
     }
 }
 
@@ -109,12 +154,10 @@ public class AttackState : IMinibossState
         AttackContext context = new AttackContext
         {
             attacker = controller.transform,
-            target = controller.Target,
-            agent = controller.Agent,
+            target = controller.MovementContext.Target,
+            agent = controller.MovementContext.Agent,
             executor = controller.AttackExecutor
         };
-
-        //controller.CombatContext.ResetAttackTimers();
 
         bool executed = controller.AttackExecutor.ExecuteAttack(currentAttack, context);
         if (executed)

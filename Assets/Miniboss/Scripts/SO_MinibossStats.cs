@@ -14,6 +14,8 @@ public class SO_MinibossStats : ScriptableObject
     [Min(0.1f)] public float moveAcceleration = 8f;
     [Min(0.1f)] public float stopDistance = 1f;
     [Min(0.1f)] public float chaseRange = 12f;
+    [Min(0.1f)] public float minSafeDistance = 1f;
+    [Min(0.1f)] public float repositionRadius = 3f;
 
     [Header("Combat")]
     [Min(0.1f)] public float attackRange = 3f;

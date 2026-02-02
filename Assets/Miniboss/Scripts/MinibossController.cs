@@ -9,7 +9,6 @@ public class MinibossController : BaseCharacterController
     [Header("↑ Só BaseCharacterStats está sendo usado ↑")]
 
     [Header("References")]
-    [SerializeField] private Transform _player;
     [SerializeField] private LayerMask _playerLayer;
     [SerializeField] private Transform _attackPoint;
     [SerializeField] private float _attackRadius = 0.5f;
@@ -19,30 +18,24 @@ public class MinibossController : BaseCharacterController
     [Header("Combat Context (for debugging purposes only)")]
     [SerializeField] private CombatContext _combatContext = new CombatContext();
 
-    private NavMeshAgent _agent;
     private StatsBinder _stats;
     private MinibossAnimation _animator;
-    [SerializeField] private IMinibossMovement _movement;
-    //private SpriteRenderer _spriteRenderer;
 
     private AttackSelector _attackSelector;
     private AttackExecutor _attackExecutor;
 
-    private IMinibossState _currentState;
-
-    public Transform Target => _player;
     public Transform AttackPoint => _attackPoint;
-    public NavMeshAgent Agent => _agent;
     public StatsBinder StatsBinder => _stats;
     public MinibossAnimation Animator => _animator;
-    public IMinibossMovement Move => _movement;
 
     public AttackSelector AttackSelector => _attackSelector;
     public AttackExecutor AttackExecutor => _attackExecutor;
 
     public CombatContext CombatContext => _combatContext;
-    public SpriteRenderer SpriteRenderer => _spriteRenderer;
+    
+    public MovementContext MovementContext { get; private set; }
 
+    public IMinibossState CurrentBossState { get; private set; }
     public IMinibossState IdleState { get; private set; }
     public IMinibossState ChaseState { get; private set; }
     public IMinibossState AttackState { get; private set; }
@@ -50,13 +43,11 @@ public class MinibossController : BaseCharacterController
 
     protected override void Awake()
     {
-        _player = GameObject.FindGameObjectWithTag("Player").transform;
+        Transform player = GameObject.FindGameObjectWithTag("Player").transform;
+        NavMeshAgent agent = GetComponent<NavMeshAgent>();
 
-        _agent = GetComponent<NavMeshAgent>();
         _stats = GetComponent<StatsBinder>();
         _animator = GetComponent<MinibossAnimation>();
-        _movement = GetComponent<IMinibossMovement>();
-        _spriteRenderer = GetComponent<SpriteRenderer>(); // <--- ADICIONAR ISSO AQUI
 
         _attackSelector = GetComponent<AttackSelector>();
         _attackExecutor = GetComponent<AttackExecutor>();
@@ -64,8 +55,20 @@ public class MinibossController : BaseCharacterController
         m_rigidbody = GetComponent<Rigidbody>();
         m_rigidbody.freezeRotation = true;
 
+        MovementContext = new MovementContext
+        {
+            Self = transform,
+            Target = player,
+            Agent = agent,
+            Controller = this,
+            MinSafeDistance = StatsBinder.Stats.minSafeDistance,
+            RepositionRadius = StatsBinder.Stats.repositionRadius
+        };
+
+        StatsBinder.ApplyStats(MovementContext);
+
         IdleState = new IdleState(this);
-        ChaseState = new ChaseState(this, _movement);
+        ChaseState = new ChaseState(this);
         AttackState = new AttackState(this);
         DieState = new DieState(this);
 
@@ -82,20 +85,21 @@ public class MinibossController : BaseCharacterController
 
     protected override void Update()
     {
+        UpdateMovementContext();
         UpdateCombatContext();
-        _currentState?.Tick();
+        CurrentBossState?.Tick();
     }
 
     public void ChangeState(IMinibossState newState)
     {
-        _currentState?.Exit();
-        _currentState = newState;
-        _currentState.Enter();
+        CurrentBossState?.Exit();
+        CurrentBossState = newState;
+        CurrentBossState.Enter();
     }
 
-    public float DistanceToPlayer()
+    private void UpdateMovementContext()
     {
-        return Vector3.Distance(transform.position, _player.position);
+        MovementContext.DeltaTime = Time.deltaTime;
     }
 
     private void UpdateCombatContext()
@@ -103,7 +107,7 @@ public class MinibossController : BaseCharacterController
         _combatContext.timeInCombat += Time.deltaTime;
         _combatContext.timeSinceLastAttack += Time.deltaTime;
 
-        _combatContext.currentDistance = DistanceToPlayer();
+        _combatContext.currentDistance = MovementContext.DistanceToTarget;
 
         if (_combatContext.currentDistance <= _stats.Stats.attackRange)
         {
@@ -119,7 +123,7 @@ public class MinibossController : BaseCharacterController
     {
         if (eventName == "AttackEnds")
         {
-            if (_currentState is AttackState attackState)
+            if (CurrentBossState is AttackState attackState)
                 attackState.OnAttackFinished();
         }
 
@@ -157,7 +161,7 @@ public class MinibossController : BaseCharacterController
 
     public override void TakeDamage(int damage, Vector3 hitSourcePosition)
     {
-        if (_currentState is DieState dieState) return;
+        if (CurrentBossState is DieState dieState) return;
 
         float effectiveDamage = damage;
 
@@ -192,7 +196,7 @@ public class MinibossController : BaseCharacterController
 
     private IEnumerator Knockback(Vector3 knockDir, float force)
     {
-        _agent.enabled = false;
+        MovementContext.Agent.enabled = false;
         m_rigidbody.isKinematic = false;
 
         m_rigidbody.AddForce(knockDir * force, ForceMode.Impulse);
@@ -201,7 +205,7 @@ public class MinibossController : BaseCharacterController
 
         m_rigidbody.linearVelocity = Vector3.zero;
         m_rigidbody.isKinematic = true;
-        _agent.enabled = true;
+        MovementContext.Agent.enabled = true;
     }
 
     private void UpdateHealthUI()

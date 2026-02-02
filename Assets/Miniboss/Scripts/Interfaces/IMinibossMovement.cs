@@ -2,8 +2,14 @@ using UnityEngine;
 
 public interface IMinibossMovement
 {
-    void StartMove();
-    void StopMove();
-    void ChaseMove(Vector3 targetPosition);
-    bool IsInRange(Vector3 targetPosition, float range);
+    void StartMove(MovementContext context);
+    void StopMove(MovementContext context);
+    void Tick(MovementContext context);
+    //bool IsInRange(MovementContext context, float range);
+    /*
+    public bool IsInRange(MovementContext context, float range)
+    {
+        return Vector3.Distance(context.Self.position, context.Target.position) <= range;
+    }
+    */
 }

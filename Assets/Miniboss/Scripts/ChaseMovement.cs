@@ -5,55 +5,40 @@ public class ChaseMovement : MonoBehaviour, IMinibossMovement
 {
     [SerializeField] private float repathInterval = 0.25f;
 
-    private NavMeshAgent _agent;
-
     private float repathTimer = 0f;
 
-    private void Start()
+    public void StartMove(MovementContext context)
     {
-        if (TryGetComponent<MinibossController>(out MinibossController controller))
-            _agent = controller.Agent;
-        else
-            Debug.LogError("Needs MinibossController component!");
-    }
-
-    public void StartMove()
-    {
-        if (_agent != null)
+        if (context.Agent != null)
         {
-            if (!_agent.enabled) return;
-            
-            _agent.isStopped = false;
+            if (!context.Agent.enabled) return;
+
+            context.Agent.isStopped = false;
             repathTimer = 0f;
         }
     }
 
-    public void StopMove()
+    public void Tick(MovementContext context)
     {
-        if (_agent != null)
-        {
-            if (!_agent.enabled) return;
-
-            _agent.isStopped = true;
-            _agent.ResetPath();
-        }
-    }
-
-    public void ChaseMove(Vector3 targetPosition)
-    {
-        if (!_agent.enabled) return;
-        if (_agent.isStopped || targetPosition == null) return;
+        if (!context.Agent.enabled) return;
+        if (context.Agent.isStopped || context.Target.position == null) return;
 
         repathTimer -= Time.deltaTime;
         if (repathTimer <= 0f)
         {
             repathTimer = repathInterval;
-            _agent.SetDestination(targetPosition);
+            context.Agent.SetDestination(context.Target.position);
         }
     }
 
-    public bool IsInRange(Vector3 targetPosition, float range)
+    public void StopMove(MovementContext context)
     {
-        return Vector3.Distance(_agent.transform.position, targetPosition) <= range;
+        if (context.Agent != null)
+        {
+            if (!context.Agent.enabled) return;
+
+            context.Agent.isStopped = true;
+            context.Agent.ResetPath();
+        }
     }
 }
