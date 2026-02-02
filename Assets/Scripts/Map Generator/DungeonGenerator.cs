@@ -110,6 +110,11 @@ public class DungeonGenerator : MonoBehaviour
 
     void GenerateDungeon()
     {
+
+        // --- Progresso ---
+        RoomManager.ResetProgression();
+        // --------------------------------
+
         // 1. Configuração da Seed
         if (useRandomSeed)
         {

@@ -1,6 +1,7 @@
 using UnityEngine;
 using Unity.Cinemachine;
 using System;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : BaseCharacterController
 {
@@ -11,6 +12,7 @@ public class PlayerController : BaseCharacterController
     [SerializeField] private LayerMask _enemyLayer;
     [SerializeField] private float _attackWindowStartPercentage = 0.3f;
     [SerializeField] private float _attackWindowEndPercentage = 0.8f;
+    
 
     [Header("Interaction Settings")]
     [SerializeField] private LayerMask _interactableLayer;
@@ -39,6 +41,10 @@ public class PlayerController : BaseCharacterController
     [Header("Rotation Settings")]
     [SerializeField] private float _rotationDuration = 0.25f; // Tempo para girar 90 graus
     private bool _isRotating = false; // Trava para não spamar o botão
+
+    [Header("Death Settings")]
+    [SerializeField] private float _deathAnimationDuration = 1.5f; // Ajuste no Inspector conforme sua animação
+    [SerializeField] private float _restartDelay = 2.0f; // Tempo de espera após a animação
 
     protected override void Awake()
     {
@@ -230,11 +236,36 @@ public class PlayerController : BaseCharacterController
     protected override void Die()
     {
         SetState(CharacterState.Die);
+
         // EVENTO
         OnPlayerGetKilled?.Invoke();
+
         m_rigidbody.linearVelocity = Vector3.zero;
-        enabled = false;
+
         Debug.Log("Player has died!");
+
+        // Inicia a contagem para reiniciar antes de desativar o script
+        StartCoroutine(RestartSceneRoutine());
+    }
+
+    private System.Collections.IEnumerator RestartSceneRoutine()
+    {
+        // 1. Desabilita inputs e física, mas mantém o script rodando a corotina
+        m_rigidbody.isKinematic = true;
+
+        // Opcional: Desabilita colisores para inimigos pararem de bater
+        Collider col = GetComponent<Collider>();
+        if (col != null) col.enabled = false;
+
+        // 2. Espera a duração da Animação de Morte
+        yield return new WaitForSeconds(_deathAnimationDuration);
+
+        // 3. Espera os 2 segundos extras que você pediu
+        yield return new WaitForSeconds(_restartDelay);
+
+        // 4. Recarrega a cena atual
+        Scene currentScene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(currentScene.name);
     }
 
     private void PerformMovement(Vector3 direction)
@@ -293,6 +324,7 @@ public class PlayerController : BaseCharacterController
 
         m_canPerformAction = false;
         m_hasAttackedInCurrentWindow = false;
+        
     }
 
     private void Dodge()

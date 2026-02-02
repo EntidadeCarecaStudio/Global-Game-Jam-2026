@@ -15,7 +15,7 @@ MonoBehaviour:
   sounds:
   - id: _golpe1
     clip: {fileID: 8300000, guid: 4047dfebc243abe4692c48fdf8c4d77f, type: 3}
-    volume: 0.6
+    volume: 0.8
     loop: 0
     source: {fileID: 0}
   - id: _golpe2

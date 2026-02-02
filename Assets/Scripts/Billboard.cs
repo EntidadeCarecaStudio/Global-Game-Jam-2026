@@ -28,6 +28,6 @@ public class Billboard : MonoBehaviour
 
         // Ajuste de inversão: Dependendo de como seu sprite foi desenhado, 
         // ele pode aparecer de costas. Se isso ocorrer, descomente a linha abaixo:
-        //transform.Rotate(0, 180, 0);
+        transform.Rotate(0, 180, 0);
     }
 }

@@ -9,6 +9,10 @@ public class AudioEventListener : MonoBehaviour
         PlayerController.OnPlayerAttack += PlayAttackSound;
         PlayerController.OnPlayerGetHit += PlayHitSound;
         PlayerController.OnPlayerGetKilled += PlayKillSound;
+
+        EnemyController.OnEnemyAttack += PlayEnemyAttackSound;
+        EnemyController.OnEnemyGetHit += PlayEnemyHitSound;
+        EnemyController.OnEnemyDeath += PlayEnemyDeathSound;
     }
 
     private void OnDisable()
@@ -18,6 +22,11 @@ public class AudioEventListener : MonoBehaviour
         PlayerController.OnPlayerAttack -= PlayAttackSound;
         PlayerController.OnPlayerGetHit -= PlayHitSound;
         PlayerController.OnPlayerGetKilled -= PlayKillSound;
+
+        // Remover Eventos do Inimigo
+        EnemyController.OnEnemyAttack -= PlayEnemyAttackSound;
+        EnemyController.OnEnemyGetHit -= PlayEnemyHitSound;
+        EnemyController.OnEnemyDeath -= PlayEnemyDeathSound;
     }
 
     // A AÇÃO
@@ -46,8 +55,13 @@ public class AudioEventListener : MonoBehaviour
     {
         // Aqui chamamos o AudioManager (com aquele sistema de proteção que criamos antes)
         // Certifique-se que "Dash" é o ID exato que está no seu Scriptable Object
-        AudioManager.Instance.Play("_scream2");
         AudioManager.Instance.Play("_death1");
     }
+
+    // Métodos para tocar os sons (Use os IDs do seu AudioManager)
+    private void PlayEnemyAttackSound() => AudioManager.Instance.Play("_golpe1");
+    private void PlayEnemyHitSound() => AudioManager.Instance.Play("_damage3");
+    private void PlayEnemyDeathSound() => AudioManager.Instance.Play("_kill2");
+    private void PlayMiniBossDeathSound() => AudioManager.Instance.Play("_kill3");
 
 }
