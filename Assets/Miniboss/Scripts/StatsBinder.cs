@@ -6,23 +6,13 @@ public class StatsBinder : MonoBehaviour
     [SerializeField] private SO_MinibossStats _stats;
     [SerializeField] private CharacterStats _cStats;
 
-    private NavMeshAgent _agent;
-
     public SO_MinibossStats Stats => _stats;
     public CharacterStats CStats => _cStats;
 
-    private void Start()
+    public void ApplyStats(MovementContext context)
     {
-        if (TryGetComponent<MinibossController>(out MinibossController controller))
-            _agent = controller.Agent;
-        else
-            Debug.LogError("Needs MinibossController component!");
+        NavMeshAgent _agent = context.Agent;
 
-        ApplyStats();
-    }
-
-    private void ApplyStats()
-    {
         if (_agent != null && _stats != null)
         {
             _agent.speed = _cStats.movementSpeedX; //_stats.moveSpeed;

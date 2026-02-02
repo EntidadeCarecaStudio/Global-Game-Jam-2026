@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f401f9fac846588418060beb96cd5eac, type: 3}
-  m_Name: GroundMinibossCharacterStats
+  m_Name: FireMinibossCharacterStats
   m_EditorClassIdentifier: 
-  maxHealth: 150
-  attackDamage: 6
-  movementSpeedX: 1
-  movementSpeedZ: 1
+  maxHealth: 100
+  attackDamage: 9
+  movementSpeedX: 2
+  movementSpeedZ: 2
   attackDuration: 0.4
   dodgeDuration: 0.6
   attackCooldown: 0
   takeDamageStunDuration: 0.5
   damageFeedbackDuration: 0.1
   knockbackForce: 5
-  knockbackResistance: 0.6
+  knockbackResistance: 0.4
