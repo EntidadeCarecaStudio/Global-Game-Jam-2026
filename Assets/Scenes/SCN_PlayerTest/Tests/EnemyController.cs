@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI; // Necessário para a Barra de Vida
 using System.Collections;
+using System;
 
 public class EnemyController : BaseCharacterController
 {
@@ -23,6 +24,11 @@ public class EnemyController : BaseCharacterController
     private float m_attackCooldownTimer;
     private bool m_hasDealtDamageInCurrentAttack;
     private Vector3 m_facingDirection = Vector3.back;
+
+    // Eventos de som
+    public static event Action OnEnemyAttack;
+    public static event Action OnEnemyGetHit;
+    public static event Action OnEnemyDeath;
 
     protected override void Start()
     {
@@ -61,6 +67,10 @@ public class EnemyController : BaseCharacterController
     public override void TakeDamage(int damage, Vector3 hitSourcePosition)
     {
         base.TakeDamage(damage, hitSourcePosition); // Aplica dano, knockback, cor vermelha
+
+        // --- ADICIONE ISTO ---
+        OnEnemyGetHit?.Invoke();
+        // ---------------------
         UpdateHealthUI(); // Atualiza a barra
     }
 
@@ -113,6 +123,10 @@ public class EnemyController : BaseCharacterController
         if (m_attackCooldownTimer <= 0 && distance <= _attackRange)
         {
             SetState(CharacterState.Attack);
+
+            // --- ADICIONE ISTO ---
+            OnEnemyAttack?.Invoke();
+            // ---------------------
         }
         else if (distance > _detectionRange)
         {
@@ -196,6 +210,11 @@ public class EnemyController : BaseCharacterController
     protected override void Die()
     {
         SetState(CharacterState.Die);
+
+        // --- ADICIONE ISTO ---
+        OnEnemyDeath?.Invoke();
+        // ---------------------
+
         m_rigidbody.linearVelocity = Vector3.zero;
         m_rigidbody.isKinematic = true;
 
