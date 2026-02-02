@@ -239,7 +239,7 @@ public class PlayerController : BaseCharacterController
         SetState(CharacterState.Attack);
         m_canPerformAction = false;
         m_hasAttackedInCurrentWindow = false;
-        hit.GetComponent<AnimationControl>().OnHit();
+        
     }
 
     private void Dodge()

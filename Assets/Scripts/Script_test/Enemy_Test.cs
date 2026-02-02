@@ -64,8 +64,8 @@ public class Enemy_Test : BaseCharacterController
     {
         if (_attackPoint == null)
         {
-            Debug.Log("O Inimigo está batendo");
-            //Debug.LogWarning("Attack point not assigned for enemy attack detection.");
+            
+            Debug.LogWarning("Attack point not assigned for enemy attack detection.");
             return;
         }
 

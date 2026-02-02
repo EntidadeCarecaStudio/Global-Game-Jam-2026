@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.InputSystem.Controls;
 
 
-public class Enemy : MonoBehaviour
+public class Enemy : MonoBehaviour, IDamageable
 {
     #region Perseguição do Jogador
 
@@ -160,4 +160,8 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    public void TakeDamage(int damage, Vector3 hitSourcePosition)
+    {
+        animControl.OnHit();
+    }
 }

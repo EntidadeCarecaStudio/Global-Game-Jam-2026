@@ -6,8 +6,8 @@ public class AnimationControl : MonoBehaviour
     [SerializeField] private Transform attackPoint;
     [SerializeField] private float radius;
     [SerializeField] private LayerMask playerLayer;
-
-    private PlayerController player;
+    [SerializeField] private RuntimeAnimatorController controller;
+    
     private Animator anim;
     private Enemy enemy;
 
@@ -16,6 +16,7 @@ public class AnimationControl : MonoBehaviour
 
         anim = GetComponent<Animator>();
         enemy = GetComponentInParent<Enemy>();
+        anim.runtimeAnimatorController = controller;
         
     }
 
@@ -29,10 +30,15 @@ public class AnimationControl : MonoBehaviour
         if (!enemy.isDead)
         {
             Collider[] hit = Physics.OverlapSphere(attackPoint.position, radius, playerLayer);
-            if (hit != null)
+            foreach (Collider playerCollider in hit)
             {
-               
-                Debug.Log("Está batendo no player");
+                if (playerCollider.gameObject == gameObject || !playerCollider.isTrigger)
+                    continue;
+
+                if (playerCollider.TryGetComponent(out IDamageable damageableEnemy))
+                {
+                    damageableEnemy.TakeDamage(10, transform.position);
+                }
             }
         }
 
@@ -46,6 +52,8 @@ public class AnimationControl : MonoBehaviour
         {
             enemy.isDead = true;
             anim.SetTrigger("death");
+
+            Destroy(enemy.gameObject, 2f);
         }
         else
         {
