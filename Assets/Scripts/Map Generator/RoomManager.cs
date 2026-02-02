@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System; // Necessário para Action
 
 public class RoomManager : MonoBehaviour
 {
@@ -12,6 +13,36 @@ public class RoomManager : MonoBehaviour
     public List<DoorController> myDoors = new List<DoorController>();
     public List<GameObject> myEnemies = new List<GameObject>();
 
+    // --- LÓGICA DE PROGRESSÃO ESTÁTICA ---
+    // Mantemos um registro estático de quais minibosses foram mortos nesta sessão de jogo
+    private static HashSet<Room.RoomElement> clearedMiniBossElements = new HashSet<Room.RoomElement>();
+
+    // Evento para avisar a sala do Boss que ela foi liberada
+    public static event Action OnBossUnlockConditionMet;
+
+    public static void ResetProgression()
+    {
+        clearedMiniBossElements.Clear();
+    }
+    // --------------------------------------
+
+    void OnEnable()
+    {
+        // Se eu sou a sala do Boss, quero saber quando os minibosses morreram
+        if (roomType == Room.RoomType.Boss)
+        {
+            OnBossUnlockConditionMet += UnlockBossRoom;
+        }
+    }
+
+    void OnDisable()
+    {
+        if (roomType == Room.RoomType.Boss)
+        {
+            OnBossUnlockConditionMet -= UnlockBossRoom;
+        }
+    }
+
     void Start()
     {
         // Start e Corredores são seguros
@@ -20,13 +51,17 @@ public class RoomManager : MonoBehaviour
             isCleared = true;
         }
 
-        // --- MUDANÇA IMPORTANTE ---
-        // Não chamamos mais OpenAllDoors() aqui.
-        // Deixamos as portas destravadas (padrão) mas FECHADAS visualmente.
-        // O DoorController abrirá sozinho quando o player chegar perto.
-        
-        // Apenas garantimos que elas saibam que não estão travadas
-        UnlockAllDoors();
+        // --- ALTERAÇÃO: Lógica de Portas Inicial ---
+        if (roomType == Room.RoomType.Boss)
+        {
+            // Se for Boss, TRANCAMOS as portas imediatamente e não abrimos
+            LockAllDoors();
+        }
+        else
+        {
+            // Salas normais, start e corredores começam destrancadas (abrem por proximidade)
+            UnlockAllDoors();
+        }
     }
 
     void Update()
@@ -44,7 +79,6 @@ public class RoomManager : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            // Atualiza o Fog of War
             Room myRoom = GetComponent<Room>();
             if (myRoom != null && DungeonVisibilityManager.Instance != null)
             {
@@ -53,6 +87,8 @@ public class RoomManager : MonoBehaviour
 
             if (isCleared || isActive) return;
 
+            // Se for Boss Room e estiver trancada (Minibosses vivos), o player não deveria conseguir entrar.
+            // Mas caso ele entre (teleporte/bug), iniciamos combate.
             StartCombat();
         }
     }
@@ -60,16 +96,15 @@ public class RoomManager : MonoBehaviour
     void StartCombat()
     {
         isActive = true;
-        LockAllDoors(); // TRANCAR AS PORTAS!
-        
-        // Acorda os inimigos
+        LockAllDoors(); // Tranca para o player não fugir durante o combate
+
         foreach (GameObject enemyObj in myEnemies)
         {
             if (enemyObj != null)
             {
                 EnemySpawnController spawner = enemyObj.GetComponent<EnemySpawnController>();
                 if (spawner != null) spawner.StartSpawnSequence();
-                else enemyObj.SetActive(true); 
+                else enemyObj.SetActive(true);
             }
         }
     }
@@ -78,10 +113,53 @@ public class RoomManager : MonoBehaviour
     {
         isCleared = true;
         isActive = false;
-        UnlockAllDoors(); // LIBERAR AS PORTAS!
+
+        // --- ALTERAÇÃO: Verifica Minibosses ---
+        if (roomType == Room.RoomType.MiniBoss)
+        {
+            Room myRoom = GetComponent<Room>();
+            if (myRoom != null)
+            {
+                RegisterMiniBossDefeat(myRoom.element);
+            }
+        }
+        // --------------------------------------
+
+        UnlockAllDoors(); // Libera as portas após vencer o combate local
     }
 
-    // --- Novos métodos de controle ---
+    // --- LÓGICA DE CONTROLE DE FLUXO ---
+
+    void RegisterMiniBossDefeat(Room.RoomElement element)
+    {
+        if (!clearedMiniBossElements.Contains(element))
+        {
+            clearedMiniBossElements.Add(element);
+            Debug.Log($"MiniBoss de {element} derrotado! Progresso: {clearedMiniBossElements.Count}/3");
+
+            // Verifica se temos os 3 elementos necessários
+            if (clearedMiniBossElements.Contains(Room.RoomElement.Fire) &&
+                clearedMiniBossElements.Contains(Room.RoomElement.Ice) &&
+                clearedMiniBossElements.Contains(Room.RoomElement.Earth))
+            {
+                Debug.Log("TODOS OS MINIBOSSES DERROTADOS! ABRINDO SALA DO BOSS!");
+                OnBossUnlockConditionMet?.Invoke();
+            }
+        }
+    }
+
+    // Método específico chamado apenas na Sala do Boss via Evento
+    void UnlockBossRoom()
+    {
+        if (roomType == Room.RoomType.Boss)
+        {
+            // Destranca as portas para permitir a entrada do Player
+            // Nota: Elas ainda respeitam a proximidade (DoorController), mas agora 'isLocked' é false
+            UnlockAllDoors();
+        }
+    }
+
+    // --- Helpers de Porta ---
 
     void UnlockAllDoors()
     {
