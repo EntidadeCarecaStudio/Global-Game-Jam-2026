@@ -9,17 +9,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b2a655b2dff94d64690b2f51ccfa28ae, type: 3}
-  m_Name: GroundMiniBoss_DashAttack
+  m_Script: {fileID: 11500000, guid: b9423b2502c568f46b504983bf185f59, type: 3}
+  m_Name: IceMiniBoss_Attack2
   m_EditorClassIdentifier: 
-  attackName: DashAttack
-  attackAnimationClip: {fileID: 7400000, guid: bef9136d332b66249ab2d011e8fa90e1, type: 2}
-  attackRadius: 1
-  minRange: 2
-  maxRange: 4
-  cooldown: 6
+  attackName: LongShotAttack
+  attackAnimationClip: {fileID: 7400000, guid: da4a747a0bec8814c8e727b2080c264d, type: 2}
+  attackRadius: 3
+  minRange: 3
+  maxRange: 8
+  cooldown: 5
   recoveryTime: 3
   minCombatTime: 15
   minFailedAttempts: 0
-  dashDuration: 0.7
-  speedMultiplier: 5

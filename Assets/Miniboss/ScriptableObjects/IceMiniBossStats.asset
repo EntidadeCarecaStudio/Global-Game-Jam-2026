@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6d6dab2bba0da9649b4467a8e751413b, type: 3}
-  m_Name: GroundMiniBossStats
+  m_Name: IceMiniBossStats
   m_EditorClassIdentifier: 
   moveAcceleration: 8
-  stopDistance: 1
-  chaseRange: 8
-  minSafeDistance: 0.1
-  repositionRadius: 0.1
-  attackRange: 6
-  criticalChance: 0.08
-  criticalMultiplier: 2
+  stopDistance: 3
+  chaseRange: 15
+  minSafeDistance: 3
+  repositionRadius: 5
+  attackRange: 15
+  criticalChance: 0.3
+  criticalMultiplier: 5

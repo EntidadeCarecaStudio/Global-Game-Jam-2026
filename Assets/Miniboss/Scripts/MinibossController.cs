@@ -143,6 +143,11 @@ public class MinibossController : BaseCharacterController
             PerformAttackDetection(_attackPoint, _attackRadius);
         }
 
+        if (eventType == AnimationEventType.SetAttackPoint)
+        {
+            _attackPoint.position = MovementContext.Target.position;
+        }
+
         if (eventType == AnimationEventType.PlayVFX) { }
     }
 
@@ -228,7 +233,7 @@ public class MinibossController : BaseCharacterController
     }
     protected override void Die()
     {
-        _healthSlider.enabled = false;
+        _healthSlider.gameObject.SetActive(false);
         _animator.PlayDie();
     }
 }

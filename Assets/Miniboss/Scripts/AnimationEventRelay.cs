@@ -4,6 +4,7 @@ public enum AnimationEventType
 {
     AttackEnds,
     HitDetection,
+    SetAttackPoint,
     PlayVFX
 }
 
