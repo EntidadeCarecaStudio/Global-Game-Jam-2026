@@ -694,6 +694,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8281838330554503987, guid: f6f09cbbeb30d544c9a06193bad1af2a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8951977294549718498, guid: f6f09cbbeb30d544c9a06193bad1af2a, type: 3}
       propertyPath: m_Name
       value: Canvas_MiniBoss

@@ -32,7 +32,10 @@ public static class Manager_Events
         public static Event OnAttack;
         public static Event OnDodge;
         public static Event OnInteract;
+        public static Event OnSubmit;
         public static Event OnHit;
+        public static Event OnRotateClockwise;
+        public static Event OnRotateCounterclockwise;
     }
 
     public static class Settings
