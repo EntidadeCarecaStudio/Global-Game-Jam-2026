@@ -1,0 +1,379 @@
+fileFormatVersion: 2
+guid: d1f7a1ddae9c89447a869546a08c9561
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -7410593718438231972
+    second: Character SEA HORSE_0
+  - first:
+      213: 325409591331294789
+    second: Character SEA HORSE_1
+  - first:
+      213: -1737481670499231246
+    second: Character SEA HORSE_2
+  - first:
+      213: 4616394257787674864
+    second: Character SEA HORSE_3
+  - first:
+      213: 4786995126776750713
+    second: Character SEA HORSE_4
+  - first:
+      213: -5696153335790479700
+    second: Character SEA HORSE_5
+  - first:
+      213: 5355454116639904650
+    second: Character SEA HORSE_6
+  - first:
+      213: -4324389165335144254
+    second: Character SEA HORSE_7
+  - first:
+      213: 154323860426616070
+    second: Character SEA HORSE_8
+  - first:
+      213: -3516380665534073977
+    second: Character SEA HORSE_9
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Character SEA HORSE_0
+      rect:
+        serializedVersion: 2
+        x: 184
+        y: 656
+        width: 129
+        height: 165
+      alignment: 9
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c508fbda648482990800000000000000
+      internalID: -7410593718438231972
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Character SEA HORSE_1
+      rect:
+        serializedVersion: 2
+        x: 318
+        y: 806
+        width: 460
+        height: 520
+      alignment: 9
+      pivot: {x: 0.47152337, y: 0.19956183}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 54e8ec99c46148400800000000000000
+      internalID: 325409591331294789
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Character SEA HORSE_2
+      rect:
+        serializedVersion: 2
+        x: 774
+        y: 656
+        width: 129
+        height: 162
+      alignment: 9
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2f9142250a933e7e0800000000000000
+      internalID: -1737481670499231246
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Character SEA HORSE_3
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 517
+        width: 115
+        height: 107
+      alignment: 9
+      pivot: {x: 0.5991013, y: 0.86368513}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0f066966e1ab01040800000000000000
+      internalID: 4616394257787674864
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Character SEA HORSE_4
+      rect:
+        serializedVersion: 2
+        x: 398
+        y: 448
+        width: 281
+        height: 328
+      alignment: 9
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 972ed0984b2de6240800000000000000
+      internalID: 4786995126776750713
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Character SEA HORSE_5
+      rect:
+        serializedVersion: 2
+        x: 857
+        y: 517
+        width: 115
+        height: 107
+      alignment: 9
+      pivot: {x: 0.39681557, y: 0.8586557}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ca65d0a78b233f0b0800000000000000
+      internalID: -5696153335790479700
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Character SEA HORSE_6
+      rect:
+        serializedVersion: 2
+        x: 279
+        y: 237
+        width: 111
+        height: 185
+      alignment: 9
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a8399390525625a40800000000000000
+      internalID: 5355454116639904650
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Character SEA HORSE_7
+      rect:
+        serializedVersion: 2
+        x: 659
+        y: 231
+        width: 111
+        height: 185
+      alignment: 9
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2c896a937feacf3c0800000000000000
+      internalID: -4324389165335144254
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Character SEA HORSE_8
+      rect:
+        serializedVersion: 2
+        x: 257
+        y: 138
+        width: 137
+        height: 74
+      alignment: 9
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 60d6811cbb4442200800000000000000
+      internalID: 154323860426616070
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Character SEA HORSE_9
+      rect:
+        serializedVersion: 2
+        x: 636
+        y: 132
+        width: 138
+        height: 74
+      alignment: 9
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7833acf4a6e433fc0800000000000000
+      internalID: -3516380665534073977
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 2d5fe2cb12de0f343bddd181c6920512
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":9,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      Character SEA HORSE_0: -7410593718438231972
+      Character SEA HORSE_1: 325409591331294789
+      Character SEA HORSE_2: -1737481670499231246
+      Character SEA HORSE_3: 4616394257787674864
+      Character SEA HORSE_4: 4786995126776750713
+      Character SEA HORSE_5: -5696153335790479700
+      Character SEA HORSE_6: 5355454116639904650
+      Character SEA HORSE_7: -4324389165335144254
+      Character SEA HORSE_8: 154323860426616070
+      Character SEA HORSE_9: -3516380665534073977
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
