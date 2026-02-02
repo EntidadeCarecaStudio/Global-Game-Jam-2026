@@ -183,6 +183,7 @@ public class MinibossController : BaseCharacterController
         {
             m_currentHealth = 0;
             ChangeState(DieState);
+            Destroy(gameObject, 3f);
         }
         else
         {
