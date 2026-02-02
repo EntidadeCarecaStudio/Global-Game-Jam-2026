@@ -1006,7 +1006,7 @@ MonoBehaviour:
   earthRoomPrefab: {fileID: 717650978647655219, guid: e3bf69b8adf5c5b45b407327a494a0d9, type: 3}
   fireBossPrefab: {fileID: 500907227295110919, guid: 0c96d9b4efdd9e64ca3ba8acdb2b2a05, type: 3}
   iceBossPrefab: {fileID: 1887303498935379201, guid: ca26b1f90dd465644b9deafd2f513385, type: 3}
-  earthBossPrefab: {fileID: 500907227295110919, guid: 0c96d9b4efdd9e64ca3ba8acdb2b2a05, type: 3}
+  earthBossPrefab: {fileID: 103169884534510784, guid: 156c998b79ca65c408ad4db0ef4f1417, type: 3}
   desiredRooms: 30
   maxSimulationAttempts: 200
   useRandomSeed: 1

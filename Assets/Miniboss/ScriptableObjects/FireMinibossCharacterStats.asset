@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: FireMiniBossCharacterStats
   m_EditorClassIdentifier: 
   maxHealth: 100
-  attackDamage: 9
+  attackDamage: 10
   movementSpeedX: 2
   movementSpeedZ: 2
   attackDuration: 0.4
