@@ -521,8 +521,8 @@ public class DungeonGenerator : MonoBehaviour
         }
 
         Transform spawnPoint = roomInstance.spawnPoints[0];
-        GameObject entityObj = Instantiate(entityPrefab, spawnPoint.position, spawnPoint.rotation);
-        
+        GameObject entityObj = Instantiate(entityPrefab, spawnPoint.position, Quaternion.identity);
+
         // --- NOVO: Se tiver manager (caso do Boss), registra ---
         if (manager != null) SetupEnemySpawn(entityObj, manager);
     }

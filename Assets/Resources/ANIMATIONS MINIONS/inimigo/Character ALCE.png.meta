@@ -1,0 +1,379 @@
+fileFormatVersion: 2
+guid: 67a626cbc77d64d42ad7786625f2d6f3
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -2659101055859740088
+    second: Character ALCE_0
+  - first:
+      213: 9218986072042373022
+    second: Character ALCE_1
+  - first:
+      213: -702490544877383169
+    second: Character ALCE_2
+  - first:
+      213: 1892194836410582146
+    second: Character ALCE_3
+  - first:
+      213: 2355852488101074837
+    second: Character ALCE_4
+  - first:
+      213: 7873797111908012591
+    second: Character ALCE_5
+  - first:
+      213: 5621066286445008710
+    second: Character ALCE_6
+  - first:
+      213: 1743253907940032452
+    second: Character ALCE_7
+  - first:
+      213: -6262521900305244489
+    second: Character ALCE_8
+  - first:
+      213: -4876116595803739388
+    second: Character ALCE_9
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Character ALCE_0
+      rect:
+        serializedVersion: 2
+        x: 184
+        y: 656
+        width: 129
+        height: 165
+      alignment: 9
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8423d9f9da9f81bd0800000000000000
+      internalID: -2659101055859740088
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Character ALCE_1
+      rect:
+        serializedVersion: 2
+        x: 268
+        y: 814
+        width: 500
+        height: 556
+      alignment: 9
+      pivot: {x: 0.4982665, y: 0.15150957}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e9ffb5dfcfa60ff70800000000000000
+      internalID: 9218986072042373022
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Character ALCE_2
+      rect:
+        serializedVersion: 2
+        x: 774
+        y: 656
+        width: 129
+        height: 162
+      alignment: 9
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ff1538642904046f0800000000000000
+      internalID: -702490544877383169
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Character ALCE_3
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 517
+        width: 115
+        height: 107
+      alignment: 9
+      pivot: {x: 0.5754917, y: 0.8705085}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 284c41ead2d624a10800000000000000
+      internalID: 1892194836410582146
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Character ALCE_4
+      rect:
+        serializedVersion: 2
+        x: 398
+        y: 448
+        width: 281
+        height: 329
+      alignment: 9
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5971c782b5ba1b020800000000000000
+      internalID: 2355852488101074837
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Character ALCE_5
+      rect:
+        serializedVersion: 2
+        x: 856
+        y: 517
+        width: 115
+        height: 107
+      alignment: 9
+      pivot: {x: 0.47641337, y: 0.8693511}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f2216c091c8554d60800000000000000
+      internalID: 7873797111908012591
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Character ALCE_6
+      rect:
+        serializedVersion: 2
+        x: 279
+        y: 237
+        width: 111
+        height: 185
+      alignment: 9
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6479a7e710a020e40800000000000000
+      internalID: 5621066286445008710
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Character ALCE_7
+      rect:
+        serializedVersion: 2
+        x: 659
+        y: 231
+        width: 111
+        height: 185
+      alignment: 9
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4cfb3107138413810800000000000000
+      internalID: 1743253907940032452
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Character ALCE_8
+      rect:
+        serializedVersion: 2
+        x: 257
+        y: 138
+        width: 137
+        height: 74
+      alignment: 9
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7be933e038d0719a0800000000000000
+      internalID: -6262521900305244489
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Character ALCE_9
+      rect:
+        serializedVersion: 2
+        x: 636
+        y: 132
+        width: 138
+        height: 74
+      alignment: 9
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 40b2bb77acd845cb0800000000000000
+      internalID: -4876116595803739388
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: b7772b5c58b58654b8ed3699e4b4126c
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":9,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      Character ALCE_0: -2659101055859740088
+      Character ALCE_1: 9218986072042373022
+      Character ALCE_2: -702490544877383169
+      Character ALCE_3: 1892194836410582146
+      Character ALCE_4: 2355852488101074837
+      Character ALCE_5: 7873797111908012591
+      Character ALCE_6: 5621066286445008710
+      Character ALCE_7: 1743253907940032452
+      Character ALCE_8: -6262521900305244489
+      Character ALCE_9: -4876116595803739388
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
