@@ -3,19 +3,29 @@ using System;
 
 public class WorldRotationManager : MonoBehaviour
 {
-    // Evento que o Player e a Câmera (se necessário) escutarão
+    
     public static event Action<float> OnRotateRequest;
 
-    void Update()
+    private void OnRotateClockwise()
     {
-        // Detecta o input e dispara o evento para quem estiver ouvindo (o Player)
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            OnRotateRequest?.Invoke(90f); // Gira 90 graus para um lado
-        }
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            OnRotateRequest?.Invoke(-90f); // Gira 90 graus para o outro
-        }
+        OnRotateRequest?.Invoke(-90f);
     }
+
+    private void OnRotateCounterclockwise()
+    {
+        OnRotateRequest?.Invoke(90f);
+    }
+
+    void OnEnable()
+    {
+        Manager_Events.Input.OnRotateClockwise += OnRotateClockwise;
+        Manager_Events.Input.OnRotateCounterclockwise += OnRotateCounterclockwise;
+    }
+
+    void OnDisable()
+    {
+        Manager_Events.Input.OnRotateClockwise -= OnRotateClockwise;
+        Manager_Events.Input.OnRotateCounterclockwise -= OnRotateCounterclockwise;
+    }
+
 }

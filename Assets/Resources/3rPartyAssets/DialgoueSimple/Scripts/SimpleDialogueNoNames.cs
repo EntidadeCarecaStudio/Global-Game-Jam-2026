@@ -20,20 +20,17 @@ namespace JacksonJames
             ShowLine();
         }
 
-        void Update()
+        void OnInteract()
         {
-            if (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return))
+            currentLineIndex++;
+            if (currentLineIndex < dialogueLines.Length)
             {
-                currentLineIndex++;
-                if (currentLineIndex < dialogueLines.Length)
-                {
-                    ShowLine();
-                }
-                else
-                {
-                    dialogueText.text = ""; // Clear text or handle end of dialogue
-                    Debug.Log("End of dialogue.");
-                }
+                ShowLine();
+            }
+            else
+            {
+                dialogueText.text = ""; // Clear text or handle end of dialogue
+                Debug.Log("End of dialogue.");
             }
         }
 
@@ -41,5 +38,16 @@ namespace JacksonJames
         {
             dialogueText.text = dialogueLines[currentLineIndex];
         }
+
+        void OnEnable()
+        {
+            Manager_Events.Input.OnInteract += OnInteract;
+        }
+
+        void OnDisable()
+        {
+            Manager_Events.Input.OnInteract -= OnInteract;
+        }
+
     }
 }

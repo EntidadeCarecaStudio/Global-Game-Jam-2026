@@ -694,6 +694,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8281838330554503987, guid: f6f09cbbeb30d544c9a06193bad1af2a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8951977294549718498, guid: f6f09cbbeb30d544c9a06193bad1af2a, type: 3}
       propertyPath: m_Name
       value: Canvas_MiniBoss
@@ -1000,9 +1004,9 @@ MonoBehaviour:
   fireRoomPrefab: {fileID: 5946541285351160598, guid: 09b8f0b0712b78646b060f8f211590cb, type: 3}
   iceRoomPrefab: {fileID: 5276511597662811546, guid: a3c863c0b9938de4f97779ea7b544eed, type: 3}
   earthRoomPrefab: {fileID: 717650978647655219, guid: e3bf69b8adf5c5b45b407327a494a0d9, type: 3}
-  fireBossPrefab: {fileID: 1311362182539385582, guid: e75e2943ed0a6c14da30561de6ede6a1, type: 3}
-  iceBossPrefab: {fileID: 3344326619342167051, guid: 035335262352119448ada63cbceba9a4, type: 3}
-  earthBossPrefab: {fileID: 103169884534510784, guid: 156c998b79ca65c408ad4db0ef4f1417, type: 3}
+  fireBossPrefab: {fileID: 500907227295110919, guid: 0c96d9b4efdd9e64ca3ba8acdb2b2a05, type: 3}
+  iceBossPrefab: {fileID: 1887303498935379201, guid: ca26b1f90dd465644b9deafd2f513385, type: 3}
+  earthBossPrefab: {fileID: 500907227295110919, guid: 0c96d9b4efdd9e64ca3ba8acdb2b2a05, type: 3}
   desiredRooms: 30
   maxSimulationAttempts: 200
   useRandomSeed: 1
