@@ -1,0 +1,535 @@
+fileFormatVersion: 2
+guid: 154c3554fe102fe47b0d84b90e1d2a6a
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -7300385562137741053
+    second: Deer Baron Chib_0
+  - first:
+      213: -6802340184191676662
+    second: Deer Baron Chib_1
+  - first:
+      213: -2877257853218336717
+    second: Deer Baron Chib_2
+  - first:
+      213: -8884497840304211488
+    second: Deer Baron Chib_3
+  - first:
+      213: 4894192981398911543
+    second: Deer Baron Chib_4
+  - first:
+      213: -1114104190232442644
+    second: Deer Baron Chib_5
+  - first:
+      213: 7341505231118218138
+    second: Deer Baron Chib_6
+  - first:
+      213: 1411216860569723649
+    second: Deer Baron Chib_7
+  - first:
+      213: 8051423789789144172
+    second: Deer Baron Chib_8
+  - first:
+      213: 249279903561990281
+    second: Deer Baron Chib_9
+  - first:
+      213: 3345481733206953823
+    second: Deer Baron Chib_10
+  - first:
+      213: -805780630369575415
+    second: Deer Baron Chib_11
+  - first:
+      213: -958631918439401735
+    second: Deer Baron Chib_12
+  - first:
+      213: -2088712307517589496
+    second: Deer Baron Chib_13
+  - first:
+      213: -1980449565952386099
+    second: Deer Baron Chib_14
+  - first:
+      213: 1502492481211088015
+    second: Deer Baron Chib_15
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Deer Baron Chib_0
+      rect:
+        serializedVersion: 2
+        x: 203
+        y: 1011
+        width: 99
+        height: 192
+      alignment: 9
+      pivot: {x: 0.6203619, y: 0.8731696}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 309b365a202dfaa90800000000000000
+      internalID: -7300385562137741053
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Baron Chib_1
+      rect:
+        serializedVersion: 2
+        x: 403
+        y: 1037
+        width: 574
+        height: 494
+      alignment: 9
+      pivot: {x: 0.44827387, y: 0.22388214}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a0fc3ef84ab3991a0800000000000000
+      internalID: -6802340184191676662
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Baron Chib_2
+      rect:
+        serializedVersion: 2
+        x: 1025
+        y: 1011
+        width: 97
+        height: 191
+      alignment: 9
+      pivot: {x: 0.59336114, y: 0.8567521}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 330d7b31a3de118d0800000000000000
+      internalID: -2877257853218336717
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Baron Chib_3
+      rect:
+        serializedVersion: 2
+        x: 1436
+        y: 644
+        width: 443
+        height: 393
+      alignment: 9
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0e931fc494ce3b480800000000000000
+      internalID: -8884497840304211488
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Baron Chib_4
+      rect:
+        serializedVersion: 2
+        x: 207
+        y: 758
+        width: 77
+        height: 147
+      alignment: 9
+      pivot: {x: 0.65748733, y: 0.9089858}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 73afd76069aabe340800000000000000
+      internalID: 4894192981398911543
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Baron Chib_5
+      rect:
+        serializedVersion: 2
+        x: 543
+        y: 713
+        width: 231
+        height: 275
+      alignment: 9
+      pivot: {x: 0.47389308, y: 0.06566118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ce8cb6a4428e980f0800000000000000
+      internalID: -1114104190232442644
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Baron Chib_6
+      rect:
+        serializedVersion: 2
+        x: 1044
+        y: 746
+        width: 73
+        height: 151
+      alignment: 9
+      pivot: {x: 0.44832915, y: 0.88938653}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a9339795c1442e560800000000000000
+      internalID: 7341505231118218138
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Baron Chib_7
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 488
+        width: 133
+        height: 130
+      alignment: 9
+      pivot: {x: 0.48049363, y: 0.8746333}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 103ec4bf146a59310800000000000000
+      internalID: 1411216860569723649
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Baron Chib_8
+      rect:
+        serializedVersion: 2
+        x: 355
+        y: 329
+        width: 72
+        height: 175
+      alignment: 9
+      pivot: {x: 0.63398445, y: 0.84417117}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c64e28e47476cbf60800000000000000
+      internalID: 8051423789789144172
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Baron Chib_9
+      rect:
+        serializedVersion: 2
+        x: 595
+        y: 488
+        width: 113
+        height: 169
+      alignment: 9
+      pivot: {x: 0.48937124, y: 0.1135225}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 980c47560ce957300800000000000000
+      internalID: 249279903561990281
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Baron Chib_10
+      rect:
+        serializedVersion: 2
+        x: 875
+        y: 322
+        width: 73
+        height: 176
+      alignment: 9
+      pivot: {x: 0.5874642, y: 0.865649}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f5fcb5649e98d6e20800000000000000
+      internalID: 3345481733206953823
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Baron Chib_11
+      rect:
+        serializedVersion: 2
+        x: 1026
+        y: 489
+        width: 136
+        height: 133
+      alignment: 9
+      pivot: {x: 0.53938025, y: 0.87398946}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 90e5eef29ca41d4f0800000000000000
+      internalID: -805780630369575415
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Baron Chib_12
+      rect:
+        serializedVersion: 2
+        x: 145
+        y: 54
+        width: 101
+        height: 55
+      alignment: 9
+      pivot: {x: 0.81350905, y: 0.78467405}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9f67117695142b2f0800000000000000
+      internalID: -958631918439401735
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Baron Chib_13
+      rect:
+        serializedVersion: 2
+        x: 357
+        y: 73
+        width: 63
+        height: 167
+      alignment: 9
+      pivot: {x: 0.50060064, y: 0.91939884}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8087d6809376303e0800000000000000
+      internalID: -2088712307517589496
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Baron Chib_14
+      rect:
+        serializedVersion: 2
+        x: 669
+        y: 50
+        width: 99
+        height: 59
+      alignment: 9
+      pivot: {x: 0.8215603, y: 0.75961083}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dcbd4d5dc970484e0800000000000000
+      internalID: -1980449565952386099
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Deer Baron Chib_15
+      rect:
+        serializedVersion: 2
+        x: 883
+        y: 76
+        width: 70
+        height: 165
+      alignment: 9
+      pivot: {x: 0.40305525, y: 0.9028397}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f8c384c73fce9d410800000000000000
+      internalID: 1502492481211088015
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 62a6b0372a1aa5c4cb120fd6cff6ed92
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":9,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      Deer Baron Chib_0: -7300385562137741053
+      Deer Baron Chib_1: -6802340184191676662
+      Deer Baron Chib_10: 3345481733206953823
+      Deer Baron Chib_11: -805780630369575415
+      Deer Baron Chib_12: -958631918439401735
+      Deer Baron Chib_13: -2088712307517589496
+      Deer Baron Chib_14: -1980449565952386099
+      Deer Baron Chib_15: 1502492481211088015
+      Deer Baron Chib_2: -2877257853218336717
+      Deer Baron Chib_3: -8884497840304211488
+      Deer Baron Chib_4: 4894192981398911543
+      Deer Baron Chib_5: -1114104190232442644
+      Deer Baron Chib_6: 7341505231118218138
+      Deer Baron Chib_7: 1411216860569723649
+      Deer Baron Chib_8: 8051423789789144172
+      Deer Baron Chib_9: 249279903561990281
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
