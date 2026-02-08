@@ -16,7 +16,7 @@ MonoBehaviour:
   maskIcon: {fileID: 21300000, guid: c5fd6cdac3bf857478e5d4f51ea359b6, type: 3}
   maxHealthModifier: 0
   attackDamageModifier: 0
-  movementSpeedModifier: 5
+  movementSpeedModifier: 50
   attackDurationModifier: 0
   dodgeDurationModifier: 0
   attackCooldownModifier: 0
