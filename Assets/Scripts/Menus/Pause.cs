@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using System.Collections; // Necessário para Corrotinas
+using System.Collections;
 using static Manager_Events;
 using Input = UnityEngine.Input;
 
@@ -12,7 +12,6 @@ public class Pause : MonoBehaviour
     [Header("Animation Settings")]
     [SerializeField] private float _animationDuration = 0.4f;
 
-    // Curva: 0 -> 1.15 -> 0.95 -> 1.0
     [SerializeField]
     private AnimationCurve _popCurve = new AnimationCurve(
         new Keyframe(0f, 0f),
@@ -40,6 +39,7 @@ public class Pause : MonoBehaviour
             _pauseMenuUI.transform.localScale = Vector3.zero;
         }
 
+        // Salva o volume inicial apenas uma vez no começo
         if (_musicSource != null)
             _originalVolume = _musicSource.volume;
     }
@@ -48,9 +48,6 @@ public class Pause : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            // Impede spam do botão enquanto estiver animando (opcional, mas recomendado)
-            // if (_animationCoroutine != null) return; 
-
             if (_isPaused)
                 ResumeGame();
             else
@@ -62,17 +59,13 @@ public class Pause : MonoBehaviour
     {
         _isPaused = true;
 
-        // 1. Pausa lógica do jogo imediatamente
+        // 1. Pausa o jogo
         Time.timeScale = 0f;
 
-        // 2. Ajusta som
-        if (_musicSource != null)
-        {
-            _originalVolume = _musicSource.volume; // Salva o volume atual
-            _musicSource.volume = _pausedVolume;
-        }
+        // 2. Não setamos o volume aqui abruptamente mais.
+        // A corrotina vai cuidar disso suavemente.
 
-        // 3. Ativa e Anima (ABRIR = true)
+        // 3. Inicia Animação de Abrir
         if (_pauseMenuUI != null)
         {
             _pauseMenuUI.SetActive(true);
@@ -89,10 +82,8 @@ public class Pause : MonoBehaviour
     {
         _isPaused = false;
 
-        // NOTA: Não mudamos Time.timeScale para 1 aqui ainda!
-        // O jogo continua pausado visualmente enquanto o menu encolhe.
-
-        // 1. Inicia Animação de Fechar (ABRIR = false)
+        // 1. Inicia Animação de Fechar
+        // O Time.timeScale continua 0 até a animação acabar (no FinishResume)
         if (_pauseMenuUI != null)
         {
             if (_animationCoroutine != null) StopCoroutine(_animationCoroutine);
@@ -100,60 +91,65 @@ public class Pause : MonoBehaviour
         }
         else
         {
-            // Fallback caso não tenha UI linkada
             FinishResume();
         }
     }
 
-    // Esta função é chamada automaticamente quando a animação de fechar termina
     private void FinishResume()
     {
-        // Desativa a UI
         if (_pauseMenuUI != null)
             _pauseMenuUI.SetActive(false);
 
-        // AGORA sim voltamos o jogo ao normal
         Time.timeScale = 1f;
 
-        // Restaura som
+        // Garante que o volume fique exatamente no original no final (para corrigir pequenos erros de cálculo)
         if (_musicSource != null)
             _musicSource.volume = _originalVolume;
 
-        // Opcional: Travar mouse novamente
         // Cursor.visible = false;
         // Cursor.lockState = CursorLockMode.Locked;
     }
 
-    // --- CORROTINA UNIFICADA (ABRIR E FECHAR) ---
+    // --- CORROTINA (AGORA CONTROLA UI E ÁUDIO) ---
     private IEnumerator AnimateMenu(bool isOpening)
     {
         float timer = 0f;
 
+        // Configurações de AUDIO para a transição
+        float startVol = (_musicSource != null) ? _musicSource.volume : 0f;
+        float targetVol = isOpening ? _pausedVolume : _originalVolume;
+
         while (timer < _animationDuration)
         {
             timer += Time.unscaledDeltaTime;
-            float progress = timer / _animationDuration;
+            float progress = Mathf.Clamp01(timer / _animationDuration);
 
-            // Se estiver abrindo: vai de 0 a 1 na curva
-            // Se estiver fechando: vai de 1 a 0 na curva
+            // --- 1. Lógica da UI (Curva) ---
             float curveTime = isOpening ? progress : (1f - progress);
-
             float scaleValue = _popCurve.Evaluate(curveTime);
-
             _pauseMenuUI.transform.localScale = Vector3.one * scaleValue;
+
+            // --- 2. Lógica do Áudio (Lerp Linear) ---
+            if (_musicSource != null)
+            {
+                // Mathf.Lerp faz a transição suave entre o volume inicial e o final
+                _musicSource.volume = Mathf.Lerp(startVol, targetVol, progress);
+            }
 
             yield return null;
         }
 
-        // Finalização forçada para evitar erros de float
+        // Finalização
         if (isOpening)
         {
             _pauseMenuUI.transform.localScale = Vector3.one;
+            // Garante volume final correto
+            if (_musicSource != null) _musicSource.volume = _pausedVolume;
         }
         else
         {
             _pauseMenuUI.transform.localScale = Vector3.zero;
-            // Chama a função que realmente "despausa" o jogo
+            // O volume será cravado no _originalVolume dentro de FinishResume()
             FinishResume();
         }
 
@@ -163,12 +159,14 @@ public class Pause : MonoBehaviour
     public void RestartLevel()
     {
         Time.timeScale = 1f;
+        if (_musicSource != null) _musicSource.volume = _originalVolume; // Reseta volume ao reiniciar
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     public void QuitToMainMenu()
     {
         Time.timeScale = 1f;
+        if (_musicSource != null) _musicSource.volume = _originalVolume; // Reseta volume ao sair
         SceneManager.LoadScene(_mainMenuSceneName);
     }
 }
