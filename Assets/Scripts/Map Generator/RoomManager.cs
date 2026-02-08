@@ -80,10 +80,10 @@ public class RoomManager : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             Room myRoom = GetComponent<Room>();
-            if (myRoom != null && DungeonVisibilityManager.Instance != null)
+            /*if (myRoom != null && DungeonVisibilityManager.Instance != null)
             {
                 DungeonVisibilityManager.Instance.UpdateVisibility(myRoom);
-            }
+            }*/
 
             if (isCleared || isActive) return;
 
