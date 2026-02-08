@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e0c15defba87b8042ab39d94020a83a1, type: 3}
-  m_Name: Mask_2
+  m_Name: Deer_Mask
   m_EditorClassIdentifier: 
-  maskName: Second
-  maskIcon: {fileID: 21300000, guid: a80a75097c5e0234abd2d42f4c47205f, type: 3}
-  maxHealthModifier: 50
-  attackDamageModifier: 0
+  maskName: Deer
+  maskIcon: {fileID: -8884497840304211488, guid: 51889c7fe12340742a1e43e64c42da2a, type: 3}
+  maxHealthModifier: 0
+  attackDamageModifier: 10
   movementSpeedModifier: 0
   attackDurationModifier: 0
   dodgeDurationModifier: 0
