@@ -1011,7 +1011,7 @@ MonoBehaviour:
   maxSimulationAttempts: 200
   useRandomSeed: 1
   seed: 0
-  roomRadius: 10
+  roomRadius: 8
   gridSize: 10
   standardEnemyPrefabs:
   - {fileID: 2285911381739752932, guid: f07824b99708e174f84768af8cd7e5cd, type: 3}
