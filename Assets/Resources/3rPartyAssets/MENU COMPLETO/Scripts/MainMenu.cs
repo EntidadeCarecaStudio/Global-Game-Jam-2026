@@ -9,6 +9,7 @@ public class MainMenu : MonoBehaviour
     public string firstLevel;
 
     public GameObject optionsScreen;
+    public GameObject creditScreen;
 
     public GameObject loadingScreen, loadingIcon;
     public Text loadingText;
@@ -36,9 +37,19 @@ public class MainMenu : MonoBehaviour
         optionsScreen.SetActive(true);
     }
 
+    public void OpenCredits()
+    {
+        creditScreen.SetActive(true);
+    }
+
     public void CloseOptions()
     {
         optionsScreen.SetActive(false);
+    }
+
+    public void CloseCredits()
+    {
+        creditScreen.SetActive(false);
     }
 
     public void QuitGame()
@@ -72,4 +83,6 @@ public class MainMenu : MonoBehaviour
             yield return null;
         }
     }
+
+
 }
