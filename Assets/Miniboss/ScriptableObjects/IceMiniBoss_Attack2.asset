@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9423b2502c568f46b504983bf185f59, type: 3}
+  m_Name: IceMiniBoss_Attack2
+  m_EditorClassIdentifier: 
+  attackName: LongShotAttack
+  attackAnimationClip: {fileID: 7400000, guid: da4a747a0bec8814c8e727b2080c264d, type: 2}
+  attackRadius: 3
+  minRange: 3
+  maxRange: 8
+  cooldown: 5
+  recoveryTime: 3
+  minCombatTime: 15
+  minFailedAttempts: 0

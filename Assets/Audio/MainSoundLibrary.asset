@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b35cf3ab56e257448a5f69d90879e72, type: 3}
+  m_Name: MainSoundLibrary
+  m_EditorClassIdentifier: 
+  sounds:
+  - id: _golpe1
+    clip: {fileID: 8300000, guid: 4047dfebc243abe4692c48fdf8c4d77f, type: 3}
+    volume: 0.8
+    loop: 0
+    source: {fileID: 0}
+  - id: _golpe2
+    clip: {fileID: 8300000, guid: 3c1daa37203efa245b84c578a6c6482d, type: 3}
+    volume: 0.5
+    loop: 0
+    source: {fileID: 0}
+  - id: _scream1
+    clip: {fileID: 8300000, guid: e565963cb785cc9449672ea4717840ea, type: 3}
+    volume: 0.4
+    loop: 0
+    source: {fileID: 0}
+  - id: _scream2
+    clip: {fileID: 8300000, guid: 147fbb3a0f17054469186fe63f33e19a, type: 3}
+    volume: 0.5
+    loop: 0
+    source: {fileID: 0}
+  - id: _damage1
+    clip: {fileID: 8300000, guid: 4e5b2bb20dc76ff44917ab14d807f882, type: 3}
+    volume: 0.1
+    loop: 0
+    source: {fileID: 0}
+  - id: _damage2
+    clip: {fileID: 8300000, guid: e392543b2a6e6bc46ad575c1befde737, type: 3}
+    volume: 0.1
+    loop: 0
+    source: {fileID: 0}
+  - id: _damage3
+    clip: {fileID: 8300000, guid: a3ef85e8877950846b0e519d62a72a31, type: 3}
+    volume: 0.1
+    loop: 0
+    source: {fileID: 0}
+  - id: _death1
+    clip: {fileID: 8300000, guid: c247554faae46074a9c16f67d9ef3e34, type: 3}
+    volume: 0.5
+    loop: 0
+    source: {fileID: 0}
+  - id: _kill1
+    clip: {fileID: 8300000, guid: 8e835870ac67b2a4abba2d2a0dbe4783, type: 3}
+    volume: 0.1
+    loop: 0
+    source: {fileID: 0}
+  - id: _kill2
+    clip: {fileID: 8300000, guid: 8e835870ac67b2a4abba2d2a0dbe4783, type: 3}
+    volume: 0.1
+    loop: 0
+    source: {fileID: 0}
+  - id: _kill3
+    clip: {fileID: 8300000, guid: d9ed64f9d950c1747a906678cdb5c436, type: 3}
+    volume: 0.1
+    loop: 0
+    source: {fileID: 0}
+  - id: _music1
+    clip: {fileID: 8300000, guid: ca130b77ccee16f40af321efbbc2efda, type: 3}
+    volume: 0.068
+    loop: 0
+    source: {fileID: 0}
