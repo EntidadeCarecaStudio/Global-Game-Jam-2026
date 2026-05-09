@@ -2,6 +2,7 @@ using UnityEngine;
 using Unity.Cinemachine;
 using System;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class PlayerController : BaseCharacterController
 {
@@ -18,6 +19,9 @@ public class PlayerController : BaseCharacterController
     [SerializeField] private LayerMask _interactableLayer;
     [SerializeField] private float _interactionRange = 2.0f;
     [SerializeField] private float _interactionCheckInterval = 0.1f;
+
+    [Header("UI Settings")]
+    [SerializeField] private Slider _healthSlider;
 
     [Header("Cinemachine Impulse")]
     [SerializeField] private CinemachineImpulseSource _impulseSource;
@@ -62,6 +66,7 @@ public class PlayerController : BaseCharacterController
     protected override void Start()
     {
         base.Start();
+        UpdateHealthUI();
         SetState(CharacterState.Idle);
     }
 
@@ -354,6 +359,8 @@ public class PlayerController : BaseCharacterController
 
         base.TakeDamage(damage, hitSourcePosition);
 
+        UpdateHealthUI();
+
         if (m_currentHealth > 0 && _impulseSource != null)
         {
             _impulseSource.GenerateImpulse();
@@ -539,6 +546,16 @@ public class PlayerController : BaseCharacterController
         // Garante que termine exatamente no ângulo certo (evita erros flutuantes)
         transform.rotation = targetRotation;
         _isRotating = false;
+    }
+
+    private void UpdateHealthUI()
+    {
+        if (_healthSlider != null)
+        {
+            // Garante que a barra saiba qual é a vida máxima atual (caso mude por buffs/equipamentos)
+            _healthSlider.maxValue = m_effectiveStats.maxHealth;
+            _healthSlider.value = m_currentHealth;
+        }
     }
 
 }

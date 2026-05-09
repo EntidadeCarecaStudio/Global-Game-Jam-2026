@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: GroundMiniBossCharacterStats
   m_EditorClassIdentifier: 
   maxHealth: 150
-  attackDamage: 7
+  attackDamage: 15
   movementSpeedX: 1
   movementSpeedZ: 1
   attackDuration: 0.4

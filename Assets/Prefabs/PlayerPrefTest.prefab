@@ -935,6 +935,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 5233819285483483996, guid: 13b6e7c81aba20a478cc3f1e91e70ef3, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8192798429671646879, guid: 13b6e7c81aba20a478cc3f1e91e70ef3, type: 3}
       propertyPath: _attackRadius
       value: 0.2

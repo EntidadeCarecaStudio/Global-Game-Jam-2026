@@ -40,6 +40,9 @@ public class MinibossController : BaseCharacterController
     public IMinibossState StunState { get; private set; }
     public IMinibossState DieState { get; private set; }
 
+    //Eventos
+    public event System.Action OnMinibossDeath;
+
     protected override void Awake()
     {
         Transform player = GameObject.FindGameObjectWithTag("Player").transform;
@@ -236,5 +239,8 @@ public class MinibossController : BaseCharacterController
     {
         _healthSlider.gameObject.SetActive(false);
         _animator.PlayDie();
+
+        //Evento
+        OnMinibossDeath?.Invoke();
     }
 }

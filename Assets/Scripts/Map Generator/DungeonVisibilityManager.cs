@@ -6,7 +6,7 @@ public class DungeonVisibilityManager : MonoBehaviour
     public static DungeonVisibilityManager Instance;
     
     private List<Room> allRooms = new List<Room>();
-    public int viewDepth = 2; 
+    public int viewDepth = 1; 
 
     void Awake()
     {

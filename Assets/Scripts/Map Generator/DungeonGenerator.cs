@@ -381,7 +381,7 @@ public class DungeonGenerator : MonoBehaviour
             }
         }
 
-        // 3. Inicializa o Sistema de Visibilidade Otimizado
+        /*/ 3. Inicializa o Sistema de Visibilidade Otimizado
         if (DungeonVisibilityManager.Instance == null)
         {
             GameObject managerObj = new GameObject("DungeonVisibilityManager");
@@ -394,7 +394,7 @@ public class DungeonGenerator : MonoBehaviour
         if (instantiatedRooms.Count > 0)
         {
             DungeonVisibilityManager.Instance.UpdateVisibility(instantiatedRooms[0]);
-        }
+        }*/
     }
 
     // --- MÉTODOS DE SPAWN ---

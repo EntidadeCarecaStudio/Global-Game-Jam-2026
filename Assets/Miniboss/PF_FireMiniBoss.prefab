@@ -121,6 +121,7 @@ GameObject:
   - component: {fileID: 6046505527666934968}
   - component: {fileID: 2054754318401298167}
   - component: {fileID: 2193756607534280368}
+  - component: {fileID: 7241026126514350259}
   m_Layer: 26
   m_Name: PF_FireMiniBoss
   m_TagString: Untagged
@@ -335,6 +336,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b1022b0c5d80ed488ddbfe1349a1559, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &7241026126514350259
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 500907227295110919}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d15ab3ae2b50d24cac2fc994807c0fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _lootPrefab: {fileID: 3036918466319280, guid: a8fbf72deee4f904583f6fbe704993e9, type: 3}
+  _dropOffset: {x: 0, y: 0.5, z: 0}
 --- !u!1 &637970241391641747
 GameObject:
   m_ObjectHideFlags: 0

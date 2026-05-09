@@ -19,6 +19,7 @@ GameObject:
   - component: {fileID: 7418794553610086575}
   - component: {fileID: 7209457582854303406}
   - component: {fileID: 2652152927289526296}
+  - component: {fileID: 4085354350862375573}
   m_Layer: 26
   m_Name: PF_GroundMiniBoss
   m_TagString: Untagged
@@ -233,6 +234,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b1022b0c5d80ed488ddbfe1349a1559, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &4085354350862375573
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 103169884534510784}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d15ab3ae2b50d24cac2fc994807c0fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _lootPrefab: {fileID: 4160478804099051636, guid: 0eb78ca9748333843b29851171393a28, type: 3}
+  _dropOffset: {x: 0, y: 0.5, z: 0}
 --- !u!1 &351929425461002537
 GameObject:
   m_ObjectHideFlags: 0
